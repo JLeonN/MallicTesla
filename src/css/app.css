@@ -11,19 +11,423 @@ body {
   font-family: var(--tipografia-principal);
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: var(--ancho-borde-foco) solid var(--color-foco);
+  outline-offset: var(--espaciado-minimo);
+}
+
 .aplicacion-mallic-tesla,
-.pagina-inicial {
+.pagina-contenido {
   background: var(--color-fondo-principal);
 }
 
-.pagina-inicial {
-  min-height: 100vh;
+.pagina-contenido {
   padding: var(--espaciado-grande);
 }
 
-.presentacion {
+.contenedor-principal {
   width: min(100%, var(--ancho-contenido-principal));
-  padding: clamp(var(--espaciado-grande), 7vw, var(--espaciado-muy-grande));
+  margin: 0 auto;
+}
+
+.etiqueta-seccion {
+  margin: 0 0 var(--espaciado-control);
+  color: var(--color-accion-principal);
+  font-size: var(--tamano-texto-pequeno);
+  font-weight: var(--peso-texto-fuerte);
+  letter-spacing: var(--espaciado-letras-etiqueta);
+  text-transform: uppercase;
+}
+
+.titulo-pagina,
+.titulo-seccion {
+  margin: 0;
+  color: var(--color-texto-principal);
+  line-height: var(--altura-linea-compacta);
+}
+
+.titulo-pagina {
+  font-size: var(--tamano-titulo-pagina);
+}
+
+.titulo-seccion {
+  font-size: var(--tamano-titulo-seccion);
+}
+
+.texto-secundario {
+  color: var(--color-texto-secundario);
+  line-height: var(--altura-linea-texto);
+}
+
+.boton-accion-principal {
+  min-height: var(--altura-control);
+  padding-inline: var(--espaciado-grande);
+  color: var(--color-accion-contraste);
+  font-weight: var(--peso-texto-fuerte);
+  background: var(--color-accion-principal);
+  border-radius: var(--radio-mediano);
+  box-shadow: var(--sombra-control);
+}
+
+.boton-secundario {
+  min-height: var(--altura-control);
+  color: var(--color-accion-principal);
+  border-radius: var(--radio-mediano);
+}
+
+.logo-mallic-tesla {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--color-logo-fondo);
+  border-radius: var(--radio-mediano);
+}
+
+.logo-mallic-tesla--pequeno {
+  width: var(--tamano-logo-pequeno);
+  height: var(--tamano-logo-pequeno);
+  padding: var(--espaciado-minimo);
+}
+
+.logo-mallic-tesla--mediano {
+  width: var(--tamano-logo-mediano);
+  height: var(--tamano-logo-mediano);
+  padding: var(--espaciado-pequeno);
+}
+
+.logo-mallic-tesla--grande {
+  width: var(--tamano-logo-grande);
+  height: var(--tamano-logo-grande);
+  padding: var(--espaciado-mediano);
+  border-radius: var(--radio-grande);
+  box-shadow: var(--sombra-principal);
+}
+
+.logo-mallic-tesla__imagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.encabezado-movil {
+  color: var(--color-texto-principal);
+  background: var(--color-fondo-secundario);
+  border-bottom: var(--ancho-borde) solid var(--color-borde-principal);
+  box-shadow: none;
+}
+
+.encabezado-movil__barra {
+  min-height: var(--altura-encabezado-movil);
+  padding-inline: var(--espaciado-mediano);
+}
+
+.marca-movil {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--altura-control);
+  gap: var(--espaciado-control);
+  font-size: var(--tamano-texto-base);
+  font-weight: var(--peso-texto-fuerte);
+  border-radius: var(--radio-pequeno);
+}
+
+.menu-escritorio {
+  color: var(--color-texto-principal);
+  background: var(--color-fondo-secundario);
+  border-color: var(--color-borde-principal) !important;
+}
+
+.menu-escritorio__contenido {
+  display: flex;
+  flex-direction: column;
+  width: var(--ancho-menu-escritorio);
+  min-height: 100%;
+  padding: var(--espaciado-extra-grande) var(--espaciado-grande);
+}
+
+.marca-escritorio {
+  display: flex;
+  align-items: center;
+  gap: var(--espaciado-mediano);
+  border-radius: var(--radio-mediano);
+}
+
+.marca-escritorio__texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: var(--espaciado-minimo);
+}
+
+.marca-escritorio__texto strong {
+  font-size: var(--tamano-texto-destacado);
+}
+
+.marca-escritorio__texto small {
+  overflow: hidden;
+  color: var(--color-texto-suave);
+  font-size: var(--tamano-texto-pequeno);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-escritorio__accion {
+  width: 100%;
+  margin-block: var(--espaciado-extra-grande);
+}
+
+.lista-navegacion {
+  display: grid;
+  gap: var(--espaciado-pequeno);
+}
+
+.enlace-navegacion-escritorio {
+  display: flex;
+  align-items: center;
+  min-height: var(--altura-control);
+  padding-inline: var(--espaciado-mediano);
+  gap: var(--espaciado-mediano);
+  color: var(--color-texto-secundario);
+  font-weight: var(--peso-texto-medio);
+  border: var(--ancho-borde) solid transparent;
+  border-radius: var(--radio-mediano);
+  transition:
+    color var(--duracion-transicion) ease,
+    background var(--duracion-transicion) ease,
+    border-color var(--duracion-transicion) ease;
+}
+
+.enlace-navegacion-escritorio:hover {
+  color: var(--color-texto-principal);
+  background: var(--color-superficie-secundaria);
+}
+
+.enlace-navegacion-escritorio--activo {
+  color: var(--color-accion-principal);
+  background: var(--color-accion-suave);
+  border-color: var(--color-accion-borde);
+}
+
+.navegacion-movil {
+  color: var(--color-texto-secundario);
+  background: var(--color-fondo-secundario);
+  border-top: var(--ancho-borde) solid var(--color-borde-principal);
+  box-shadow: none;
+}
+
+.navegacion-movil__contenido {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: calc(var(--altura-navegacion-movil) + env(safe-area-inset-bottom));
+  padding: var(--espaciado-pequeno) var(--espaciado-pequeno) env(safe-area-inset-bottom);
+}
+
+.enlace-navegacion-movil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--altura-control);
+  gap: var(--espaciado-minimo);
+  color: var(--color-texto-suave);
+  font-size: var(--tamano-texto-pequeno);
+  font-weight: var(--peso-texto-medio);
+  border-radius: var(--radio-mediano);
+  transition:
+    color var(--duracion-transicion) ease,
+    background var(--duracion-transicion) ease;
+}
+
+.enlace-navegacion-movil .q-icon {
+  font-size: var(--tamano-icono-navegacion);
+}
+
+.enlace-navegacion-movil--activo {
+  color: var(--color-accion-principal);
+  background: var(--color-accion-suave);
+}
+
+.presentacion-inicio {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 26rem;
+  padding: var(--espaciado-muy-grande);
+  gap: var(--espaciado-muy-grande);
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    var(--color-superficie-principal),
+    var(--color-fondo-secundario)
+  );
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-grande);
+  box-shadow: var(--sombra-principal);
+}
+
+.presentacion-inicio::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 42%;
+  height: var(--ancho-borde-foco);
+  content: '';
+  background: var(--color-accion-principal);
+}
+
+.presentacion-inicio__contenido {
+  max-width: var(--ancho-texto-presentacion);
+}
+
+.presentacion-inicio__titulo {
+  max-width: var(--ancho-texto-presentacion);
+  margin: 0;
+  font-size: clamp(var(--tamano-titulo-inicio-minimo), 6vw, var(--tamano-titulo-inicio-maximo));
+  line-height: var(--altura-linea-compacta);
+}
+
+.presentacion-inicio__descripcion {
+  max-width: var(--ancho-texto-secundario);
+  margin: var(--espaciado-grande) 0 0;
+  font-size: var(--tamano-texto-base);
+}
+
+.presentacion-inicio__accion {
+  margin-top: var(--espaciado-extra-grande);
+}
+
+.presentacion-inicio__marca {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seccion-accesos {
+  padding-block: var(--espaciado-seccion) var(--espaciado-extra-grande);
+}
+
+.encabezado-seccion {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: var(--espaciado-grande);
+}
+
+.grilla-accesos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--espaciado-mediano);
+}
+
+.tarjeta-acceso,
+.tarjeta-opcion {
+  display: flex;
+  align-items: center;
+  min-height: var(--altura-control);
+  color: var(--color-texto-principal);
+  background: var(--color-superficie-principal);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-mediano);
+  transition:
+    transform var(--duracion-transicion) ease,
+    background var(--duracion-transicion) ease,
+    border-color var(--duracion-transicion) ease;
+}
+
+.tarjeta-acceso {
+  padding: var(--espaciado-grande);
+  gap: var(--espaciado-mediano);
+}
+
+.tarjeta-acceso:hover,
+.tarjeta-opcion:hover {
+  background: var(--color-superficie-secundaria);
+  border-color: var(--color-borde-destacado);
+  transform: translateY(calc(var(--ancho-borde) * -2));
+}
+
+.tarjeta-acceso__icono,
+.tarjeta-opcion__icono,
+.tarjeta-modulo-pendiente__icono {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accion-principal);
+  background: var(--color-accion-suave);
+  border: var(--ancho-borde) solid var(--color-accion-borde);
+  border-radius: var(--radio-mediano);
+}
+
+.tarjeta-acceso__icono,
+.tarjeta-opcion__icono {
+  width: var(--altura-control);
+  height: var(--altura-control);
+}
+
+.tarjeta-acceso__icono .q-icon,
+.tarjeta-opcion__icono .q-icon {
+  font-size: var(--tamano-icono-tarjeta);
+}
+
+.tarjeta-acceso__contenido,
+.tarjeta-opcion__texto {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  gap: var(--espaciado-minimo);
+}
+
+.tarjeta-acceso__contenido small,
+.tarjeta-opcion__texto small {
+  color: var(--color-texto-suave);
+}
+
+.tarjeta-acceso__flecha {
+  color: var(--color-texto-suave);
+}
+
+.encabezado-pagina {
+  max-width: var(--ancho-texto-secundario);
+  padding-block: var(--espaciado-mediano) var(--espaciado-extra-grande);
+}
+
+.encabezado-pagina .texto-secundario {
+  margin: var(--espaciado-mediano) 0 0;
+}
+
+.lista-opciones {
+  display: grid;
+  max-width: var(--ancho-texto-presentacion);
+  gap: var(--espaciado-mediano);
+}
+
+.tarjeta-opcion {
+  padding: var(--espaciado-mediano);
+  gap: var(--espaciado-mediano);
+}
+
+.pagina-modulo-pendiente {
+  display: flex;
+  align-items: center;
+}
+
+.tarjeta-modulo-pendiente {
+  max-width: var(--ancho-texto-presentacion);
+  margin: 0 auto;
+  padding: var(--espaciado-muy-grande);
   text-align: center;
   background: var(--color-superficie-principal);
   border: var(--ancho-borde) solid var(--color-borde-principal);
@@ -31,24 +435,73 @@ body {
   box-shadow: var(--sombra-principal);
 }
 
-.presentacion__estado {
-  margin: 0 0 var(--espaciado-mediano);
-  color: var(--color-accion-principal);
-  font-size: var(--tamano-texto-pequeno);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.tarjeta-modulo-pendiente__icono {
+  width: var(--tamano-logo-mediano);
+  height: var(--tamano-logo-mediano);
+  margin-bottom: var(--espaciado-grande);
+  font-size: var(--tamano-titulo-pagina);
 }
 
-.presentacion__titulo {
-  margin: 0;
-  font-size: clamp(var(--tamano-titulo-minimo), 10vw, var(--tamano-titulo-maximo));
-  line-height: 1;
+.tarjeta-modulo-pendiente__descripcion {
+  max-width: var(--ancho-texto-secundario);
+  margin: var(--espaciado-mediano) auto var(--espaciado-grande);
 }
 
-.presentacion__descripcion {
-  max-width: 34rem;
-  margin: var(--espaciado-grande) auto 0;
-  color: var(--color-texto-secundario);
-  font-size: clamp(var(--tamano-texto-base), 3vw, var(--tamano-texto-destacado));
+@media (max-width: 1023px) {
+  .pagina-contenido {
+    padding: var(--espaciado-mediano);
+  }
+
+  .presentacion-inicio {
+    min-height: auto;
+    padding: var(--espaciado-extra-grande);
+  }
+
+  .presentacion-inicio__marca {
+    opacity: var(--opacidad-deshabilitado);
+  }
+}
+
+@media (max-width: 767px) {
+  .presentacion-inicio {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espaciado-extra-grande);
+  }
+
+  .presentacion-inicio__marca {
+    grid-row: 1;
+    justify-content: flex-start;
+  }
+
+  .logo-mallic-tesla--grande {
+    width: var(--tamano-logo-mediano);
+    height: var(--tamano-logo-mediano);
+    padding: var(--espaciado-pequeno);
+    border-radius: var(--radio-mediano);
+  }
+
+  .presentacion-inicio__titulo {
+    font-size: var(--tamano-titulo-inicio-minimo);
+  }
+
+  .grilla-accesos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .seccion-accesos {
+    padding-block: var(--espaciado-extra-grande);
+  }
+
+  .tarjeta-modulo-pendiente {
+    padding: var(--espaciado-extra-grande) var(--espaciado-grande);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
