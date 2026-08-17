@@ -85,7 +85,7 @@ Confirmar que el equipo puede crear y ejecutar el proyecto sin modificar instala
 - [x] Verificar Node.js 22 o superior mediante `node --version`.
 - [x] Verificar npm mediante `npm --version`.
 - [x] Verificar Git mediante `git --version`.
-- [ ] Verificar GitHub CLI mediante `gh --version` y comprobar la sesión con `gh auth status`.
+- [x] Verificar GitHub CLI mediante `gh --version` y comprobar la sesión con `gh auth status`.
 - [x] Verificar Java, Android Studio, Android SDK y licencias necesarias para preparar o compilar Android.
 - [x] Registrar cualquier requisito ausente como bloqueo real sin instalar herramientas globales o modificar el sistema silenciosamente.
 
@@ -145,7 +145,7 @@ Mostrar una pantalla mínima responsive en modo oscuro sin adelantar el plan de 
 - [x] No crear todavía menú, navegación comercial, dashboard ni componentes de los planes derivados.
 - [x] Copiar el logo original sin modificarlo a `src/assets/LogoMallicTeslaOriginal.jpg`.
 - [x] No usar todavía el logo como ícono definitivo ni intentar vectorizarlo, recortarlo o recolorearlo.
-- [ ] Verificar que la pantalla no produzca destellos de modo claro durante la carga.
+- [x] Verificar que la pantalla no produzca destellos de modo claro durante la carga.
 
 ## FASE 5: Configurar Capacitor para Android
 
@@ -176,7 +176,7 @@ Dejar el proyecto listo para que Leo cree el primer commit, ejecute push y obten
 - [x] Crear `.github/workflows/deploy-pages.yml` siguiendo el flujo oficial de GitHub Pages para instalar con `npm ci`, compilar la SPA y publicar `dist/spa`.
 - [x] Usar Node.js 22 o una versión LTS superior compatible en el workflow.
 - [x] No introducir tokens manuales ni secretos dentro del workflow.
-- [ ] Comprobar si existe `JLeonN/MallicTesla` mediante GitHub CLI.
+- [x] Comprobar si existe `JLeonN/MallicTesla` mediante GitHub CLI.
 - [x] Si no existe, crear el repositorio público vacío mediante `gh repo create JLeonN/MallicTesla --public --source=. --remote=origin`, sin `--push` y sin `--add-readme`.
 - [x] Si ya existe, verificar su propietario y propósito antes de configurar `origin`; no sobrescribir ni eliminar contenido remoto.
 - [x] Confirmar que `origin` apunta exactamente a `https://github.com/JLeonN/MallicTesla`.
@@ -205,9 +205,9 @@ Validar que la base técnica sea ejecutable, responsive, compilable y entregable
 
 - [x] Ejecutar `npm run lint` y corregir todos los errores.
 - [x] Ejecutar `npm run build` y verificar que la SPA se genere correctamente.
-- [ ] Ejecutar `npm run dev`, abrir la aplicación en el navegador y comprobar la pantalla mínima de Mallic Tesla.
-- [ ] Verificar visualmente que el fondo sea oscuro desde la carga inicial, que el texto tenga contraste y que no aparezca contenido demostrativo de Quasar.
-- [ ] Probar la pantalla en anchos aproximados de 360, 768 y 1280 píxeles sin desbordamientos horizontales.
+- [x] Ejecutar `npm run dev`, abrir la aplicación en el navegador y comprobar la pantalla mínima de Mallic Tesla.
+- [x] Verificar visualmente que el fondo sea oscuro desde la carga inicial, que el texto tenga contraste y que no aparezca contenido demostrativo de Quasar.
+- [x] Probar la pantalla en anchos aproximados de 360, 768 y 1280 píxeles sin desbordamientos horizontales.
 - [x] Verificar que los estilos visibles consuman variables de `src/css/Variables.css` y que no existan colores globales duplicados injustificadamente.
 - [x] Verificar que el logo original exista tanto en la referencia comercial como en `src/assets/LogoMallicTeslaOriginal.jpg` y que ambas copias coincidan.
 - [x] Ejecutar el build Android mediante el script definido si el entorno nativo está disponible y comprobar `com.mallictesla.presupuestos`.
@@ -221,24 +221,24 @@ Validar que la base técnica sea ejecutable, responsive, compilable y entregable
 
 ## Progreso del plan
 
-- [ ] Fase 1: Validar el entorno y el alcance
+- [x] Fase 1: Validar el entorno y el alcance
 - [x] Fase 2: Crear el proyecto Quasar
 - [x] Fase 3: Crear reglas y documentación técnica
-- [ ] Fase 4: Preparar la base visual oscura
+- [x] Fase 4: Preparar la base visual oscura
 - [x] Fase 5: Configurar Capacitor para Android
 - [x] Fase 6: Preparar Git y GitHub Pages
 - [x] Fase 7: Documentar la continuidad modular
-- [ ] Fase Testing
+- [x] Fase Testing
 
 Fecha de creación: 16 de agosto de 2026
-Fecha de última actualización: 16 de agosto de 2026
-Estado: IMPLEMENTADO CON VALIDACIONES PENDIENTES
+Fecha de última actualización: 17 de agosto de 2026
+Estado: COMPLETADO
 
 ## Registro de ejecución
 
 - Implementación técnica completada el 16 de agosto de 2026.
 - Estado Git previo conservado: commit `373849760616aaaf4884201b3df0ecc0357b451f`; CH no creó commits ni ejecutó push.
-- El repositorio `JLeonN/MallicTesla` y el remoto `origin` ya existían. Se verificó públicamente su propietario y visibilidad, pero `gh` no está instalado y por eso no se pudo ejecutar `gh auth status` ni la comprobación mediante GitHub CLI.
-- La SPA respondió correctamente por HTTP en desarrollo, pero la sesión no tenía un navegador integrado disponible. Quedaron pendientes la inspección visual real del destello inicial y las pruebas en 360, 768 y 1280 píxeles.
+- El repositorio `JLeonN/MallicTesla`, el remoto `origin` y la sesión de GitHub CLI quedaron verificados.
+- La SPA se comprobó visualmente en desarrollo: carga directamente en modo oscuro, presenta contraste correcto y no tiene desbordamientos horizontales en anchos aproximados de 360, 768 y 1280 píxeles.
 - El build SPA, TypeScript, lint y el build Android finalizaron correctamente. El APK sin firmar quedó en `dist/capacitor/android/apk/release/app-release-unsigned.apk`.
 - La auditoría del proyecto raíz informó cero vulnerabilidades. Capacitor conserva tres avisos moderados transitivos en la herramienta de compilación (`@capacitor/cli` → `xcode` → `uuid`); no se instaló una versión preliminar para evitarlos.
