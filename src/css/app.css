@@ -532,7 +532,9 @@ button:focus-visible {
 .tabla-clientes__encabezado,
 .tabla-clientes__fila {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns:
+    minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr)
+    var(--ancho-columna-acciones);
   align-items: center;
   min-height: var(--altura-control);
   padding: var(--espaciado-control) var(--espaciado-grande);
@@ -552,10 +554,28 @@ button:focus-visible {
   border-top: var(--ancho-borde) solid var(--color-borde-principal);
 }
 
-.tabla-clientes__fila > span {
+.tabla-clientes__fila > span,
+.tabla-clientes__fila > div {
   min-width: 0;
   overflow: hidden;
   color: var(--color-texto-secundario);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.enlace-whatsapp {
+  max-width: 100%;
+  min-height: var(--altura-control);
+  padding-inline: 0;
+  color: var(--color-accion-principal);
+}
+
+.enlace-whatsapp .q-btn__content {
+  flex-wrap: nowrap;
+}
+
+.enlace-whatsapp .q-btn__content > span:not(.q-icon) {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -601,6 +621,10 @@ button:focus-visible {
 .dato-adicional-cliente > span {
   color: var(--color-texto-secundario);
   font-size: var(--tamano-texto-secundario);
+}
+
+.tarjeta-cliente .enlace-whatsapp {
+  align-self: flex-start;
 }
 
 .encabezado-formulario-cliente {
@@ -698,6 +722,20 @@ button:focus-visible {
 .campo-notas-generales .q-field__native {
   min-height: calc(var(--altura-control) * 3);
   resize: vertical;
+}
+
+.seccion-formulario .q-field__native:-webkit-autofill,
+.seccion-formulario .q-field__input:-webkit-autofill {
+  background: transparent !important;
+  border: 0 !important;
+  -webkit-text-fill-color: var(--color-texto-principal) !important;
+  caret-color: var(--color-texto-principal);
+  box-shadow: 0 0 0 var(--tamano-cobertura-autocompletado) var(--color-superficie-principal) inset !important;
+}
+
+.bloque-repetible .q-field__native:-webkit-autofill,
+.bloque-repetible .q-field__input:-webkit-autofill {
+  box-shadow: 0 0 0 var(--tamano-cobertura-autocompletado) var(--color-superficie-secundaria) inset !important;
 }
 
 .acciones-formulario {

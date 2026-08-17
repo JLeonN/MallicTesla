@@ -95,6 +95,7 @@ Usar un único formulario responsive para crear y editar clientes con validacion
 - [x] Agrupar las tarjetas del formulario dentro de una tarjeta contenedora que unifique visualmente toda la carga del cliente.
 - [x] Mantener Datos adicionales cerrado al ingresar y ampliar el campo Notas generales para facilitar textos extensos.
 - [x] Alinear desde arriba los campos de teléfono, tipo y selección principal en la versión web.
+- [x] Neutralizar el fondo y las franjas laterales que agrega el autocompletado del navegador en los campos del formulario.
 
 ## FASE 5: Implementar la ficha del cliente
 

@@ -63,9 +63,11 @@
   --ancho-menu-escritorio: 18.75rem;
   --ancho-texto-presentacion: 42rem;
   --ancho-texto-secundario: 34rem;
+  --ancho-columna-acciones: 8.5rem;
   --altura-control: 3rem;
   --altura-encabezado-movil: 4rem;
   --altura-navegacion-movil: 4.5rem;
+  --tamano-cobertura-autocompletado: 100vmax;
   --tamano-icono-navegacion: 1.5rem;
   --tamano-icono-tarjeta: 1.75rem;
   --tamano-logo-pequeno: 2.5rem;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import EnlaceWhatsapp from '@/components/clientes/EnlaceWhatsapp.vue';
 import { obtenerTelefonoPrincipal } from '@/dominio/clientes';
 import { useClientesStore } from '@/stores/clientes';
 
@@ -79,9 +80,14 @@ function textoLocales(cantidadLocales: number): string {
           >
             <strong role="cell">{{ cliente.nombre }}</strong>
             <span role="cell">{{ textoLocales(cliente.locales.length) }}</span>
-            <span role="cell">{{
-              obtenerTelefonoPrincipal(cliente)?.numero ?? 'Sin teléfono'
-            }}</span>
+            <div role="cell">
+              <EnlaceWhatsapp
+                v-if="obtenerTelefonoPrincipal(cliente)"
+                :nombre-cliente="cliente.nombre"
+                :numero="obtenerTelefonoPrincipal(cliente)!.numero"
+              />
+              <span v-else class="texto-secundario">Sin teléfono</span>
+            </div>
             <q-btn
               class="boton-secundario"
               flat
@@ -98,7 +104,12 @@ function textoLocales(cantidadLocales: number): string {
             <div class="tarjeta-cliente__contenido">
               <h2>{{ cliente.nombre }}</h2>
               <span>{{ textoLocales(cliente.locales.length) }}</span>
-              <span>{{ obtenerTelefonoPrincipal(cliente)?.numero ?? 'Sin teléfono' }}</span>
+              <EnlaceWhatsapp
+                v-if="obtenerTelefonoPrincipal(cliente)"
+                :nombre-cliente="cliente.nombre"
+                :numero="obtenerTelefonoPrincipal(cliente)!.numero"
+              />
+              <span v-else>Sin teléfono</span>
             </div>
             <q-btn
               class="boton-secundario"
