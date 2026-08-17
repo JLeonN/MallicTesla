@@ -156,4 +156,4 @@ Validar el flujo completo del apartado Clientes en navegador y en una compilaci�
 
 Fecha de creación: 17 de Agosto 2026
 Fecha de última actualización: 17 de Agosto 2026
-Estado: BORRADOR
+Estado: EN PROCESO

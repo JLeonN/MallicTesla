@@ -23,6 +23,11 @@
   --color-advertencia: #f6c85f;
   --color-error: #ff6b6b;
 
+  --q-primary: var(--color-accion-principal);
+  --q-positive: var(--color-exito);
+  --q-negative: var(--color-error);
+  --q-warning: var(--color-advertencia);
+
   --tipografia-principal: Inter, Roboto, Arial, sans-serif;
   --tamano-texto-pequeno: 0.75rem;
   --tamano-texto-secundario: 0.875rem;

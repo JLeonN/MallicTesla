@@ -33,12 +33,22 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'clientes',
         name: 'clientes',
-        component: () => import('@/components/PaginaModuloPendiente.vue'),
-        props: {
-          titulo: 'Clientes',
-          descripcion: 'Acá vas a organizar los datos de cada cliente.',
-          icono: 'groups',
-        },
+        component: () => import('@/pages/ClientesPage.vue'),
+      },
+      {
+        path: 'clientes/nuevo',
+        name: 'nuevo-cliente',
+        component: () => import('@/pages/ClienteFormularioPage.vue'),
+      },
+      {
+        path: 'clientes/:idCliente/editar',
+        name: 'editar-cliente',
+        component: () => import('@/pages/ClienteFormularioPage.vue'),
+      },
+      {
+        path: 'clientes/:idCliente',
+        name: 'detalle-cliente',
+        component: () => import('@/pages/ClienteDetallePage.vue'),
       },
       {
         path: 'materiales',
