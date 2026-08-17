@@ -1,0 +1,34 @@
+:root {
+  color-scheme: dark;
+
+  /* Colores provisionales: se reemplazarán cuando Pablo defina la identidad visual. */
+  --color-fondo-principal: #080b10;
+  --color-superficie-principal: #121720;
+  --color-superficie-secundaria: #19212c;
+  --color-texto-principal: #f4f7fb;
+  --color-texto-secundario: #aeb8c7;
+  --color-borde-principal: #293443;
+  --color-accion-principal: #4fc3f7;
+  --color-exito: #42d392;
+  --color-advertencia: #f6c85f;
+  --color-error: #ff6b6b;
+
+  --tipografia-principal: Inter, Roboto, Arial, sans-serif;
+  --tamano-texto-pequeno: 0.75rem;
+  --tamano-texto-base: 1rem;
+  --tamano-texto-destacado: 1.25rem;
+  --tamano-titulo-minimo: 2.5rem;
+  --tamano-titulo-maximo: 5.5rem;
+
+  --espaciado-pequeno: 0.5rem;
+  --espaciado-mediano: 1rem;
+  --espaciado-grande: 1.5rem;
+  --espaciado-muy-grande: 4rem;
+
+  --radio-pequeno: 0.5rem;
+  --radio-mediano: 0.75rem;
+  --radio-grande: 1.25rem;
+  --ancho-borde: 1px;
+  --ancho-contenido-principal: 52rem;
+  --sombra-principal: 0 1.5rem 4rem rgb(0 0 0 / 35%);
+}

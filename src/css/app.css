@@ -1,0 +1,54 @@
+html,
+body,
+#q-app {
+  min-height: 100%;
+  background: var(--color-fondo-principal);
+}
+
+body {
+  margin: 0;
+  color: var(--color-texto-principal);
+  font-family: var(--tipografia-principal);
+}
+
+.aplicacion-mallic-tesla,
+.pagina-inicial {
+  background: var(--color-fondo-principal);
+}
+
+.pagina-inicial {
+  min-height: 100vh;
+  padding: var(--espaciado-grande);
+}
+
+.presentacion {
+  width: min(100%, var(--ancho-contenido-principal));
+  padding: clamp(var(--espaciado-grande), 7vw, var(--espaciado-muy-grande));
+  text-align: center;
+  background: var(--color-superficie-principal);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-grande);
+  box-shadow: var(--sombra-principal);
+}
+
+.presentacion__estado {
+  margin: 0 0 var(--espaciado-mediano);
+  color: var(--color-accion-principal);
+  font-size: var(--tamano-texto-pequeno);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.presentacion__titulo {
+  margin: 0;
+  font-size: clamp(var(--tamano-titulo-minimo), 10vw, var(--tamano-titulo-maximo));
+  line-height: 1;
+}
+
+.presentacion__descripcion {
+  max-width: 34rem;
+  margin: var(--espaciado-grande) auto 0;
+  color: var(--color-texto-secundario);
+  font-size: clamp(var(--tamano-texto-base), 3vw, var(--tamano-texto-destacado));
+}
