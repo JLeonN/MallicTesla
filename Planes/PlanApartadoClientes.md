@@ -92,6 +92,9 @@ Usar un único formulario responsive para crear y editar clientes con validacion
 - [x] Incorporar validaciones claras, mensajes de error y prevención de envíos duplicados.
 - [x] Agregar los botones Guardar cliente y Cancelar con comportamiento correcto en ambos modos.
 - [x] Confirmar la eliminación de un local durante la edición cuando ya forme parte de un cliente guardado.
+- [x] Agrupar las tarjetas del formulario dentro de una tarjeta contenedora que unifique visualmente toda la carga del cliente.
+- [x] Mantener Datos adicionales cerrado al ingresar y ampliar el campo Notas generales para facilitar textos extensos.
+- [x] Alinear desde arriba los campos de teléfono, tipo y selección principal en la versión web.
 
 ## FASE 5: Implementar la ficha del cliente
 

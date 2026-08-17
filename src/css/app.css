@@ -613,6 +613,16 @@ button:focus-visible {
   gap: var(--espaciado-grande);
 }
 
+.formulario-cliente__contenedor {
+  display: grid;
+  padding: var(--espaciado-mediano);
+  gap: var(--espaciado-mediano);
+  background: var(--color-fondo-secundario);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-grande);
+  box-shadow: var(--sombra-principal);
+}
+
 .seccion-formulario,
 .tarjeta-detalle-cliente {
   padding: var(--espaciado-grande);
@@ -654,7 +664,7 @@ button:focus-visible {
 
 .bloque-repetible__campos--telefono {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  align-items: center;
+  align-items: start;
 }
 
 .bloque-repetible__campos--local {
@@ -683,6 +693,11 @@ button:focus-visible {
   display: grid;
   padding: 0 var(--espaciado-grande) var(--espaciado-grande);
   gap: var(--espaciado-grande);
+}
+
+.campo-notas-generales .q-field__native {
+  min-height: calc(var(--altura-control) * 3);
+  resize: vertical;
 }
 
 .acciones-formulario {
@@ -854,6 +869,10 @@ button:focus-visible {
 
   .acciones-formulario .q-btn {
     width: 100%;
+  }
+
+  .formulario-cliente__contenedor {
+    padding: var(--espaciado-pequeno);
   }
 }
 

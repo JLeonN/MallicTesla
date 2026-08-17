@@ -27,7 +27,7 @@ const telefonos = ref<TelefonoCliente[]>(
 const locales = ref<LocalCliente[]>(structuredClone(props.cliente?.locales ?? [crearLocal()]));
 const correo = ref(props.cliente?.correo ?? '');
 const notas = ref(props.cliente?.notas ?? '');
-const mostrarDatosAdicionales = ref(props.cliente?.correo !== '');
+const mostrarDatosAdicionales = ref(false);
 const telefonoPrincipalId = ref(
   props.cliente?.telefonos.find((telefono) => telefono.esPrincipal)?.id ??
     telefonos.value[0]?.id ??
@@ -93,180 +93,185 @@ function guardarCliente(): void {
 
 <template>
   <q-form class="formulario-cliente" greedy @submit="guardarCliente">
-    <section class="seccion-formulario" aria-labelledby="titulo-datos-cliente">
-      <div class="encabezado-seccion-formulario">
-        <div>
-          <p class="etiqueta-seccion">Datos principales</p>
-          <h2 id="titulo-datos-cliente" class="titulo-seccion">Cliente</h2>
-        </div>
-      </div>
-
-      <q-input
-        v-model="nombre"
-        dark
-        outlined
-        label="Nombre del cliente"
-        autocomplete="name"
-        :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá el nombre del cliente.']"
-      />
-    </section>
-
-    <section class="seccion-formulario" aria-labelledby="titulo-telefonos">
-      <div class="encabezado-seccion-formulario">
-        <div>
-          <p class="etiqueta-seccion">Contacto</p>
-          <h2 id="titulo-telefonos" class="titulo-seccion">Teléfonos</h2>
-          <p class="texto-secundario texto-ayuda-formulario">
-            Marcá el teléfono principal que querés ver en la lista de clientes.
-          </p>
-        </div>
-        <q-btn
-          class="boton-secundario"
-          flat
-          no-caps
-          icon="add"
-          label="Agregar teléfono"
-          @click="agregarTelefono"
-        />
-      </div>
-
-      <div class="lista-campos-repetibles">
-        <article v-for="telefono in telefonos" :key="telefono.id" class="bloque-repetible">
-          <div class="bloque-repetible__campos bloque-repetible__campos--telefono">
-            <q-input
-              v-model="telefono.numero"
-              dark
-              outlined
-              type="tel"
-              label="Teléfono"
-              autocomplete="tel"
-              :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá un teléfono.']"
-            />
-            <q-select
-              v-model="telefono.etiqueta"
-              dark
-              outlined
-              label="Tipo"
-              :options="ETIQUETAS_TELEFONO"
-            />
-            <q-radio
-              v-model="telefonoPrincipalId"
-              class="selector-principal"
-              :val="telefono.id"
-              label="Principal"
-            />
+    <div class="formulario-cliente__contenedor">
+      <section class="seccion-formulario" aria-labelledby="titulo-datos-cliente">
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Datos principales</p>
+            <h2 id="titulo-datos-cliente" class="titulo-seccion">Cliente</h2>
           </div>
-          <q-btn
-            v-if="telefonos.length > 1"
-            class="boton-icono-secundario"
-            flat
-            round
-            dense
-            icon="delete_outline"
-            aria-label="Quitar teléfono"
-            @click="eliminarTelefono(telefono.id)"
-          />
-        </article>
-      </div>
-    </section>
-
-    <section class="seccion-formulario" aria-labelledby="titulo-locales">
-      <div class="encabezado-seccion-formulario">
-        <div>
-          <p class="etiqueta-seccion">Lugar de trabajo</p>
-          <h2 id="titulo-locales" class="titulo-seccion">Locales</h2>
-          <p class="texto-secundario texto-ayuda-formulario">
-            Podés asociar varios locales a una misma persona.
-          </p>
         </div>
-        <q-btn
-          class="boton-secundario"
-          flat
-          no-caps
-          icon="add"
-          label="Agregar otro local"
-          @click="agregarLocal"
-        />
-      </div>
 
-      <div class="lista-campos-repetibles">
-        <article v-for="(local, indice) in locales" :key="local.id" class="bloque-repetible">
-          <div class="bloque-repetible__campos bloque-repetible__campos--local">
-            <q-input
-              v-model="local.nombre"
-              dark
-              outlined
-              :label="`Nombre del local ${indice + 1}`"
-              :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá el nombre del local.']"
-            />
-            <q-input
-              v-model="local.direccion"
-              dark
-              outlined
-              label="Dirección"
-              autocomplete="street-address"
-              :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá la dirección.']"
-            />
-          </div>
-          <q-btn
-            v-if="locales.length > 1"
-            class="boton-icono-secundario"
-            flat
-            round
-            dense
-            icon="delete_outline"
-            aria-label="Quitar local"
-            @click="solicitarEliminarLocal(local.id)"
-          />
-        </article>
-      </div>
-    </section>
-
-    <q-expansion-item
-      v-model="mostrarDatosAdicionales"
-      class="seccion-formulario seccion-formulario--desplegable"
-      icon="add_circle_outline"
-      label="Datos adicionales"
-      caption="Correo electrónico y notas generales"
-      header-class="encabezado-datos-adicionales"
-    >
-      <div class="datos-adicionales__contenido">
         <q-input
-          v-model="correo"
+          v-model="nombre"
           dark
           outlined
-          type="email"
-          label="Correo electrónico"
-          autocomplete="email"
-          :rules="[
-            (valor) =>
-              !valor ||
-              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(valor)) ||
-              'Ingresá un correo válido.',
-          ]"
+          label="Nombre del cliente"
+          autocomplete="name"
+          :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá el nombre del cliente.']"
         />
-        <q-input
-          v-model="notas"
-          dark
-          outlined
-          type="textarea"
-          autogrow
-          label="Notas generales"
-          hint="Observaciones generales del cliente, no de un local específico."
+      </section>
+
+      <section class="seccion-formulario" aria-labelledby="titulo-telefonos">
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Contacto</p>
+            <h2 id="titulo-telefonos" class="titulo-seccion">Teléfonos</h2>
+            <p class="texto-secundario texto-ayuda-formulario">
+              Marcá el teléfono principal que querés ver en la lista de clientes.
+            </p>
+          </div>
+          <q-btn
+            class="boton-secundario"
+            flat
+            no-caps
+            icon="add"
+            label="Agregar teléfono"
+            @click="agregarTelefono"
+          />
+        </div>
+
+        <div class="lista-campos-repetibles">
+          <article v-for="telefono in telefonos" :key="telefono.id" class="bloque-repetible">
+            <div class="bloque-repetible__campos bloque-repetible__campos--telefono">
+              <q-input
+                v-model="telefono.numero"
+                dark
+                outlined
+                type="tel"
+                label="Teléfono"
+                autocomplete="tel"
+                :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá un teléfono.']"
+              />
+              <q-select
+                v-model="telefono.etiqueta"
+                dark
+                outlined
+                label="Tipo"
+                :options="ETIQUETAS_TELEFONO"
+              />
+              <q-radio
+                v-model="telefonoPrincipalId"
+                class="selector-principal"
+                :val="telefono.id"
+                label="Principal"
+              />
+            </div>
+            <q-btn
+              v-if="telefonos.length > 1"
+              class="boton-icono-secundario"
+              flat
+              round
+              dense
+              icon="delete_outline"
+              aria-label="Quitar teléfono"
+              @click="eliminarTelefono(telefono.id)"
+            />
+          </article>
+        </div>
+      </section>
+
+      <section class="seccion-formulario" aria-labelledby="titulo-locales">
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Lugar de trabajo</p>
+            <h2 id="titulo-locales" class="titulo-seccion">Locales</h2>
+            <p class="texto-secundario texto-ayuda-formulario">
+              Podés asociar varios locales a una misma persona.
+            </p>
+          </div>
+          <q-btn
+            class="boton-secundario"
+            flat
+            no-caps
+            icon="add"
+            label="Agregar otro local"
+            @click="agregarLocal"
+          />
+        </div>
+
+        <div class="lista-campos-repetibles">
+          <article v-for="(local, indice) in locales" :key="local.id" class="bloque-repetible">
+            <div class="bloque-repetible__campos bloque-repetible__campos--local">
+              <q-input
+                v-model="local.nombre"
+                dark
+                outlined
+                :label="`Nombre del local ${indice + 1}`"
+                :rules="[
+                  (valor) => Boolean(String(valor).trim()) || 'Ingresá el nombre del local.',
+                ]"
+              />
+              <q-input
+                v-model="local.direccion"
+                dark
+                outlined
+                label="Dirección"
+                autocomplete="street-address"
+                :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá la dirección.']"
+              />
+            </div>
+            <q-btn
+              v-if="locales.length > 1"
+              class="boton-icono-secundario"
+              flat
+              round
+              dense
+              icon="delete_outline"
+              aria-label="Quitar local"
+              @click="solicitarEliminarLocal(local.id)"
+            />
+          </article>
+        </div>
+      </section>
+
+      <q-expansion-item
+        v-model="mostrarDatosAdicionales"
+        class="seccion-formulario seccion-formulario--desplegable"
+        icon="add_circle_outline"
+        label="Datos adicionales"
+        caption="Correo electrónico y notas generales"
+        header-class="encabezado-datos-adicionales"
+      >
+        <div class="datos-adicionales__contenido">
+          <q-input
+            v-model="correo"
+            dark
+            outlined
+            type="email"
+            label="Correo electrónico"
+            autocomplete="email"
+            :rules="[
+              (valor) =>
+                !valor ||
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(valor)) ||
+                'Ingresá un correo válido.',
+            ]"
+          />
+          <q-input
+            v-model="notas"
+            class="campo-notas-generales"
+            dark
+            outlined
+            type="textarea"
+            rows="6"
+            label="Notas generales"
+            hint="Observaciones generales del cliente, no de un local específico."
+          />
+        </div>
+      </q-expansion-item>
+
+      <div class="acciones-formulario">
+        <q-btn class="boton-secundario" flat no-caps label="Cancelar" @click="emitir('cancelar')" />
+        <q-btn
+          class="boton-accion-principal"
+          unelevated
+          no-caps
+          type="submit"
+          :loading="guardando"
+          :label="esEdicion ? 'Guardar cambios' : 'Guardar cliente'"
         />
       </div>
-    </q-expansion-item>
-
-    <div class="acciones-formulario">
-      <q-btn class="boton-secundario" flat no-caps label="Cancelar" @click="emitir('cancelar')" />
-      <q-btn
-        class="boton-accion-principal"
-        unelevated
-        no-caps
-        type="submit"
-        :loading="guardando"
-        :label="esEdicion ? 'Guardar cambios' : 'Guardar cliente'"
-      />
     </div>
   </q-form>
 
