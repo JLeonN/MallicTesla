@@ -4,8 +4,8 @@ import { obtenerTelefonoPrincipal } from '@/dominio/clientes';
 import { useClientesStore } from '@/stores/clientes';
 
 const clientesStore = useClientesStore();
-const terminoBusqueda = ref('');
-const clientesFiltrados = computed(() => clientesStore.buscarClientes(terminoBusqueda.value));
+const terminoBusqueda = ref<string | null>('');
+const clientesFiltrados = computed(() => clientesStore.buscarClientes(terminoBusqueda.value ?? ''));
 
 onMounted(() => {
   void clientesStore.cargarClientes();

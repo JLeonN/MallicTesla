@@ -31,18 +31,18 @@ Implementar el apartado Clientes de Mallic Tesla con una interfaz responsive y r
 
 Crear contratos de datos estables y desacoplar la interfaz del almacenamiento para admitir una futura implementación con Firebase.
 
-- [ ] Revisar la arquitectura actual del proyecto y reutilizar sus patrones de tipos, servicios, stores y manejo de errores.
-- [ ] Definir el tipo de cliente con identificador único, nombre, teléfonos, locales, correo opcional, notas generales y fechas de creación y actualización.
-- [ ] Definir el tipo de teléfono con identificador, número, etiqueta y marca de teléfono principal.
-- [ ] Definir el tipo de local con identificador, nombre y dirección.
-- [ ] Garantizar mediante funciones de dominio que cada cliente con teléfonos tenga exactamente uno marcado como principal.
-- [ ] Crear un contrato asíncrono `RepositorioClientes` con las operaciones necesarias para obtener, crear, actualizar y eliminar clientes.
-- [ ] Implementar la persistencia web mediante `localStorage` sin exponerla directamente a Pinia ni a los componentes.
-- [ ] Implementar o integrar la persistencia móvil mediante el mecanismo de almacenamiento disponible en Capacitor, validando antes las dependencias existentes.
-- [ ] Crear un punto único de selección del repositorio según la plataforma.
-- [ ] Mantener identificadores y fechas en formatos que puedan migrarse de forma predecible a Firebase.
-- [ ] Incorporar manejo seguro de datos inexistentes, JSON inválido y fallos de lectura o escritura.
-- [ ] Agregar comentarios `TODO` concretos en los adaptadores y en el selector del repositorio para indicar dónde conectar Firebase y qué implementación local reemplazar.
+- [x] Revisar la arquitectura actual del proyecto y reutilizar sus patrones de tipos, servicios, stores y manejo de errores.
+- [x] Definir el tipo de cliente con identificador único, nombre, teléfonos, locales, correo opcional, notas generales y fechas de creación y actualización.
+- [x] Definir el tipo de teléfono con identificador, número, etiqueta y marca de teléfono principal.
+- [x] Definir el tipo de local con identificador, nombre y dirección.
+- [x] Garantizar mediante funciones de dominio que cada cliente con teléfonos tenga exactamente uno marcado como principal.
+- [x] Crear un contrato asíncrono `RepositorioClientes` con las operaciones necesarias para obtener, crear, actualizar y eliminar clientes.
+- [x] Implementar la persistencia web mediante `localStorage` sin exponerla directamente a Pinia ni a los componentes.
+- [x] Implementar o integrar la persistencia móvil mediante el mecanismo de almacenamiento disponible en Capacitor, validando antes las dependencias existentes.
+- [x] Crear un punto único de selección del repositorio según la plataforma.
+- [x] Mantener identificadores y fechas en formatos que puedan migrarse de forma predecible a Firebase.
+- [x] Incorporar manejo seguro de datos inexistentes, JSON inválido y fallos de lectura o escritura.
+- [x] Agregar comentarios `TODO` concretos en los adaptadores y en el selector del repositorio para indicar dónde conectar Firebase y qué implementación local reemplazar.
 
 ## FASE 2: Crear el estado reutilizable de clientes
 
@@ -50,12 +50,12 @@ Crear contratos de datos estables y desacoplar la interfaz del almacenamiento pa
 
 Centralizar el acceso a clientes y exponer estados coherentes para todas las pantallas del apartado.
 
-- [ ] Crear o adaptar un store de Pinia que dependa de `RepositorioClientes` y no de APIs de almacenamiento concretas.
-- [ ] Exponer acciones asíncronas para cargar, crear, actualizar y eliminar clientes.
-- [ ] Mantener estados de carga, error y operación en curso.
-- [ ] Exponer una búsqueda por nombre del cliente, nombre del local y cualquier teléfono.
-- [ ] Ordenar el listado alfabéticamente por nombre del cliente.
-- [ ] Evitar mutaciones parciales en pantalla cuando una operación de persistencia falle.
+- [x] Crear o adaptar un store de Pinia que dependa de `RepositorioClientes` y no de APIs de almacenamiento concretas.
+- [x] Exponer acciones asíncronas para cargar, crear, actualizar y eliminar clientes.
+- [x] Mantener estados de carga, error y operación en curso.
+- [x] Exponer una búsqueda por nombre del cliente, nombre del local y cualquier teléfono.
+- [x] Ordenar el listado alfabéticamente por nombre del cliente.
+- [x] Evitar mutaciones parciales en pantalla cuando una operación de persistencia falle.
 
 ## FASE 3: Implementar el listado responsive
 
@@ -63,14 +63,14 @@ Centralizar el acceso a clientes y exponer estados coherentes para todas las pan
 
 Mostrar todos los clientes con una navegación clara hacia la ficha individual, sin acciones destructivas en el listado.
 
-- [ ] Crear la pantalla principal del apartado con el título Clientes y el botón Agregar cliente nuevo.
-- [ ] Agregar un buscador por nombre, local o teléfono.
-- [ ] Mostrar el nombre, los locales asociados y el teléfono principal de cada cliente.
-- [ ] Mostrar únicamente la acción Ver cliente en cada registro.
-- [ ] Usar una presentación amplia en escritorio y tarjetas compactas en celular, compartiendo la misma fuente de datos y comportamiento.
-- [ ] Representar de forma legible los clientes con varios locales sin saturar la lista.
-- [ ] Crear estados para lista vacía, búsqueda sin resultados, carga y error.
-- [ ] Conectar Agregar cliente nuevo y Ver cliente con sus rutas correspondientes.
+- [x] Crear la pantalla principal del apartado con el título Clientes y el botón Agregar cliente nuevo.
+- [x] Agregar un buscador por nombre, local o teléfono.
+- [x] Mostrar el nombre, los locales asociados y el teléfono principal de cada cliente.
+- [x] Mostrar únicamente la acción Ver cliente en cada registro.
+- [x] Usar una presentación amplia en escritorio y tarjetas compactas en celular, compartiendo la misma fuente de datos y comportamiento.
+- [x] Representar de forma legible los clientes con varios locales sin saturar la lista.
+- [x] Crear estados para lista vacía, búsqueda sin resultados, carga y error.
+- [x] Conectar Agregar cliente nuevo y Ver cliente con sus rutas correspondientes.
 
 ## FASE 4: Construir el formulario reutilizable
 
@@ -78,20 +78,20 @@ Mostrar todos los clientes con una navegación clara hacia la ficha individual, 
 
 Usar un único formulario responsive para crear y editar clientes con validaciones consistentes.
 
-- [ ] Crear un componente de formulario reutilizable para los modos creación y edición.
-- [ ] Agregar el campo obligatorio Nombre del cliente.
-- [ ] Permitir agregar y quitar múltiples teléfonos.
-- [ ] Permitir etiquetar cada teléfono como Personal, Trabajo, WhatsApp u Otro.
-- [ ] Marcar automáticamente el primer teléfono agregado como principal.
-- [ ] Permitir cambiar el teléfono principal y asegurar que solo uno permanezca marcado.
-- [ ] Impedir que un cliente con teléfonos quede sin teléfono principal al quitar o cambiar números.
-- [ ] Permitir agregar y quitar múltiples locales dentro del mismo formulario.
-- [ ] Agregar nombre y dirección para cada local.
-- [ ] Colocar el correo opcional dentro de una sección desplegable Datos adicionales.
-- [ ] Agregar un único campo de notas generales del cliente.
-- [ ] Incorporar validaciones claras, mensajes de error y prevención de envíos duplicados.
-- [ ] Agregar los botones Guardar cliente y Cancelar con comportamiento correcto en ambos modos.
-- [ ] Confirmar la eliminación de un local durante la edición cuando ya forme parte de un cliente guardado.
+- [x] Crear un componente de formulario reutilizable para los modos creación y edición.
+- [x] Agregar el campo obligatorio Nombre del cliente.
+- [x] Permitir agregar y quitar múltiples teléfonos.
+- [x] Permitir etiquetar cada teléfono como Personal, Trabajo, WhatsApp u Otro.
+- [x] Marcar automáticamente el primer teléfono agregado como principal.
+- [x] Permitir cambiar el teléfono principal y asegurar que solo uno permanezca marcado.
+- [x] Impedir que un cliente con teléfonos quede sin teléfono principal al quitar o cambiar números.
+- [x] Permitir agregar y quitar múltiples locales dentro del mismo formulario.
+- [x] Agregar nombre y dirección para cada local.
+- [x] Colocar el correo opcional dentro de una sección desplegable Datos adicionales.
+- [x] Agregar un único campo de notas generales del cliente.
+- [x] Incorporar validaciones claras, mensajes de error y prevención de envíos duplicados.
+- [x] Agregar los botones Guardar cliente y Cancelar con comportamiento correcto en ambos modos.
+- [x] Confirmar la eliminación de un local durante la edición cuando ya forme parte de un cliente guardado.
 
 ## FASE 5: Implementar la ficha del cliente
 
@@ -99,14 +99,14 @@ Usar un único formulario responsive para crear y editar clientes con validacion
 
 Centralizar la consulta y las acciones sensibles de cada cliente en una pantalla individual.
 
-- [ ] Crear una ruta y una pantalla de ficha identificada por el ID del cliente.
-- [ ] Mostrar el nombre, el teléfono principal, los teléfonos adicionales, el correo cuando exista, los locales y las notas generales.
-- [ ] Mostrar las acciones Editar cliente y Eliminar cliente únicamente dentro de esta ficha.
-- [ ] Conectar Editar cliente con el formulario reutilizable cargado con los datos actuales.
-- [ ] Mostrar una confirmación antes de eliminar e indicar cuántos locales asociados también se eliminarán.
-- [ ] Eliminar el cliente y todos sus locales asociados únicamente después de una confirmación explícita.
-- [ ] Volver al listado y mostrar una notificación clara después de crear, actualizar o eliminar correctamente.
-- [ ] Resolver de forma controlada el acceso a un ID inexistente o eliminado.
+- [x] Crear una ruta y una pantalla de ficha identificada por el ID del cliente.
+- [x] Mostrar el nombre, el teléfono principal, los teléfonos adicionales, el correo cuando exista, los locales y las notas generales.
+- [x] Mostrar las acciones Editar cliente y Eliminar cliente únicamente dentro de esta ficha.
+- [x] Conectar Editar cliente con el formulario reutilizable cargado con los datos actuales.
+- [x] Mostrar una confirmación antes de eliminar e indicar cuántos locales asociados también se eliminarán.
+- [x] Eliminar el cliente y todos sus locales asociados únicamente después de una confirmación explícita.
+- [x] Volver al listado y mostrar una notificación clara después de crear, actualizar o eliminar correctamente.
+- [x] Resolver de forma controlada el acceso a un ID inexistente o eliminado.
 
 ## FASE 6: Integrar navegación, diseño y experiencia responsive
 
@@ -114,13 +114,13 @@ Centralizar la consulta y las acciones sensibles de cada cliente en una pantalla
 
 Completar una experiencia consistente, accesible y reutilizable en navegador y Android.
 
-- [ ] Registrar las rutas del listado, creación, ficha y edición respetando la estructura actual del router.
+- [x] Registrar las rutas del listado, creación, ficha y edición respetando la estructura actual del router.
 - [ ] Verificar navegación hacia atrás y cancelación sin perder ni guardar cambios accidentalmente.
-- [ ] Reutilizar componentes comunes para teléfonos, locales, estados vacíos y confirmaciones cuando aporten una responsabilidad clara.
-- [ ] Aplicar únicamente variables y clases visuales compatibles con `Variables.css` sin cambiar los colores aprobados.
+- [x] Reutilizar componentes comunes para teléfonos, locales, estados vacíos y confirmaciones cuando aporten una responsabilidad clara.
+- [x] Aplicar únicamente variables y clases visuales compatibles con `Variables.css` sin cambiar los colores aprobados.
 - [ ] Comprobar tamaños táctiles, foco, etiquetas, contraste y mensajes comprensibles.
 - [ ] Verificar que no exista desplazamiento horizontal ni contenido cortado en anchos móviles.
-- [ ] Mantener la misma lógica de negocio y validación en SPA web y Android.
+- [x] Mantener la misma lógica de negocio y validación en SPA web y Android.
 
 ## FASE TESTING
 
@@ -128,7 +128,7 @@ Completar una experiencia consistente, accesible y reutilizable en navegador y A
 
 Validar el flujo completo del apartado Clientes en navegador y en una compilación Android mediante pruebas ejecutables por IA y revisables por una persona.
 
-- [ ] Ejecutar lint, validación de TypeScript y build del proyecto, y resolver los errores relacionados con el cambio.
+- [x] Ejecutar lint, validación de TypeScript y build del proyecto, y resolver los errores relacionados con el cambio.
 - [ ] Crear un cliente con un teléfono y un local, recargar la aplicación y verificar que los datos persisten.
 - [ ] Crear un cliente con varios teléfonos, cambiar el principal y comprobar que solo uno queda marcado y aparece en la lista.
 - [ ] Crear un cliente con varios locales y verificar que todos aparecen en su ficha.
@@ -141,16 +141,16 @@ Validar el flujo completo del apartado Clientes en navegador y en una compilaci�
 - [ ] Probar lista vacía, búsqueda sin resultados, ID inexistente y datos locales inválidos.
 - [ ] Revisar visualmente listado, formulario y ficha en tamaños de celular, tableta y escritorio.
 - [ ] Ejecutar el flujo principal en Android con Capacitor y comprobar que los datos persisten después de cerrar y volver a abrir la aplicación.
-- [ ] Verificar que los componentes y el store no acceden directamente a `localStorage` ni al almacenamiento de Capacitor.
-- [ ] Verificar que los comentarios `TODO` de Firebase sean concretos y estén limitados a los puntos de sustitución previstos.
+- [x] Verificar que los componentes y el store no acceden directamente a `localStorage` ni al almacenamiento de Capacitor.
+- [x] Verificar que los comentarios `TODO` de Firebase sean concretos y estén limitados a los puntos de sustitución previstos.
 
 ## Progreso del plan
 
-- [ ] Fase 1: Definir el modelo y la capa de almacenamiento
-- [ ] Fase 2: Crear el estado reutilizable de clientes
-- [ ] Fase 3: Implementar el listado responsive
-- [ ] Fase 4: Construir el formulario reutilizable
-- [ ] Fase 5: Implementar la ficha del cliente
+- [x] Fase 1: Definir el modelo y la capa de almacenamiento
+- [x] Fase 2: Crear el estado reutilizable de clientes
+- [x] Fase 3: Implementar el listado responsive
+- [x] Fase 4: Construir el formulario reutilizable
+- [x] Fase 5: Implementar la ficha del cliente
 - [ ] Fase 6: Integrar navegación, diseño y experiencia responsive
 - [ ] Fase Testing
 
