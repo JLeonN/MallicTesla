@@ -103,22 +103,33 @@ function textoLocales(cantidadLocales: number): string {
           <article v-for="cliente in clientesFiltrados" :key="cliente.id" class="tarjeta-cliente">
             <div class="tarjeta-cliente__contenido">
               <h2>{{ cliente.nombre }}</h2>
-              <span>{{ textoLocales(cliente.locales.length) }}</span>
+              <div class="tarjeta-cliente__datos">
+                <span>
+                  <q-icon name="place" aria-hidden="true" />
+                  {{ textoLocales(cliente.locales.length) }}
+                </span>
+                <span>
+                  <q-icon name="phone" aria-hidden="true" />
+                  {{ obtenerTelefonoPrincipal(cliente)?.numero ?? 'Sin teléfono' }}
+                </span>
+              </div>
+            </div>
+            <div class="tarjeta-cliente__acciones">
               <EnlaceWhatsapp
                 v-if="obtenerTelefonoPrincipal(cliente)"
+                etiqueta="WhatsApp"
                 :nombre-cliente="cliente.nombre"
                 :numero="obtenerTelefonoPrincipal(cliente)!.numero"
               />
-              <span v-else>Sin teléfono</span>
+              <q-btn
+                class="boton-secundario"
+                flat
+                no-caps
+                icon-right="arrow_forward"
+                label="Ver ficha"
+                :to="`/clientes/${cliente.id}`"
+              />
             </div>
-            <q-btn
-              class="boton-secundario"
-              flat
-              no-caps
-              icon-right="arrow_forward"
-              label="Ver cliente"
-              :to="`/clientes/${cliente.id}`"
-            />
           </article>
         </div>
       </section>

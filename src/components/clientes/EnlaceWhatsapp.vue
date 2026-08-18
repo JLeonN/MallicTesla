@@ -5,6 +5,7 @@ import { mdiWhatsapp } from '@quasar/extras/mdi-v7';
 const props = defineProps<{
   nombreCliente: string;
   numero: string;
+  etiqueta?: string;
 }>();
 
 const numeroWhatsapp = computed(() => {
@@ -33,7 +34,7 @@ const enlaceWhatsapp = computed(() => `https://wa.me/${numeroWhatsapp.value}`);
     target="_blank"
     rel="noopener noreferrer"
     :icon="mdiWhatsapp"
-    :label="numero"
+    :label="etiqueta ?? numero"
     :aria-label="`Abrir WhatsApp con ${nombreCliente} al ${numero}`"
   />
 </template>

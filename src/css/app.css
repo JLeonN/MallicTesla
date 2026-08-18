@@ -595,11 +595,10 @@ button:focus-visible {
 }
 
 .tarjeta-cliente {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
   padding: var(--espaciado-grande);
-  gap: var(--espaciado-mediano);
+  gap: var(--espaciado-grande);
+  box-shadow: var(--sombra-control);
 }
 
 .tarjeta-cliente__contenido,
@@ -616,15 +615,51 @@ button:focus-visible {
   font-size: var(--tamano-texto-destacado);
 }
 
-.tarjeta-cliente span,
+.tarjeta-cliente__datos {
+  display: grid;
+  margin-top: var(--espaciado-mediano);
+  gap: var(--espaciado-control);
+}
+
+.tarjeta-cliente__datos > span {
+  display: flex;
+  align-items: center;
+  gap: var(--espaciado-pequeno);
+}
+
+.tarjeta-cliente__datos .q-icon {
+  color: var(--color-accion-principal);
+  font-size: var(--tamano-icono-navegacion);
+}
+
+.tarjeta-cliente__acciones {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-top: var(--espaciado-mediano);
+  gap: var(--espaciado-pequeno);
+  border-top: var(--ancho-borde) solid var(--color-borde-principal);
+}
+
+.tarjeta-cliente__acciones > .q-btn {
+  width: 100%;
+  min-width: 0;
+}
+
+.tarjeta-cliente__acciones > .q-btn:only-child {
+  grid-column: 1 / -1;
+}
+
+.tarjeta-cliente__acciones .enlace-whatsapp {
+  background: var(--color-accion-suave);
+  border: var(--ancho-borde) solid var(--color-accion-borde);
+  border-radius: var(--radio-mediano);
+}
+
+.tarjeta-cliente__contenido span,
 .fila-detalle-cliente span,
 .dato-adicional-cliente > span {
   color: var(--color-texto-secundario);
   font-size: var(--tamano-texto-secundario);
-}
-
-.tarjeta-cliente .enlace-whatsapp {
-  align-self: flex-start;
 }
 
 .encabezado-formulario-cliente {
@@ -907,15 +942,6 @@ button:focus-visible {
 
   .selector-principal {
     justify-self: start;
-  }
-
-  .tarjeta-cliente {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .tarjeta-cliente .q-btn {
-    align-self: start;
   }
 
   .acciones-formulario {
