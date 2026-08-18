@@ -90,6 +90,10 @@ function textoPrecioCantidadParcial(precio: DatosPrecioMaterial): string {
   return `${formatearImporte(importe, precio.moneda)} por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
 }
 
+function tituloReferencia(precio: DatosPrecioMaterial): string {
+  return `Referencia por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
+}
+
 function opcionesValorVisible(precio: DatosPrecioMaterial) {
   return [
     { label: 'Mostrar total', value: 'total' },
@@ -337,11 +341,6 @@ function guardarMaterial(): void {
                   />
                 </div>
 
-                <div class="resultado-calculo-precio" aria-live="polite">
-                  <span>Costo calculado por unidad</span>
-                  <strong>{{ textoCostoCalculado(precio) }}</strong>
-                </div>
-
                 <q-input
                   v-model.number="precio.precioCantidadParcial"
                   dark
@@ -358,13 +357,22 @@ function guardarMaterial(): void {
                   ]"
                 />
 
-                <div
-                  class="resultado-calculo-precio resultado-calculo-precio--cantidad-parcial"
-                  aria-live="polite"
-                >
-                  <span>Precio para cantidad parcial</span>
-                  <strong>{{ textoPrecioCantidadParcial(precio) }}</strong>
-                </div>
+                <section class="resumen-precios-parciales" aria-live="polite">
+                  <p class="etiqueta-seccion">{{ tituloReferencia(precio) }}</p>
+                  <div
+                    class="resumen-precios-parciales__fila resumen-precios-parciales__fila--destacada"
+                  >
+                    <span>Precio para cantidad parcial</span>
+                    <strong>{{ textoPrecioCantidadParcial(precio) }}</strong>
+                  </div>
+                  <div class="resumen-precios-parciales__fila">
+                    <span>Costo calculado</span>
+                    <strong>{{ textoCostoCalculado(precio) }}</strong>
+                  </div>
+                  <p class="resumen-precios-parciales__ayuda">
+                    El costo calculado es únicamente informativo.
+                  </p>
+                </section>
 
                 <div>
                   <span class="etiqueta-control-precio">Precio que se mostrará</span>

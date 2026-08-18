@@ -1207,25 +1207,38 @@ button:focus-visible {
   font-size: var(--tamano-texto-secundario);
 }
 
-.resultado-calculo-precio {
-  display: flex;
-  flex-direction: column;
+.resumen-precios-parciales {
+  display: grid;
   padding: var(--espaciado-mediano);
-  gap: var(--espaciado-minimo);
+  gap: var(--espaciado-mediano);
   color: var(--color-texto-principal);
-  background: var(--color-accion-suave);
-  border: var(--ancho-borde) solid var(--color-accion-borde);
+  background: var(--color-superficie-interactiva);
+  border: var(--ancho-borde) solid var(--color-borde-destacado);
   border-radius: var(--radio-mediano);
 }
 
-.resultado-calculo-precio span {
+.resumen-precios-parciales__fila {
+  display: grid;
+  gap: var(--espaciado-minimo);
+}
+
+.resumen-precios-parciales__fila + .resumen-precios-parciales__fila {
+  padding-top: var(--espaciado-mediano);
+  border-top: var(--ancho-borde) solid var(--color-borde-principal);
+}
+
+.resumen-precios-parciales__fila > span,
+.resumen-precios-parciales__ayuda {
   color: var(--color-texto-secundario);
   font-size: var(--tamano-texto-secundario);
 }
 
-.resultado-calculo-precio--cantidad-parcial {
-  background: var(--color-superficie-interactiva);
-  border-color: var(--color-borde-destacado);
+.resumen-precios-parciales__fila--destacada > strong {
+  color: var(--color-accion-principal);
+}
+
+.resumen-precios-parciales__ayuda {
+  margin: 0;
 }
 
 .detalle-material {
