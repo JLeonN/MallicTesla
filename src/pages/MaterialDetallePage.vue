@@ -38,7 +38,18 @@ function descripcionPrecio(precio: PrecioMaterial): string {
     return `Precio directo por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
   }
 
-  return `${obtenerPresentacion(precio)} de ${precio.cantidadContenido ?? 0} ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
+  const cantidadContenido = precio.cantidadContenido ?? 0;
+  const unidadContenido = obtenerUnidadMedida(precio).toLocaleLowerCase('es');
+  const unidadMostrada = cantidadContenido === 1 ? unidadContenido : `${unidadContenido}s`;
+
+  return `${obtenerPresentacion(precio)} de ${cantidadContenido} ${unidadMostrada}`;
+}
+
+function precioCompraPresentacion(precio: PrecioMaterial): string {
+  const importe = precio.importe ?? 0;
+  const presentacion = obtenerPresentacion(precio).toLocaleLowerCase('es');
+
+  return `${formatearImporte(importe, precio.moneda)} por ${presentacion}`;
 }
 
 function costoCalculado(precio: PrecioMaterial): string | null {
@@ -113,13 +124,12 @@ async function eliminarMaterial(): Promise<void> {
 
         <div class="detalle-material__contenedor">
           <section class="tarjeta-detalle-material" aria-labelledby="titulo-precios-detalle">
-            <p class="etiqueta-seccion">Precios del material</p>
-            <h2 id="titulo-precios-detalle" class="titulo-seccion">Precios</h2>
+            <p id="titulo-precios-detalle" class="etiqueta-seccion">Precios del material</p>
             <div class="lista-detalle-material">
               <article v-for="precio in precios" :key="precio.id" class="fila-detalle-material">
                 <div class="fila-detalle-material__contenido">
                   <div class="fila-detalle-material__titulo">
-                    <strong>{{ precio.comercio }}</strong>
+                    <strong class="fila-detalle-material__comercio">{{ precio.comercio }}</strong>
                     <q-badge
                       v-if="precio.id === material.idPrecioPredeterminado"
                       class="insignia-principal"
@@ -127,16 +137,31 @@ async function eliminarMaterial(): Promise<void> {
                       Predeterminado
                     </q-badge>
                   </div>
-                  <span>{{ descripcionPrecio(precio) }}</span>
-                  <strong>{{ formatearPrecioVisible(precio) }}</strong>
-                  <span v-if="costoCalculado(precio)">
-                    Costo calculado: {{ costoCalculado(precio) }}
-                  </span>
-                  <span v-if="precio.modalidad === 'presentacion'">
-                    Cantidad parcial: {{ precioCantidadParcial(precio) }}
-                  </span>
+
+                  <template v-if="precio.modalidad === 'presentacion'">
+                    <div class="dato-precio-material">
+                      <span class="dato-precio-material__etiqueta">Compra</span>
+                      <span>{{ descripcionPrecio(precio) }}</span>
+                      <strong>{{ precioCompraPresentacion(precio) }}</strong>
+                    </div>
+
+                    <div v-if="costoCalculado(precio)" class="dato-precio-material">
+                      <span class="dato-precio-material__etiqueta">Costo aproximado</span>
+                      <strong>{{ costoCalculado(precio) }}</strong>
+                    </div>
+
+                    <div class="dato-precio-material dato-precio-material--destacado">
+                      <span class="dato-precio-material__etiqueta">Venta al cliente</span>
+                      <strong>{{ precioCantidadParcial(precio) }}</strong>
+                    </div>
+                  </template>
+
+                  <div v-else class="dato-precio-material dato-precio-material--destacado">
+                    <span class="dato-precio-material__etiqueta">Precio registrado</span>
+                    <span>{{ descripcionPrecio(precio) }}</span>
+                    <strong>{{ formatearPrecioVisible(precio) }}</strong>
+                  </div>
                 </div>
-                <q-icon name="payments" aria-hidden="true" />
               </article>
             </div>
           </section>
