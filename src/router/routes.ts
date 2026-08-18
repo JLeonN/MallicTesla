@@ -23,12 +23,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'presupuestos/nuevo',
         name: 'nuevo-presupuesto',
-        component: () => import('@/components/PaginaModuloPendiente.vue'),
-        props: {
-          titulo: 'Nuevo presupuesto',
-          descripcion: 'El formulario se incorporará en el próximo módulo funcional.',
-          icono: 'add_circle',
-        },
+        component: () => import('@/pages/NuevoPresupuestoPage.vue'),
       },
       {
         path: 'clientes',

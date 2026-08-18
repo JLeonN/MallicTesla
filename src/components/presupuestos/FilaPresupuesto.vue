@@ -1,0 +1,141 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import {
+  formatearImporte,
+  MONEDAS,
+  UNIDADES_MEDIDA,
+  type Material,
+  type Moneda,
+} from '@/dominio/materiales';
+import {
+  calcularSubtotalLinea,
+  lineaTieneMonedaCompatible,
+  type LineaPresupuesto,
+} from '@/dominio/presupuestos';
+
+const props = defineProps<{
+  monedaPresupuesto: Moneda;
+  materiales: Material[];
+}>();
+
+const linea = defineModel<LineaPresupuesto>({ required: true });
+
+const emitir = defineEmits<{
+  eliminar: [];
+  reemplazar: [material: Material];
+}>();
+
+const terminoMaterial = ref('');
+const materialSeleccionado = ref<Material | null>(null);
+
+const esMaterial = computed(() => linea.value.tipo === 'material');
+const monedaCompatible = computed(() =>
+  lineaTieneMonedaCompatible(linea.value, props.monedaPresupuesto),
+);
+const subtotal = computed(() => calcularSubtotalLinea(linea.value));
+const opcionesMateriales = computed(() => {
+  const termino = terminoMaterial.value.trim().toLocaleLowerCase('es');
+  return props.materiales.filter(
+    (material) =>
+      material.id !== linea.value.idMaterial &&
+      (termino === '' || material.nombre.toLocaleLowerCase('es').includes(termino)),
+  );
+});
+
+function reemplazarMaterial(material: Material | null): void {
+  if (material === null) {
+    return;
+  }
+
+  emitir('reemplazar', material);
+  materialSeleccionado.value = null;
+  terminoMaterial.value = '';
+}
+</script>
+
+<template>
+  <article
+    class="fila-presupuesto"
+    :class="{ 'fila-presupuesto--moneda-incompatible': !monedaCompatible }"
+  >
+    <div
+      class="fila-presupuesto__principal"
+      :class="{ 'fila-presupuesto__principal--importe-unico': !esMaterial }"
+    >
+      <q-input v-model="linea.nombre" dark outlined dense label="Concepto" />
+
+      <template v-if="esMaterial">
+        <q-input
+          v-model.number="linea.cantidad"
+          dark
+          outlined
+          dense
+          type="number"
+          min="0"
+          step="0.01"
+          label="Cantidad"
+        />
+        <q-select
+          v-model="linea.unidad"
+          dark
+          outlined
+          dense
+          use-input
+          new-value-mode="add-unique"
+          label="Unidad"
+          :options="UNIDADES_MEDIDA"
+        />
+      </template>
+
+      <q-input
+        v-model.number="linea.precioUnitario"
+        dark
+        outlined
+        dense
+        type="number"
+        min="0"
+        step="0.01"
+        :label="esMaterial ? 'Precio unitario' : 'Importe'"
+      />
+
+      <q-select v-model="linea.moneda" dark outlined dense label="Moneda" :options="MONEDAS" />
+
+      <div class="fila-presupuesto__subtotal">
+        <span>Subtotal</span>
+        <strong>{{ formatearImporte(subtotal, linea.moneda) }}</strong>
+      </div>
+
+      <q-btn
+        class="boton-icono-secundario fila-presupuesto__eliminar"
+        flat
+        round
+        dense
+        icon="delete_outline"
+        :aria-label="`Eliminar ${linea.nombre}`"
+        @click="emitir('eliminar')"
+      />
+    </div>
+
+    <div v-if="esMaterial && materiales.length" class="fila-presupuesto__reemplazo">
+      <q-select
+        v-model="materialSeleccionado"
+        dark
+        outlined
+        dense
+        clearable
+        use-input
+        input-debounce="0"
+        label="Reemplazar por material guardado"
+        :options="opcionesMateriales"
+        option-label="nombre"
+        @input-value="terminoMaterial = $event"
+        @update:model-value="reemplazarMaterial"
+      />
+    </div>
+
+    <p v-if="!monedaCompatible" class="fila-presupuesto__aviso" role="alert">
+      Esta línea está en {{ linea.moneda }} y no se incluye en el total {{ monedaPresupuesto }}.
+      Cambiá su moneda y revisá el precio.
+    </p>
+  </article>
+</template>
