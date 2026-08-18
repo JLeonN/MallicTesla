@@ -53,12 +53,22 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'materiales',
         name: 'materiales',
-        component: () => import('@/components/PaginaModuloPendiente.vue'),
-        props: {
-          titulo: 'Materiales',
-          descripcion: 'Acá vas a mantener tu catálogo de materiales y precios.',
-          icono: 'inventory_2',
-        },
+        component: () => import('@/pages/MaterialesPage.vue'),
+      },
+      {
+        path: 'materiales/nuevo',
+        name: 'nuevo-material',
+        component: () => import('@/pages/MaterialFormularioPage.vue'),
+      },
+      {
+        path: 'materiales/:idMaterial/editar',
+        name: 'editar-material',
+        component: () => import('@/pages/MaterialFormularioPage.vue'),
+      },
+      {
+        path: 'materiales/:idMaterial',
+        name: 'detalle-material',
+        component: () => import('@/pages/MaterialDetallePage.vue'),
       },
       {
         path: 'historial',

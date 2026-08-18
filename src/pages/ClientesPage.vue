@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import BuscadorListado from '@/components/BuscadorListado.vue';
 import EnlaceWhatsapp from '@/components/clientes/EnlaceWhatsapp.vue';
 import {
   obtenerLocalesConDatos,
@@ -52,17 +53,11 @@ function textoLocales(locales: LocalCliente[]): string {
         />
       </header>
 
-      <q-input
+      <BuscadorListado
         v-model="terminoBusqueda"
         class="buscador-clientes"
-        dark
-        outlined
-        clearable
-        debounce="150"
-        label="Buscar por cliente, local o teléfono"
-      >
-        <template #prepend><q-icon name="search" /></template>
-      </q-input>
+        etiqueta="Buscar por cliente, local o teléfono"
+      />
 
       <q-banner v-if="clientesStore.error" class="aviso-error" rounded>
         <template #avatar><q-icon name="error_outline" /></template>

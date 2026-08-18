@@ -64,6 +64,8 @@
   --ancho-texto-presentacion: 42rem;
   --ancho-texto-secundario: 34rem;
   --ancho-columna-acciones: 8.5rem;
+  --columnas-tabla-materiales: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.2fr)
+    var(--ancho-columna-acciones);
   --altura-control: 3rem;
   --altura-encabezado-movil: 4rem;
   --altura-navegacion-movil: 4.5rem;
