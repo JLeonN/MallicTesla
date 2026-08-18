@@ -1175,8 +1175,21 @@ button:focus-visible {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.grilla-campos-precio--principal {
-  grid-template-columns: minmax(0, 1fr) minmax(0, var(--ancho-columna-acciones));
+.grupo-precio-moneda {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--espaciado-mediano);
+}
+
+.selector-moneda-precio {
+  min-width: max-content;
+}
+
+.selector-moneda-precio__opciones {
+  display: flex;
+  align-items: center;
+  gap: var(--espaciado-pequeno);
 }
 
 .selector-modalidad-precio {
@@ -1282,8 +1295,12 @@ button:focus-visible {
   }
 
   .grilla-campos-precio,
-  .grilla-campos-precio--principal {
+  .grupo-precio-moneda {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .selector-moneda-precio {
+    min-width: 0;
   }
 
   .formulario-material__contenedor,

@@ -154,18 +154,15 @@ function guardarMaterial(): void {
                 />
               </div>
 
-              <div class="grilla-campos-precio grilla-campos-precio--principal">
-                <q-input
-                  v-model="precio.comercio"
-                  dark
-                  outlined
-                  label="Dónde lo compraste"
-                  :rules="[
-                    (valor) => Boolean(String(valor).trim()) || 'Ingresá el comercio o local.',
-                  ]"
-                />
-                <q-select v-model="precio.moneda" dark outlined label="Moneda" :options="MONEDAS" />
-              </div>
+              <q-input
+                v-model="precio.comercio"
+                dark
+                outlined
+                label="Comercio o proveedor"
+                :rules="[
+                  (valor) => Boolean(String(valor).trim()) || 'Ingresá el comercio o proveedor.',
+                ]"
+              />
 
               <q-btn-toggle
                 v-model="precio.modalidad"
@@ -178,17 +175,43 @@ function guardarMaterial(): void {
               />
 
               <div v-if="precio.modalidad === 'directo'" class="grilla-campos-precio">
-                <q-input
-                  v-model.number="precio.importe"
-                  dark
-                  outlined
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  label="Precio"
-                  :prefix="precio.moneda"
-                  :rules="[(valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.')]"
-                />
+                <div class="grupo-precio-moneda">
+                  <q-input
+                    v-model.number="precio.importe"
+                    dark
+                    outlined
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    label="Precio"
+                    :prefix="precio.moneda"
+                    :rules="[
+                      (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
+                    ]"
+                  />
+                  <q-field
+                    :model-value="precio.moneda"
+                    class="selector-moneda-precio"
+                    dark
+                    outlined
+                  >
+                    <template #control>
+                      <div
+                        class="selector-moneda-precio__opciones"
+                        role="radiogroup"
+                        aria-label="Moneda"
+                      >
+                        <q-radio
+                          v-for="moneda in MONEDAS"
+                          :key="moneda"
+                          v-model="precio.moneda"
+                          :val="moneda"
+                          :label="moneda"
+                        />
+                      </div>
+                    </template>
+                  </q-field>
+                </div>
                 <q-select
                   v-model="precio.unidadMedida"
                   dark
@@ -227,6 +250,9 @@ function guardarMaterial(): void {
                       (valor) => Boolean(String(valor).trim()) || 'Ingresá la presentación.',
                     ]"
                   />
+                </div>
+
+                <div class="grupo-precio-moneda">
                   <q-input
                     v-model.number="precio.importe"
                     dark
@@ -240,6 +266,31 @@ function guardarMaterial(): void {
                       (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
                     ]"
                   />
+                  <q-field
+                    :model-value="precio.moneda"
+                    class="selector-moneda-precio"
+                    dark
+                    outlined
+                  >
+                    <template #control>
+                      <div
+                        class="selector-moneda-precio__opciones"
+                        role="radiogroup"
+                        aria-label="Moneda"
+                      >
+                        <q-radio
+                          v-for="moneda in MONEDAS"
+                          :key="moneda"
+                          v-model="precio.moneda"
+                          :val="moneda"
+                          :label="moneda"
+                        />
+                      </div>
+                    </template>
+                  </q-field>
+                </div>
+
+                <div class="grilla-campos-precio">
                   <q-input
                     v-model.number="precio.cantidadContenido"
                     dark
