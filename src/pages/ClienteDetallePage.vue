@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
+import EnlaceWhatsapp from '@/components/clientes/EnlaceWhatsapp.vue';
 import { obtenerTelefonoPrincipal, type Cliente } from '@/dominio/clientes';
 import { useClientesStore } from '@/stores/clientes';
 
@@ -59,8 +60,14 @@ async function eliminarCliente(): Promise<void> {
           <div>
             <p class="etiqueta-seccion">Ficha del cliente</p>
             <h1 class="titulo-pagina">{{ cliente.nombre }}</h1>
-            <p class="texto-secundario">
-              {{ telefonoPrincipal?.numero ?? 'Sin teléfono principal' }}
+            <EnlaceWhatsapp
+              v-if="telefonoPrincipal"
+              class="encabezado-detalle-cliente__telefono"
+              :nombre-cliente="cliente.nombre"
+              :numero="telefonoPrincipal.numero"
+            />
+            <p v-else class="texto-secundario encabezado-detalle-cliente__telefono">
+              Sin teléfono principal
             </p>
           </div>
           <q-btn
@@ -73,67 +80,71 @@ async function eliminarCliente(): Promise<void> {
           />
         </header>
 
-        <section class="tarjeta-detalle-cliente" aria-labelledby="titulo-telefonos-cliente">
-          <p class="etiqueta-seccion">Contacto</p>
-          <h2 id="titulo-telefonos-cliente" class="titulo-seccion">Teléfonos</h2>
-          <div class="lista-detalle-cliente">
-            <div
-              v-for="telefono in cliente.telefonos"
-              :key="telefono.id"
-              class="fila-detalle-cliente"
-            >
-              <div>
-                <strong>{{ telefono.numero }}</strong>
-                <span>{{ telefono.etiqueta }}</span>
+        <div class="detalle-cliente__contenedor">
+          <section class="tarjeta-detalle-cliente" aria-labelledby="titulo-telefonos-cliente">
+            <p class="etiqueta-seccion">Contacto</p>
+            <h2 id="titulo-telefonos-cliente" class="titulo-seccion">Teléfonos</h2>
+            <div class="lista-detalle-cliente">
+              <div
+                v-for="telefono in cliente.telefonos"
+                :key="telefono.id"
+                class="fila-detalle-cliente"
+              >
+                <div>
+                  <EnlaceWhatsapp :nombre-cliente="cliente.nombre" :numero="telefono.numero" />
+                  <span>{{ telefono.etiqueta }}</span>
+                </div>
+                <q-badge v-if="telefono.esPrincipal" class="insignia-principal">
+                  Principal
+                </q-badge>
               </div>
-              <q-badge v-if="telefono.esPrincipal" class="insignia-principal">Principal</q-badge>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section class="tarjeta-detalle-cliente" aria-labelledby="titulo-locales-cliente">
-          <p class="etiqueta-seccion">Lugar de trabajo</p>
-          <h2 id="titulo-locales-cliente" class="titulo-seccion">Locales</h2>
-          <div class="lista-detalle-cliente">
-            <div v-for="local in cliente.locales" :key="local.id" class="fila-detalle-cliente">
-              <div>
-                <strong>{{ local.nombre }}</strong>
-                <span>{{ local.direccion }}</span>
+          <section class="tarjeta-detalle-cliente" aria-labelledby="titulo-locales-cliente">
+            <p class="etiqueta-seccion">Lugar de trabajo</p>
+            <h2 id="titulo-locales-cliente" class="titulo-seccion">Locales</h2>
+            <div class="lista-detalle-cliente">
+              <div v-for="local in cliente.locales" :key="local.id" class="fila-detalle-cliente">
+                <div>
+                  <strong>{{ local.nombre }}</strong>
+                  <span>{{ local.direccion }}</span>
+                </div>
+                <q-icon name="place" aria-hidden="true" />
               </div>
-              <q-icon name="place" aria-hidden="true" />
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section v-if="cliente.correo || cliente.notas" class="tarjeta-detalle-cliente">
-          <p class="etiqueta-seccion">Datos adicionales</p>
-          <div v-if="cliente.correo" class="dato-adicional-cliente">
-            <span>Correo electrónico</span>
-            <strong>{{ cliente.correo }}</strong>
-          </div>
-          <div v-if="cliente.notas" class="dato-adicional-cliente">
-            <span>Notas generales</span>
-            <p>{{ cliente.notas }}</p>
-          </div>
-        </section>
+          <section v-if="cliente.correo || cliente.notas" class="tarjeta-detalle-cliente">
+            <p class="etiqueta-seccion">Datos adicionales</p>
+            <div v-if="cliente.correo" class="dato-adicional-cliente">
+              <span>Correo electrónico</span>
+              <strong>{{ cliente.correo }}</strong>
+            </div>
+            <div v-if="cliente.notas" class="dato-adicional-cliente">
+              <span>Notas generales</span>
+              <p>{{ cliente.notas }}</p>
+            </div>
+          </section>
 
-        <section class="zona-peligro-cliente" aria-labelledby="titulo-eliminar-cliente">
-          <div>
-            <p class="etiqueta-seccion">Acción irreversible</p>
-            <h2 id="titulo-eliminar-cliente" class="titulo-seccion">Eliminar cliente</h2>
-            <p class="texto-secundario">
-              Se eliminarán también sus {{ cliente.locales.length }} locales asociados.
-            </p>
-          </div>
-          <q-btn
-            class="boton-peligro"
-            flat
-            no-caps
-            icon="delete_outline"
-            label="Eliminar cliente"
-            @click="mostrarConfirmacionEliminar = true"
-          />
-        </section>
+          <section class="zona-peligro-cliente" aria-labelledby="titulo-eliminar-cliente">
+            <div>
+              <p class="etiqueta-seccion">Acción irreversible</p>
+              <h2 id="titulo-eliminar-cliente" class="titulo-seccion">Eliminar cliente</h2>
+              <p class="texto-secundario">
+                Se eliminarán también sus {{ cliente.locales.length }} locales asociados.
+              </p>
+            </div>
+            <q-btn
+              class="boton-peligro"
+              flat
+              no-caps
+              icon="delete_outline"
+              label="Eliminar cliente"
+              @click="mostrarConfirmacionEliminar = true"
+            />
+          </section>
+        </div>
       </section>
 
       <section v-else class="estado-vacio-clientes">

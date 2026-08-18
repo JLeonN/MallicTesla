@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
   crearLocal,
   crearTelefono,
@@ -20,23 +20,32 @@ const emitir = defineEmits<{
   cancelar: [];
 }>();
 
-const nombre = ref(props.cliente?.nombre ?? '');
-const telefonos = ref<TelefonoCliente[]>(
-  structuredClone(props.cliente?.telefonos ?? [crearTelefono()]),
-);
-const locales = ref<LocalCliente[]>(structuredClone(props.cliente?.locales ?? [crearLocal()]));
-const correo = ref(props.cliente?.correo ?? '');
-const notas = ref(props.cliente?.notas ?? '');
+const nombre = ref('');
+const telefonos = ref<TelefonoCliente[]>([]);
+const locales = ref<LocalCliente[]>([]);
+const correo = ref('');
+const notas = ref('');
 const mostrarDatosAdicionales = ref(false);
-const telefonoPrincipalId = ref(
-  props.cliente?.telefonos.find((telefono) => telefono.esPrincipal)?.id ??
-    telefonos.value[0]?.id ??
-    '',
-);
+const telefonoPrincipalId = ref('');
 const idLocalPendienteEliminar = ref<string | null>(null);
 const mostrarConfirmacionEliminarLocal = ref(false);
 
 const esEdicion = computed(() => props.cliente !== undefined);
+
+function cargarDatosCliente(cliente: Cliente | undefined): void {
+  nombre.value = cliente?.nombre ?? '';
+  telefonos.value = (cliente?.telefonos ?? [crearTelefono()]).map((telefono) => ({
+    ...telefono,
+  }));
+  locales.value = (cliente?.locales ?? [crearLocal()]).map((local) => ({ ...local }));
+  correo.value = cliente?.correo ?? '';
+  notas.value = cliente?.notas ?? '';
+  telefonoPrincipalId.value =
+    cliente?.telefonos.find((telefono) => telefono.esPrincipal)?.id ?? telefonos.value[0]?.id ?? '';
+  mostrarDatosAdicionales.value = false;
+}
+
+watch(() => props.cliente, cargarDatosCliente, { immediate: true });
 
 function agregarTelefono(): void {
   const telefono = crearTelefono();

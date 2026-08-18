@@ -12,16 +12,25 @@ const $q = useQuasar();
 const clientesStore = useClientesStore();
 const cliente = ref<Cliente>();
 const clienteNoEncontrado = ref(false);
+const cargandoCliente = ref(false);
 const esEdicion = computed(() => typeof ruta.params.idCliente === 'string');
 
 onMounted(async () => {
-  if (clientesStore.clientes.length === 0) {
-    await clientesStore.cargarClientes();
-  }
+  cargandoCliente.value = esEdicion.value;
 
-  if (esEdicion.value) {
+  try {
+    if (clientesStore.clientes.length === 0) {
+      await clientesStore.cargarClientes();
+    }
+
+    if (!esEdicion.value) {
+      return;
+    }
+
     cliente.value = clientesStore.obtenerClientePorId(String(ruta.params.idCliente));
     clienteNoEncontrado.value = cliente.value === undefined;
+  } finally {
+    cargandoCliente.value = false;
   }
 });
 
@@ -79,7 +88,12 @@ function cancelar(): void {
         {{ clientesStore.error }}
       </q-banner>
 
-      <section v-if="clienteNoEncontrado" class="estado-vacio-clientes">
+      <div v-if="cargandoCliente" class="estado-clientes">
+        <q-spinner class="indicador-carga" size="2rem" />
+        <span>Cargando datos del cliente…</span>
+      </div>
+
+      <section v-else-if="clienteNoEncontrado" class="estado-vacio-clientes">
         <q-icon name="person_off" aria-hidden="true" />
         <h2 class="titulo-seccion">No encontramos este cliente</h2>
         <p class="texto-secundario">
@@ -96,6 +110,7 @@ function cancelar(): void {
 
       <FormularioCliente
         v-else-if="!esEdicion || cliente"
+        :key="cliente?.id ?? 'nuevo-cliente'"
         :cliente="cliente"
         :guardando="clientesStore.guardando"
         @guardar="guardarCliente"

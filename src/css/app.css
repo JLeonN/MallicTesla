@@ -647,6 +647,16 @@ button:focus-visible {
   box-shadow: var(--sombra-principal);
 }
 
+.detalle-cliente__contenedor {
+  display: grid;
+  padding: var(--espaciado-mediano);
+  gap: var(--espaciado-mediano);
+  background: var(--color-fondo-secundario);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-grande);
+  box-shadow: var(--sombra-principal);
+}
+
 .seccion-formulario,
 .tarjeta-detalle-cliente {
   padding: var(--espaciado-grande);
@@ -744,6 +754,14 @@ button:focus-visible {
 
 .detalle-cliente {
   margin-top: var(--espaciado-extra-grande);
+}
+
+.encabezado-detalle-cliente__telefono {
+  margin-top: var(--espaciado-mediano);
+}
+
+.encabezado-detalle-cliente > div > .enlace-whatsapp {
+  align-self: flex-start;
 }
 
 .fila-detalle-cliente {
