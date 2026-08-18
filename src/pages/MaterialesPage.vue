@@ -61,10 +61,10 @@ function localPrincipal(material: Material): string {
     <main class="contenedor-principal modulo-materiales">
       <header class="encabezado-modulo-materiales">
         <div>
-          <p class="etiqueta-seccion">Costos de trabajo</p>
+          <p class="etiqueta-seccion">Precios del material</p>
           <h1 class="titulo-pagina">Materiales</h1>
           <p class="texto-secundario encabezado-modulo-materiales__descripcion">
-            Consultá tus materiales y el precio de compra que usás como referencia.
+            Consultá tus materiales y los precios que usás como referencia.
           </p>
         </div>
         <q-btn
@@ -181,7 +181,7 @@ function localPrincipal(material: Material): string {
           {{
             terminoBusqueda
               ? 'Probá buscar por otro material o local.'
-              : 'Agregá el primer material para registrar cuánto te cuesta comprarlo.'
+              : 'Agregá el primer material para registrar sus precios de referencia.'
           }}
         </p>
         <q-btn

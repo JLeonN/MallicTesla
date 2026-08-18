@@ -1223,6 +1223,11 @@ button:focus-visible {
   font-size: var(--tamano-texto-secundario);
 }
 
+.resultado-calculo-precio--cantidad-parcial {
+  background: var(--color-superficie-interactiva);
+  border-color: var(--color-borde-destacado);
+}
+
 .detalle-material {
   margin-top: var(--espaciado-extra-grande);
 }

@@ -2,11 +2,11 @@
 
 ## Descripción del plan
 
-Implementar el apartado de materiales con una lista responsive, búsqueda, ordenamiento, alta, detalle, edición y eliminación. Cada material podrá tener uno o más precios de compra, uno de ellos marcado como predeterminado, con moneda, comercio y presentación. El módulo reutilizará los patrones visuales y técnicos ya establecidos en clientes sin mezclar ambos dominios.
+Implementar el apartado de materiales con una lista responsive, búsqueda, ordenamiento, alta, detalle, edición y eliminación. Cada material podrá tener uno o más precios, uno de ellos marcado como predeterminado, con moneda, comercio y presentación. Las presentaciones guardarán además un precio obligatorio para cantidades parciales. El módulo reutilizará los patrones visuales y técnicos ya establecidos en clientes sin mezclar ambos dominios.
 
 ## Objetivo principal
 
-- Registrar materiales y sus precios de compra en pesos uruguayos o dólares.
+- Registrar materiales y sus precios de referencia en pesos uruguayos o dólares.
 - Consultar rápidamente el nombre, el comercio y el precio predeterminado de cada material.
 - Calcular el costo aproximado por unidad de medida cuando la compra sea por caja, paquete, rollo, bolsa, bobina u otra presentación.
 - Mantener una experiencia responsive consistente con el apartado de clientes.
@@ -20,7 +20,8 @@ Implementar el apartado de materiales con una lista responsive, búsqueda, orden
 - No instalar dependencias nuevas.
 - No implementar historial de precios ni funciones del futuro apartado de historial.
 - Guardar fechas de creación y modificación internamente, sin mostrarlas todavía en la interfaz.
-- No incluir precios de venta, márgenes de ganancia ni lógica de presupuestos.
+- No incluir márgenes de ganancia ni implementar todavía la lógica de presupuestos.
+- Guardar el precio para cantidades parciales como dato obligatorio de las presentaciones para utilizarlo posteriormente en presupuestos.
 
 ## FASE 1: Modelar materiales y precios
 
@@ -35,7 +36,8 @@ Definir un modelo tipado que represente materiales, precios directos y compras p
 - [x] Permitir precios directos por unidad de medida y precios totales por presentación.
 - [x] Para precios por presentación, guardar cantidad contenida, unidad de medida y precio total.
 - [x] Calcular el costo aproximado por unidad de medida dividiendo el precio total entre la cantidad contenida y mostrarlo con dos decimales.
-- [x] Permitir que un precio por presentación elija si su valor visible será el total de la presentación o el costo calculado por unidad de medida.
+- [x] Guardar un precio obligatorio por unidad de medida para presupuestar cantidades menores a una presentación completa.
+- [x] Permitir que un precio por presentación elija si su valor visible será el total de la presentación o el precio para cantidad parcial por unidad de medida.
 - [x] Permitir uno o más precios por material y guardar el identificador de un único precio predeterminado.
 - [x] Asignar automáticamente como predeterminado el primer precio agregado.
 - [x] Impedir que un material guardado quede sin precios o sin un precio predeterminado válido.
@@ -93,7 +95,8 @@ Permitir crear y editar un material junto con una cantidad dinámica de precios.
 - [x] Para el precio directo, solicitar importe y unidad de medida.
 - [x] Para el precio por presentación, solicitar presentación, precio total, cantidad contenida y unidad de medida del contenido.
 - [x] Mostrar en tiempo real el costo aproximado calculado por unidad de medida cuando los datos sean válidos.
-- [x] Agregar en precios por presentación un selector para mostrar como valor visible el total o el costo calculado.
+- [x] Solicitar obligatoriamente el precio para cantidades parciales en compras por presentación.
+- [x] Agregar en precios por presentación un selector dinámico para mostrar como valor visible el total o el precio parcial por la unidad de medida elegida.
 - [x] Agregar un control equivalente al teléfono principal de clientes para marcar un único precio como predeterminado.
 - [x] Ocultar las fechas automáticas en el formulario.
 - [x] Validar nombre, comercio, moneda, importes positivos, cantidad contenida positiva y selecciones requeridas.
@@ -109,6 +112,7 @@ Ofrecer una ficha completa del material con las mismas operaciones principales d
 - [x] Mostrar nombre y todos los precios actuales del material.
 - [x] Identificar claramente cuál es el precio predeterminado.
 - [x] Mostrar en cada precio el comercio, moneda, modalidad, importe y cálculo aproximado cuando corresponda.
+- [x] Mostrar el precio configurado para cantidades parciales cuando corresponda.
 - [x] Agregar la acción para editar el material usando el mismo formulario.
 - [x] Agregar la acción para eliminar el material mediante un diálogo de confirmación.
 - [x] Redirigir correctamente a la lista después de guardar o eliminar.
@@ -138,7 +142,8 @@ Validar de forma ejecutable por IA y revisable por humano el flujo completo del 
 - [ ] Crear un material con cinco precios, distintas monedas y distintos comercios.
 - [ ] Cambiar el precio predeterminado y verificar que la tabla actualice local y precio.
 - [ ] Registrar una compra por rollo con precio total y cantidad de metros, y comprobar el cálculo aproximado con dos decimales.
-- [ ] Alternar el valor visible entre precio total y costo calculado, y verificar el resultado en la tabla.
+- [ ] Confirmar que una presentación no pueda guardarse sin un precio válido para cantidades parciales.
+- [ ] Alternar el valor visible entre precio total y precio parcial por unidad de medida, y verificar el resultado en la tabla.
 - [ ] Verificar las presentaciones caja, paquete, rollo, bolsa, bobina y otro.
 - [ ] Verificar las unidades unidad, metro, kilogramo, litro, rollo y otro.
 - [ ] Intentar guardar importes o cantidades inválidas y comprobar los mensajes de validación.

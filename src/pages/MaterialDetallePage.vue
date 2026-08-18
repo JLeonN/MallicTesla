@@ -48,6 +48,16 @@ function costoCalculado(precio: PrecioMaterial): string | null {
     : `${formatearImporte(costo, precio.moneda)} por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
 }
 
+function precioCantidadParcial(precio: PrecioMaterial): string {
+  const importe = precio.precioCantidadParcial ?? 0;
+
+  if (importe <= 0) {
+    return 'Sin precio para cantidad parcial';
+  }
+
+  return `${formatearImporte(importe, precio.moneda)} por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
+}
+
 async function eliminarMaterial(): Promise<void> {
   if (material.value === undefined) {
     return;
@@ -103,7 +113,7 @@ async function eliminarMaterial(): Promise<void> {
 
         <div class="detalle-material__contenedor">
           <section class="tarjeta-detalle-material" aria-labelledby="titulo-precios-detalle">
-            <p class="etiqueta-seccion">Costos de compra</p>
+            <p class="etiqueta-seccion">Precios del material</p>
             <h2 id="titulo-precios-detalle" class="titulo-seccion">Precios</h2>
             <div class="lista-detalle-material">
               <article v-for="precio in precios" :key="precio.id" class="fila-detalle-material">
@@ -120,7 +130,10 @@ async function eliminarMaterial(): Promise<void> {
                   <span>{{ descripcionPrecio(precio) }}</span>
                   <strong>{{ formatearPrecioVisible(precio) }}</strong>
                   <span v-if="costoCalculado(precio)">
-                    Costo aproximado: {{ costoCalculado(precio) }}
+                    Costo calculado: {{ costoCalculado(precio) }}
+                  </span>
+                  <span v-if="precio.modalidad === 'presentacion'">
+                    Cantidad parcial: {{ precioCantidadParcial(precio) }}
                   </span>
                 </div>
                 <q-icon name="payments" aria-hidden="true" />

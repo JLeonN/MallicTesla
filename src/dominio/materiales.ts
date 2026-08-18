@@ -19,6 +19,7 @@ export interface DatosPrecioMaterial {
   presentacion: Presentacion;
   presentacionPersonalizada: string;
   cantidadContenido: number | null;
+  precioCantidadParcial: number | null;
   valorVisible: ValorVisiblePrecio;
 }
 
@@ -56,6 +57,7 @@ export function crearPrecioMaterial(): DatosPrecioMaterial {
     presentacion: 'Caja',
     presentacionPersonalizada: '',
     cantidadContenido: null,
+    precioCantidadParcial: null,
     valorVisible: 'unitario',
   };
 }
@@ -76,7 +78,7 @@ export function calcularCostoUnitario(precio: DatosPrecioMaterial): number | nul
 
 export function obtenerImporteVisible(precio: DatosPrecioMaterial): number {
   if (precio.modalidad === 'presentacion' && precio.valorVisible === 'unitario') {
-    return calcularCostoUnitario(precio) ?? 0;
+    return precio.precioCantidadParcial ?? 0;
   }
 
   return precio.importe ?? 0;
@@ -167,6 +169,8 @@ export function normalizarDatosMaterial(datos: DatosMaterial): DatosMaterial {
     presentacionPersonalizada: precio.presentacionPersonalizada.trim(),
     cantidadContenido:
       precio.modalidad === 'presentacion' ? normalizarNumero(precio.cantidadContenido) : null,
+    precioCantidadParcial:
+      precio.modalidad === 'presentacion' ? normalizarNumero(precio.precioCantidadParcial) : null,
     valorVisible: precio.modalidad === 'directo' ? 'unitario' : precio.valorVisible,
   }));
   const idPrecioPredeterminado = precios.some(

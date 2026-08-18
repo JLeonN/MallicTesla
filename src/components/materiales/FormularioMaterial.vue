@@ -27,11 +27,6 @@ const OPCIONES_MODALIDAD = [
   { label: 'Precio directo', value: 'directo' },
   { label: 'Por presentación', value: 'presentacion' },
 ];
-const OPCIONES_VALOR_VISIBLE = [
-  { label: 'Mostrar total', value: 'total' },
-  { label: 'Mostrar por unidad', value: 'unitario' },
-];
-
 const nombre = ref('');
 const precios = ref<DatosPrecioMaterial[]>([]);
 const idPrecioPredeterminado = ref('');
@@ -53,6 +48,7 @@ function cargarDatosMaterial(material: Material | undefined): void {
         presentacion: precio.presentacion,
         presentacionPersonalizada: precio.presentacionPersonalizada,
         cantidadContenido: precio.cantidadContenido,
+        precioCantidadParcial: precio.precioCantidadParcial ?? null,
         valorVisible: precio.valorVisible,
       }))
     : [crearPrecioMaterial()];
@@ -83,6 +79,25 @@ function textoCostoCalculado(precio: DatosPrecioMaterial): string {
   }
 
   return `${formatearImporte(costo, precio.moneda)} por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
+}
+
+function textoPrecioCantidadParcial(precio: DatosPrecioMaterial): string {
+  const importe = precio.precioCantidadParcial ?? 0;
+  if (importe <= 0) {
+    return 'Ingresá el precio para una cantidad parcial.';
+  }
+
+  return `${formatearImporte(importe, precio.moneda)} por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`;
+}
+
+function opcionesValorVisible(precio: DatosPrecioMaterial) {
+  return [
+    { label: 'Mostrar total', value: 'total' },
+    {
+      label: `Mostrar por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`,
+      value: 'unitario',
+    },
+  ];
 }
 
 function validarPositivo(valor: unknown, mensaje: string): true | string {
@@ -121,7 +136,7 @@ function guardarMaterial(): void {
       <section class="seccion-formulario" aria-labelledby="titulo-precios-material">
         <div class="encabezado-seccion-formulario">
           <div>
-            <p class="etiqueta-seccion">Costos de compra</p>
+            <p class="etiqueta-seccion">Precios del material</p>
             <h2 id="titulo-precios-material" class="titulo-seccion">Precios</h2>
             <p class="texto-secundario texto-ayuda-formulario">
               Marcá como predeterminado el precio que querés ver en la lista.
@@ -260,7 +275,7 @@ function guardarMaterial(): void {
                     type="number"
                     min="0"
                     step="0.01"
-                    label="Precio total"
+                    label="Precio de la presentación"
                     :prefix="precio.moneda"
                     :rules="[
                       (valor) => validarPositivo(valor, 'Ingresá un precio mayor que cero.'),
@@ -323,8 +338,32 @@ function guardarMaterial(): void {
                 </div>
 
                 <div class="resultado-calculo-precio" aria-live="polite">
-                  <span>Costo aproximado</span>
+                  <span>Costo calculado por unidad</span>
                   <strong>{{ textoCostoCalculado(precio) }}</strong>
+                </div>
+
+                <q-input
+                  v-model.number="precio.precioCantidadParcial"
+                  dark
+                  outlined
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  :label="`Precio para cantidad parcial por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`"
+                  :prefix="precio.moneda"
+                  hint="Este precio se usará cuando el cliente necesite menos de una presentación completa."
+                  :rules="[
+                    (valor) =>
+                      validarPositivo(valor, 'Ingresá el precio para una cantidad parcial.'),
+                  ]"
+                />
+
+                <div
+                  class="resultado-calculo-precio resultado-calculo-precio--cantidad-parcial"
+                  aria-live="polite"
+                >
+                  <span>Precio para cantidad parcial</span>
+                  <strong>{{ textoPrecioCantidadParcial(precio) }}</strong>
                 </div>
 
                 <div>
@@ -336,7 +375,7 @@ function guardarMaterial(): void {
                     spread
                     unelevated
                     toggle-color="primary"
-                    :options="OPCIONES_VALOR_VISIBLE"
+                    :options="opcionesValorVisible(precio)"
                   />
                 </div>
               </template>
