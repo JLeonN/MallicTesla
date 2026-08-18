@@ -136,7 +136,7 @@ function localPrincipal(material: Material): string {
             <span role="cell">{{ localPrincipal(material) }}</span>
             <span role="cell">{{ precioPrincipal(material) }}</span>
             <q-btn
-              class="boton-secundario"
+              class="boton-secundario boton-ver-material"
               flat
               no-caps
               icon-right="arrow_forward"
@@ -155,16 +155,19 @@ function localPrincipal(material: Material): string {
             <h2>{{ material.nombre }}</h2>
             <div class="tarjeta-material__datos">
               <span><q-icon name="store" />{{ localPrincipal(material) }}</span>
-              <strong>{{ precioPrincipal(material) }}</strong>
             </div>
-            <q-btn
-              class="boton-secundario"
-              flat
-              no-caps
-              icon-right="arrow_forward"
-              label="Ver material"
-              :to="`/materiales/${material.id}`"
-            />
+            <div class="tarjeta-material__pie">
+              <strong>{{ precioPrincipal(material) }}</strong>
+              <q-btn
+                class="boton-secundario boton-ver-material tarjeta-material__accion"
+                flat
+                dense
+                no-caps
+                icon-right="arrow_forward"
+                label="Ver material"
+                :to="`/materiales/${material.id}`"
+              />
+            </div>
           </article>
         </div>
       </section>

@@ -33,6 +33,7 @@
   --tamano-texto-secundario: 0.875rem;
   --tamano-texto-base: 1rem;
   --tamano-texto-destacado: 1.25rem;
+  --tamano-texto-nombre-tarjeta: 1.375rem;
   --tamano-titulo-seccion: 1.5rem;
   --tamano-titulo-pagina: 2rem;
   --tamano-titulo-inicio-minimo: 2.5rem;
@@ -64,8 +65,9 @@
   --ancho-texto-presentacion: 42rem;
   --ancho-texto-secundario: 34rem;
   --ancho-columna-acciones: 8.5rem;
+  --ancho-columna-accion-material: 9.5rem;
   --columnas-tabla-materiales: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.2fr)
-    var(--ancho-columna-acciones);
+    var(--ancho-columna-accion-material);
   --altura-control: 3rem;
   --altura-encabezado-movil: 4rem;
   --altura-navegacion-movil: 4.5rem;

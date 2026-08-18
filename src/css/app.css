@@ -607,9 +607,11 @@ button:focus-visible {
   gap: var(--espaciado-minimo);
 }
 
-.tarjeta-cliente h2 {
+.tarjeta-cliente h2,
+.tarjeta-material h2 {
   margin: 0;
-  font-size: var(--tamano-texto-destacado);
+  font-size: var(--tamano-texto-nombre-tarjeta);
+  font-weight: var(--peso-texto-fuerte);
 }
 
 .tarjeta-cliente__datos {
@@ -1093,13 +1095,8 @@ button:focus-visible {
 .tarjeta-material {
   display: grid;
   padding: var(--espaciado-grande);
-  gap: var(--espaciado-grande);
+  gap: var(--espaciado-mediano);
   box-shadow: var(--sombra-control);
-}
-
-.tarjeta-material h2 {
-  margin: 0;
-  font-size: var(--tamano-texto-destacado);
 }
 
 .tarjeta-material__datos,
@@ -1120,6 +1117,27 @@ button:focus-visible {
 .fila-detalle-material > .q-icon {
   color: var(--color-accion-principal);
   font-size: var(--tamano-icono-tarjeta);
+}
+
+.boton-ver-material {
+  justify-self: start;
+}
+
+.boton-ver-material .q-btn__content {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.tarjeta-material__pie {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espaciado-pequeno);
+}
+
+.tarjeta-material__accion {
+  min-height: auto;
+  margin-left: auto;
 }
 
 .encabezado-formulario-material {
