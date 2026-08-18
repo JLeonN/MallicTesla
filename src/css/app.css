@@ -565,9 +565,6 @@ button:focus-visible {
 
 .enlace-whatsapp {
   max-width: 100%;
-  min-height: var(--altura-control);
-  padding-inline: 0;
-  color: var(--color-accion-principal);
 }
 
 .enlace-whatsapp .q-btn__content {

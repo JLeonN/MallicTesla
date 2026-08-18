@@ -27,7 +27,7 @@ const enlaceWhatsapp = computed(() => `https://wa.me/${numeroWhatsapp.value}`);
 
 <template>
   <q-btn
-    class="enlace-whatsapp"
+    class="enlace-whatsapp boton-secundario"
     flat
     no-caps
     :href="enlaceWhatsapp"
