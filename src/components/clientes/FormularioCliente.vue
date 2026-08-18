@@ -148,9 +148,8 @@ function guardarCliente(): void {
                 dark
                 outlined
                 type="tel"
-                label="Teléfono"
+                label="Teléfono (opcional)"
                 autocomplete="tel"
-                :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá un teléfono.']"
               />
               <q-select
                 v-model="telefono.etiqueta"
@@ -206,18 +205,14 @@ function guardarCliente(): void {
                 v-model="local.nombre"
                 dark
                 outlined
-                :label="`Nombre del local ${indice + 1}`"
-                :rules="[
-                  (valor) => Boolean(String(valor).trim()) || 'Ingresá el nombre del local.',
-                ]"
+                :label="`Nombre del local ${indice + 1} (opcional)`"
               />
               <q-input
                 v-model="local.direccion"
                 dark
                 outlined
-                label="Dirección"
+                label="Dirección (opcional)"
                 autocomplete="street-address"
-                :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá la dirección.']"
               />
             </div>
             <q-btn

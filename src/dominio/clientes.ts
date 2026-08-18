@@ -66,6 +66,14 @@ export function normalizarTelefonos(telefonos: TelefonoCliente[]): TelefonoClien
   }));
 }
 
+export function obtenerTelefonosConNumero(telefonos: TelefonoCliente[]): TelefonoCliente[] {
+  return telefonos.filter((telefono) => telefono.numero.trim() !== '');
+}
+
+export function obtenerLocalesConDatos(locales: LocalCliente[]): LocalCliente[] {
+  return locales.filter((local) => local.nombre.trim() !== '' || local.direccion.trim() !== '');
+}
+
 export function crearCliente(datos: DatosCliente): Cliente {
   const ahora = new Date().toISOString();
 
@@ -86,14 +94,18 @@ export function actualizarCliente(cliente: Cliente, datos: DatosCliente): Client
 }
 
 export function obtenerTelefonoPrincipal(cliente: Cliente): TelefonoCliente | undefined {
-  return cliente.telefonos.find((telefono) => telefono.esPrincipal);
+  const telefonosConNumero = obtenerTelefonosConNumero(cliente.telefonos);
+
+  return telefonosConNumero.find((telefono) => telefono.esPrincipal) ?? telefonosConNumero[0];
 }
 
 export function normalizarDatosCliente(datos: DatosCliente): DatosCliente {
+  const telefonosConNumero = obtenerTelefonosConNumero(datos.telefonos);
+
   return {
     nombre: datos.nombre.trim(),
-    telefonos: normalizarTelefonos(datos.telefonos),
-    locales: datos.locales.map((local) => ({
+    telefonos: normalizarTelefonos(telefonosConNumero),
+    locales: obtenerLocalesConDatos(datos.locales).map((local) => ({
       ...local,
       nombre: local.nombre.trim(),
       direccion: local.direccion.trim(),

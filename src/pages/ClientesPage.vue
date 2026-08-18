@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import EnlaceWhatsapp from '@/components/clientes/EnlaceWhatsapp.vue';
-import { obtenerTelefonoPrincipal } from '@/dominio/clientes';
+import {
+  obtenerLocalesConDatos,
+  obtenerTelefonoPrincipal,
+  type LocalCliente,
+} from '@/dominio/clientes';
 import { useClientesStore } from '@/stores/clientes';
 
 const clientesStore = useClientesStore();
@@ -12,8 +16,18 @@ onMounted(() => {
   void clientesStore.cargarClientes();
 });
 
-function textoLocales(cantidadLocales: number): string {
-  return cantidadLocales === 1 ? '1 local' : `${cantidadLocales} locales`;
+function textoLocales(locales: LocalCliente[]): string {
+  const localesConDatos = obtenerLocalesConDatos(locales);
+  const primerLocal = localesConDatos[0];
+
+  if (primerLocal === undefined) {
+    return 'Sin locales';
+  }
+
+  const nombreVisible = primerLocal.nombre || primerLocal.direccion || 'Local sin nombre';
+  const cantidadRestante = localesConDatos.length - 1;
+
+  return cantidadRestante > 0 ? `${nombreVisible} +${cantidadRestante} más` : nombreVisible;
 }
 </script>
 
@@ -79,7 +93,7 @@ function textoLocales(cantidadLocales: number): string {
             role="row"
           >
             <strong role="cell">{{ cliente.nombre }}</strong>
-            <span role="cell">{{ textoLocales(cliente.locales.length) }}</span>
+            <span role="cell">{{ textoLocales(cliente.locales) }}</span>
             <div role="cell">
               <EnlaceWhatsapp
                 v-if="obtenerTelefonoPrincipal(cliente)"
@@ -106,7 +120,7 @@ function textoLocales(cantidadLocales: number): string {
               <div class="tarjeta-cliente__datos">
                 <span>
                   <q-icon name="place" aria-hidden="true" />
-                  {{ textoLocales(cliente.locales.length) }}
+                  {{ textoLocales(cliente.locales) }}
                 </span>
                 <span>
                   <q-icon name="phone" aria-hidden="true" />

@@ -3,7 +3,12 @@ import { computed, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import EnlaceWhatsapp from '@/components/clientes/EnlaceWhatsapp.vue';
-import { obtenerTelefonoPrincipal, type Cliente } from '@/dominio/clientes';
+import {
+  obtenerLocalesConDatos,
+  obtenerTelefonoPrincipal,
+  obtenerTelefonosConNumero,
+  type Cliente,
+} from '@/dominio/clientes';
 import { useClientesStore } from '@/stores/clientes';
 
 const ruta = useRoute();
@@ -14,6 +19,12 @@ const cliente = ref<Cliente>();
 const mostrarConfirmacionEliminar = ref(false);
 const telefonoPrincipal = computed(() =>
   cliente.value ? obtenerTelefonoPrincipal(cliente.value) : undefined,
+);
+const telefonosVisibles = computed(() =>
+  cliente.value ? obtenerTelefonosConNumero(cliente.value.telefonos) : [],
+);
+const localesVisibles = computed(() =>
+  cliente.value ? obtenerLocalesConDatos(cliente.value.locales) : [],
 );
 
 onMounted(async () => {
@@ -84,9 +95,12 @@ async function eliminarCliente(): Promise<void> {
           <section class="tarjeta-detalle-cliente" aria-labelledby="titulo-telefonos-cliente">
             <p class="etiqueta-seccion">Contacto</p>
             <h2 id="titulo-telefonos-cliente" class="titulo-seccion">Teléfonos</h2>
-            <div class="lista-detalle-cliente">
+            <p v-if="telefonosVisibles.length === 0" class="texto-secundario">
+              Sin teléfonos registrados.
+            </p>
+            <div v-else class="lista-detalle-cliente">
               <div
-                v-for="telefono in cliente.telefonos"
+                v-for="telefono in telefonosVisibles"
                 :key="telefono.id"
                 class="fila-detalle-cliente"
               >
@@ -104,8 +118,11 @@ async function eliminarCliente(): Promise<void> {
           <section class="tarjeta-detalle-cliente" aria-labelledby="titulo-locales-cliente">
             <p class="etiqueta-seccion">Lugar de trabajo</p>
             <h2 id="titulo-locales-cliente" class="titulo-seccion">Locales</h2>
-            <div class="lista-detalle-cliente">
-              <div v-for="local in cliente.locales" :key="local.id" class="fila-detalle-cliente">
+            <p v-if="localesVisibles.length === 0" class="texto-secundario">
+              Sin locales registrados.
+            </p>
+            <div v-else class="lista-detalle-cliente">
+              <div v-for="local in localesVisibles" :key="local.id" class="fila-detalle-cliente">
                 <div>
                   <strong>{{ local.nombre }}</strong>
                   <span>{{ local.direccion }}</span>
@@ -132,7 +149,7 @@ async function eliminarCliente(): Promise<void> {
               <p class="etiqueta-seccion">Acción irreversible</p>
               <h2 id="titulo-eliminar-cliente" class="titulo-seccion">Eliminar cliente</h2>
               <p class="texto-secundario">
-                Se eliminarán también sus {{ cliente.locales.length }} locales asociados.
+                Se eliminarán también sus {{ localesVisibles.length }} locales asociados.
               </p>
             </div>
             <q-btn
@@ -170,7 +187,7 @@ async function eliminarCliente(): Promise<void> {
         <p class="etiqueta-seccion">Acción irreversible</p>
         <h2 class="titulo-seccion">¿Eliminar a {{ cliente?.nombre }}?</h2>
         <p class="texto-secundario">
-          Se eliminarán el cliente y sus {{ cliente?.locales.length ?? 0 }} locales asociados.
+          Se eliminarán el cliente y sus {{ localesVisibles.length }} locales asociados.
         </p>
       </q-card-section>
       <q-card-actions align="right">

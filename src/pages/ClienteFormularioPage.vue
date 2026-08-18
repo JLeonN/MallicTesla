@@ -78,7 +78,7 @@ function cancelar(): void {
           {{
             esEdicion
               ? 'Modificá los datos que necesites y guardá los cambios.'
-              : 'Cargá los datos de contacto y al menos un local donde se realizará el trabajo.'
+              : 'Ingresá el nombre y completá solamente los datos que tengas disponibles.'
           }}
         </p>
       </header>
