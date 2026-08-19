@@ -4,7 +4,7 @@ import AgregadorMaterialPresupuesto from '@/components/presupuestos/AgregadorMat
 import FilaPresupuesto from '@/components/presupuestos/FilaPresupuesto.vue';
 import ResumenPresupuesto from '@/components/presupuestos/ResumenPresupuesto.vue';
 import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorDestinatarioPresupuesto.vue';
-import { MONEDAS, type Material, type Moneda } from '@/dominio/materiales';
+import type { Material, Moneda } from '@/dominio/materiales';
 import {
   crearLineaDesdeMaterial,
   crearLineaMaterialManual,
@@ -71,15 +71,6 @@ function reemplazarLinea(indice: number, material: Material): void {
             Agregá los conceptos, ajustá sus importes y revisá el total en el mismo ticket.
           </p>
         </div>
-
-        <q-select
-          v-model="monedaPresupuesto"
-          class="selector-moneda-presupuesto"
-          dark
-          outlined
-          label="Moneda del presupuesto"
-          :options="MONEDAS"
-        />
       </header>
 
       <q-banner v-if="tieneErroresCarga" class="aviso-error" rounded>
@@ -110,7 +101,6 @@ function reemplazarLinea(indice: number, material: Material): void {
               <p class="etiqueta-seccion">Detalle editable</p>
               <h2 id="titulo-ticket-presupuesto" class="titulo-seccion">Ticket</h2>
             </div>
-            <q-badge class="insignia-principal">{{ monedaPresupuesto }}</q-badge>
           </div>
 
           <div v-if="lineas.length" class="ticket-presupuesto__lineas">
@@ -131,7 +121,7 @@ function reemplazarLinea(indice: number, material: Material): void {
             <span>Agregá un material para continuar calculando.</span>
           </div>
 
-          <ResumenPresupuesto :lineas="lineas" :moneda="monedaPresupuesto" />
+          <ResumenPresupuesto v-model:moneda="monedaPresupuesto" :lineas="lineas" />
         </section>
       </div>
     </main>

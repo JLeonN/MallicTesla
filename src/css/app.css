@@ -970,11 +970,6 @@ button:focus-visible {
   margin: var(--espaciado-mediano) 0 0;
 }
 
-.selector-moneda-presupuesto {
-  width: var(--ancho-columna-accion-material);
-  flex: 0 0 auto;
-}
-
 .nuevo-presupuesto__contenido {
   display: grid;
   max-width: var(--ancho-ticket-presupuesto);
@@ -992,10 +987,15 @@ button:focus-visible {
 
 .selector-tipo-destinatario {
   overflow: hidden;
+  margin-bottom: var(--espaciado-mediano);
   color: var(--color-texto-secundario);
   background: var(--color-superficie-interactiva);
   border: var(--ancho-borde) solid var(--color-borde-principal);
   border-radius: var(--radio-mediano);
+}
+
+.destinatario-presupuesto > .q-select {
+  margin-bottom: var(--espaciado-mediano);
 }
 
 .campos-destinatario-presupuesto {
@@ -1059,9 +1059,7 @@ button:focus-visible {
 }
 
 .fila-presupuesto__principal--importe-unico {
-  grid-template-columns:
-    minmax(11rem, 1.7fr) minmax(8rem, 0.75fr) minmax(6rem, 0.55fr) minmax(8rem, 0.8fr)
-    auto;
+  grid-template-columns: minmax(11rem, 1.7fr) minmax(8rem, 0.75fr) minmax(8rem, 0.8fr) auto;
 }
 
 .fila-presupuesto__subtotal {
@@ -1127,6 +1125,17 @@ button:focus-visible {
   gap: var(--espaciado-minimo);
 }
 
+.resumen-presupuesto__controles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espaciado-mediano);
+}
+
+.selector-moneda-presupuesto {
+  flex: 0 0 auto;
+}
+
 .resumen-presupuesto__estado {
   color: var(--color-texto-secundario);
   font-size: var(--tamano-texto-secundario);
@@ -1176,8 +1185,8 @@ button:focus-visible {
     flex-direction: column;
   }
 
-  .selector-moneda-presupuesto {
-    width: 100%;
+  .resumen-presupuesto__controles {
+    align-items: center;
   }
 
   .campos-destinatario-presupuesto,

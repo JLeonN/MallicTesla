@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue';
 import {
   formatearImporte,
-  MONEDAS,
   UNIDADES_MEDIDA,
   type Material,
   type Moneda,
@@ -98,8 +97,6 @@ function reemplazarMaterial(material: Material | null): void {
         :label="esMaterial ? 'Precio unitario' : 'Importe'"
       />
 
-      <q-select v-model="linea.moneda" dark outlined dense label="Moneda" :options="MONEDAS" />
-
       <div class="fila-presupuesto__subtotal">
         <span>Subtotal</span>
         <strong>{{ formatearImporte(subtotal, linea.moneda) }}</strong>
@@ -135,7 +132,7 @@ function reemplazarMaterial(material: Material | null): void {
 
     <p v-if="!monedaCompatible" class="fila-presupuesto__aviso" role="alert">
       Esta línea está en {{ linea.moneda }} y no se incluye en el total {{ monedaPresupuesto }}.
-      Cambiá su moneda y revisá el precio.
+      Elegí la misma moneda en el resumen o reemplazá el material.
     </p>
   </article>
 </template>
