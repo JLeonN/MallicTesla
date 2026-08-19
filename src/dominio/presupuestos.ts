@@ -43,8 +43,8 @@ export interface DatosDestinatarioPresupuesto {
 
 export function crearLineasInicialesPresupuesto(moneda: Moneda = 'UYU'): LineaPresupuesto[] {
   return [
-    crearLineaImporteUnico('manoObra', 'Mano de obra', moneda),
-    crearLineaImporteUnico('nafta', 'Nafta', moneda),
+    crearLineaPredefinida('manoObra', 'Mano de obra', moneda),
+    crearLineaPredefinida('nafta', 'Nafta', moneda),
   ];
 }
 
@@ -86,11 +86,6 @@ export function crearLineaDesdeMaterial(material: Material): LineaPresupuesto {
 
 export function calcularSubtotalLinea(linea: LineaPresupuesto): number {
   const precio = normalizarNumeroNoNegativo(linea.precioUnitario);
-
-  if (linea.tipo !== 'material') {
-    return precio;
-  }
-
   return precio * normalizarNumeroNoNegativo(linea.cantidad);
 }
 
@@ -118,7 +113,7 @@ export function lineaTienePrecioPendiente(linea: LineaPresupuesto): boolean {
   return linea.precioUnitario === null || !Number.isFinite(Number(linea.precioUnitario));
 }
 
-function crearLineaImporteUnico(
+function crearLineaPredefinida(
   tipo: Exclude<TipoConceptoPresupuesto, 'material'>,
   nombre: string,
   moneda: Moneda,
@@ -129,8 +124,8 @@ function crearLineaImporteUnico(
     origen: 'predefinido',
     idMaterial: null,
     nombre,
-    cantidad: null,
-    unidad: '',
+    cantidad: 1,
+    unidad: tipo === 'nafta' ? 'Kilómetro' : 'Unidad',
     opcionesUnidad: [],
     precioUnitario: 0,
     moneda,

@@ -22,6 +22,14 @@ const monedaCompatible = computed(() =>
   lineaTieneMonedaCompatible(linea.value, props.monedaPresupuesto),
 );
 const subtotal = computed(() => calcularSubtotalLinea(linea.value));
+const etiquetaCantidad = computed(() => (linea.value.tipo === 'nafta' ? 'Kilómetros' : 'Cantidad'));
+const etiquetaPrecio = computed(() => {
+  if (linea.value.tipo === 'nafta') {
+    return 'Precio por km';
+  }
+
+  return 'Precio unitario';
+});
 const opcionesUnidad = computed(() => {
   if (linea.value.origen === 'catalogo') {
     return linea.value.opcionesUnidad.map((opcion) => opcion.unidad);
@@ -59,18 +67,19 @@ function seleccionarContenidoNumerico(evento: Event): void {
     >
       <q-input v-model="linea.nombre" dark outlined dense label="Concepto" />
 
+      <q-input
+        v-model.number="linea.cantidad"
+        dark
+        outlined
+        dense
+        type="number"
+        min="0"
+        step="0.01"
+        :label="etiquetaCantidad"
+        @focus="seleccionarContenidoNumerico"
+      />
+
       <template v-if="esMaterial">
-        <q-input
-          v-model.number="linea.cantidad"
-          dark
-          outlined
-          dense
-          type="number"
-          min="0"
-          step="0.01"
-          label="Cantidad"
-          @focus="seleccionarContenidoNumerico"
-        />
         <q-select
           v-if="mostrarSelectorUnidad && linea.origen === 'catalogo'"
           v-model="linea.unidad"
@@ -105,7 +114,7 @@ function seleccionarContenidoNumerico(evento: Event): void {
         type="number"
         min="0"
         step="0.01"
-        :label="esMaterial ? 'Precio unitario' : 'Importe'"
+        :label="etiquetaPrecio"
         @focus="seleccionarContenidoNumerico"
       />
 

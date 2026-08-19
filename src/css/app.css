@@ -1071,7 +1071,9 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .fila-presupuesto__principal--importe-unico {
-  grid-template-columns: minmax(11rem, 1.7fr) minmax(8rem, 0.75fr) minmax(8rem, 0.8fr) auto;
+  grid-template-columns:
+    minmax(11rem, 1.7fr) minmax(5.5rem, 0.55fr) minmax(8rem, 0.75fr)
+    minmax(8rem, 0.8fr) auto;
 }
 
 .fila-presupuesto__subtotal {
