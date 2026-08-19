@@ -31,16 +31,16 @@ Implementar el apartado de Configuración de Mallic Tesla para que Pablo pueda r
 
 Definir un modelo tipado y normalizado para representar toda la información configurable.
 
-- [ ] Crear el dominio de Configuración con tipos para datos de empresa, responsable, tarifas y textos generales
-- [ ] Incluir nombre de la empresa, nombre de Pablo, teléfono, correo electrónico, dirección y RUT
-- [ ] Incluir un logo configurable con su referencia o contenido persistible
-- [ ] Incluir el precio de mano de obra por hora
-- [ ] Incluir el precio de traslado por kilómetro
-- [ ] Incluir un mensaje final predeterminado de texto libre
-- [ ] Incluir un único campo opcional y multilínea llamado `Datos para transferencia bancaria`
-- [ ] Definir valores iniciales seguros para una configuración todavía no completada
-- [ ] Normalizar espacios y textos antes de guardar sin alterar el contenido multilínea necesario
-- [ ] Rechazar precios negativos y aceptar cero mientras la tarifa todavía no esté definida
+- [x] Crear el dominio de Configuración con tipos para datos de empresa, responsable, tarifas y textos generales
+- [x] Incluir nombre de la empresa, nombre de Pablo, teléfono, correo electrónico, dirección y RUT
+- [x] Incluir un logo configurable con su referencia o contenido persistible
+- [x] Incluir el precio de mano de obra por hora
+- [x] Incluir el precio de traslado por kilómetro
+- [x] Incluir un mensaje final predeterminado de texto libre
+- [x] Incluir un único campo opcional y multilínea llamado `Datos para transferencia bancaria`
+- [x] Definir valores iniciales seguros para una configuración todavía no completada
+- [x] Normalizar espacios y textos antes de guardar sin alterar el contenido multilínea necesario
+- [x] Rechazar precios negativos y aceptar cero mientras la tarifa todavía no esté definida
 
 ## FASE 2: Implementar la persistencia
 
@@ -48,14 +48,14 @@ Definir un modelo tipado y normalizado para representar toda la información con
 
 Guardar una única configuración y recuperarla de forma consistente en navegador y Android.
 
-- [ ] Crear un contrato asíncrono para obtener y guardar la configuración
-- [ ] Implementar el repositorio local usando el almacenamiento existente para SPA y Capacitor
-- [ ] Usar una clave versionada y exclusiva para la configuración de Mallic Tesla
-- [ ] Devolver los valores iniciales cuando todavía no exista información guardada
-- [ ] Manejar datos guardados ausentes o inválidos sin bloquear la aplicación
-- [ ] Mantener aislada la selección del almacenamiento para facilitar la migración futura a Firebase
-- [ ] Crear un store de Pinia con estados de carga, guardado, éxito y error
-- [ ] Evitar guardar duplicados porque solo existe una configuración general
+- [x] Crear un contrato asíncrono para obtener y guardar la configuración
+- [x] Implementar el repositorio local usando el almacenamiento existente para SPA y Capacitor
+- [x] Usar una clave versionada y exclusiva para la configuración de Mallic Tesla
+- [x] Devolver los valores iniciales cuando todavía no exista información guardada
+- [x] Manejar datos guardados ausentes o inválidos sin bloquear la aplicación
+- [x] Mantener aislada la selección del almacenamiento para facilitar la migración futura a Firebase
+- [x] Crear un store de Pinia con estados de carga, guardado, éxito y error
+- [x] Evitar guardar duplicados porque solo existe una configuración general
 
 ## FASE 3: Construir el formulario
 
@@ -63,18 +63,18 @@ Guardar una única configuración y recuperarla de forma consistente en navegado
 
 Crear una pantalla clara que agrupe los datos por responsabilidad y sea cómoda en móvil y escritorio.
 
-- [ ] Crear una página específica para Configuración y sustituir el componente de módulo pendiente en la ruta existente
-- [ ] Crear un bloque `Empresa y responsable` con los datos generales y de contacto
-- [ ] Permitir seleccionar, previsualizar, reemplazar y quitar el logo
-- [ ] Crear un bloque `Tarifas` con mano de obra por hora y traslado por kilómetro
-- [ ] Mostrar claramente las unidades `por hora` y `por kilómetro` junto a sus campos
-- [ ] Crear un bloque `Textos y pagos` con el mensaje final y los datos para transferencia bancaria
-- [ ] Usar campos multilínea para el mensaje final y los datos bancarios
-- [ ] Mostrar validaciones junto al campo correspondiente con textos claros
-- [ ] Incorporar una acción principal para guardar los cambios
-- [ ] Desactivar o proteger la acción de guardado mientras ya exista una operación en curso
-- [ ] Informar claramente cuando la configuración se guarde o cuando ocurra un error
-- [ ] Mantener la pantalla accesible, legible y sin desbordes en móvil y escritorio
+- [x] Crear una página específica para Configuración y sustituir el componente de módulo pendiente en la ruta existente
+- [x] Crear un bloque `Empresa y responsable` con los datos generales y de contacto
+- [x] Permitir seleccionar, previsualizar, reemplazar y quitar el logo
+- [x] Crear un bloque `Tarifas` con mano de obra por hora y traslado por kilómetro
+- [x] Mostrar claramente las unidades `por hora` y `por kilómetro` junto a sus campos
+- [x] Crear un bloque `Textos y pagos` con el mensaje final y los datos para transferencia bancaria
+- [x] Usar campos multilínea para el mensaje final y los datos bancarios
+- [x] Mostrar validaciones junto al campo correspondiente con textos claros
+- [x] Incorporar una acción principal para guardar los cambios
+- [x] Desactivar o proteger la acción de guardado mientras ya exista una operación en curso
+- [x] Informar claramente cuando la configuración se guarde o cuando ocurra un error
+- [x] Mantener la pantalla accesible, legible y sin desbordes en móvil y escritorio
 
 ## FASE 4: Integrar y mantener el alcance
 
@@ -82,12 +82,12 @@ Crear una pantalla clara que agrupe los datos por responsabilidad y sea cómoda 
 
 Integrar el apartado con la aplicación actual sin adelantar conexiones con módulos futuros.
 
-- [ ] Cargar la configuración guardada al entrar en la página
-- [ ] Mantener funcionando el acceso actual desde el menú de escritorio y la página Más
-- [ ] Reutilizar estilos globales de formularios, botones, encabezados, avisos y contenedores cuando corresponda
-- [ ] Agregar únicamente las variables visuales nuevas que sean necesarias
-- [ ] Confirmar que guardar la configuración no modifica clientes, materiales ni el presupuesto en edición
-- [ ] Dejar documentado en el código el punto de integración futura con presupuestos sin implementar esa conexión
+- [x] Cargar la configuración guardada al entrar en la página
+- [x] Mantener funcionando el acceso actual desde el menú de escritorio y la página Más
+- [x] Reutilizar estilos globales de formularios, botones, encabezados, avisos y contenedores cuando corresponda
+- [x] Agregar únicamente las variables visuales nuevas que sean necesarias
+- [x] Confirmar que guardar la configuración no modifica clientes, materiales ni el presupuesto en edición
+- [x] Dejar documentado en el código el punto de integración futura con presupuestos sin implementar esa conexión
 
 ## FASE TESTING
 
@@ -104,20 +104,21 @@ Validar que la información pueda editarse, guardarse y recuperarse correctament
 - [ ] Intentar guardar precios negativos y verificar que aparezca una validación clara
 - [ ] Guardar un mensaje final y datos bancarios multilínea y comprobar que mantengan sus saltos de línea
 - [ ] Simular datos locales ausentes o inválidos y verificar que la pantalla siga siendo utilizable
-- [ ] Confirmar que ningún valor guardado se aplique todavía al formulario de presupuesto
+- [x] Confirmar que ningún valor guardado se aplique todavía al formulario de presupuesto
 - [ ] Verificar navegación, controles táctiles, foco, textos visibles y ausencia de desbordes en móvil y escritorio
-- [ ] Ejecutar `npm run lint`
-- [ ] Ejecutar `npm run typecheck`
-- [ ] Ejecutar `npm run build`
+- [x] Ejecutar `npm run lint`
+- [x] Ejecutar `npm run typecheck`
+- [x] Ejecutar `npm run build`
+- [x] Ejecutar `npm run build:android`
 
 ## Progreso del plan
 
-- [ ] Fase 1: Modelar la configuración
-- [ ] Fase 2: Implementar la persistencia
-- [ ] Fase 3: Construir el formulario
-- [ ] Fase 4: Integrar y mantener el alcance
+- [x] Fase 1: Modelar la configuración
+- [x] Fase 2: Implementar la persistencia
+- [x] Fase 3: Construir el formulario
+- [x] Fase 4: Integrar y mantener el alcance
 - [ ] Fase Testing
 
 Fecha de creación: 19 de Agosto 2026
 Fecha de última actualización: 19 de Agosto 2026
-Estado: BORRADOR
+Estado: EN PROCESO

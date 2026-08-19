@@ -348,7 +348,7 @@ function guardarMaterial(): void {
                   type="number"
                   min="0"
                   step="0.01"
-                  :label="`Precio para cantidad parcial por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`"
+                  :label="`Precio por ${obtenerUnidadMedida(precio).toLocaleLowerCase('es')}`"
                   :prefix="precio.moneda"
                   hint="Este precio se usará cuando el cliente necesite menos de una presentación completa."
                   :rules="[

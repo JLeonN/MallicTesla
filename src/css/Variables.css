@@ -80,6 +80,7 @@
   --tamano-icono-tarjeta: 1.75rem;
   --tamano-logo-pequeno: 2.5rem;
   --tamano-logo-mediano: 4rem;
+  --tamano-logo-configuracion: 9rem;
   --tamano-logo-grande: 12rem;
   --sombra-principal: 0 1.5rem 4rem var(--color-sombra);
   --sombra-control: 0 0.75rem 2rem rgb(0 0 0 / 22%);

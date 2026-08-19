@@ -78,12 +78,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'configuracion',
         name: 'configuracion',
-        component: () => import('@/components/PaginaModuloPendiente.vue'),
-        props: {
-          titulo: 'Configuración',
-          descripcion: 'Acá vas a personalizar los datos y preferencias de Mallic Tesla.',
-          icono: 'settings',
-        },
+        component: () => import('@/pages/ConfiguracionPage.vue'),
       },
       {
         path: 'mas',
