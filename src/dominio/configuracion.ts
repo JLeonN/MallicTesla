@@ -1,7 +1,32 @@
+export const MENSAJE_FINAL_PREDETERMINADO =
+  'Gracias por confiar en Mallic Tesla. Quedamos a disposición por cualquier consulta.';
+
+export const REDES_SOCIALES_DISPONIBLES = [
+  'Instagram',
+  'Facebook',
+  'TikTok',
+  'YouTube',
+  'LinkedIn',
+  'X',
+  'Otra',
+] as const;
+
 export interface LogoConfiguracion {
   nombre: string;
   tipoMime: string;
   datosUrl: string;
+}
+
+export interface MetodoPagoConfiguracion {
+  id: string;
+  nombre: string;
+  numeroCuenta: string;
+}
+
+export interface RedSocialConfiguracion {
+  id: string;
+  red: string;
+  usuarioOEnlace: string;
 }
 
 export interface DatosConfiguracion {
@@ -15,7 +40,8 @@ export interface DatosConfiguracion {
   precioManoObraHora: number | null;
   precioTrasladoKilometro: number | null;
   mensajeFinal: string;
-  datosTransferenciaBancaria: string;
+  metodosPago: MetodoPagoConfiguracion[];
+  redesSociales: RedSocialConfiguracion[];
 }
 
 export interface Configuracion extends DatosConfiguracion {
@@ -33,9 +59,26 @@ export function crearConfiguracionInicial(): Configuracion {
     logo: null,
     precioManoObraHora: null,
     precioTrasladoKilometro: null,
-    mensajeFinal: '',
-    datosTransferenciaBancaria: '',
+    mensajeFinal: MENSAJE_FINAL_PREDETERMINADO,
+    metodosPago: [crearMetodoPagoConfiguracion()],
+    redesSociales: [crearRedSocialConfiguracion()],
     fechaActualizacion: null,
+  };
+}
+
+export function crearMetodoPagoConfiguracion(): MetodoPagoConfiguracion {
+  return {
+    id: crypto.randomUUID(),
+    nombre: '',
+    numeroCuenta: '',
+  };
+}
+
+export function crearRedSocialConfiguracion(): RedSocialConfiguracion {
+  return {
+    id: crypto.randomUUID(),
+    red: 'Instagram',
+    usuarioOEnlace: '',
   };
 }
 
@@ -58,7 +101,20 @@ export function normalizarDatosConfiguracion(datos: DatosConfiguracion): DatosCo
     precioManoObraHora: normalizarPrecio(datos.precioManoObraHora),
     precioTrasladoKilometro: normalizarPrecio(datos.precioTrasladoKilometro),
     mensajeFinal: normalizarTextoMultilinea(datos.mensajeFinal),
-    datosTransferenciaBancaria: normalizarTextoMultilinea(datos.datosTransferenciaBancaria),
+    metodosPago: datos.metodosPago
+      .map((metodo) => ({
+        ...metodo,
+        nombre: metodo.nombre.trim(),
+        numeroCuenta: metodo.numeroCuenta.trim(),
+      }))
+      .filter((metodo) => metodo.nombre !== '' || metodo.numeroCuenta !== ''),
+    redesSociales: datos.redesSociales
+      .map((redSocial) => ({
+        ...redSocial,
+        red: redSocial.red.trim(),
+        usuarioOEnlace: redSocial.usuarioOEnlace.trim(),
+      }))
+      .filter((redSocial) => redSocial.usuarioOEnlace !== ''),
   };
 }
 
@@ -75,7 +131,6 @@ export function esConfiguracionGuardada(valor: unknown): valor is Configuracion 
     'direccion',
     'rut',
     'mensajeFinal',
-    'datosTransferenciaBancaria',
   ];
 
   return (
@@ -83,8 +138,48 @@ export function esConfiguracionGuardada(valor: unknown): valor is Configuracion 
     esPrecioGuardado(valor.precioManoObraHora) &&
     esPrecioGuardado(valor.precioTrasladoKilometro) &&
     esLogoGuardado(valor.logo) &&
+    esListaMetodosPago(valor.metodosPago) &&
+    esListaRedesSociales(valor.redesSociales) &&
     (valor.fechaActualizacion === null || typeof valor.fechaActualizacion === 'string')
   );
+}
+
+export function migrarConfiguracionAnterior(valor: unknown): Configuracion | null {
+  if (!esRegistro(valor) || typeof valor.datosTransferenciaBancaria !== 'string') {
+    return null;
+  }
+
+  const configuracionBase = crearConfiguracionInicial();
+  const datosBancarios = valor.datosTransferenciaBancaria.trim();
+
+  return {
+    ...configuracionBase,
+    nombreEmpresa: obtenerTexto(valor.nombreEmpresa),
+    nombreResponsable: obtenerTexto(valor.nombreResponsable),
+    telefono: obtenerTexto(valor.telefono),
+    correo: obtenerTexto(valor.correo),
+    direccion: obtenerTexto(valor.direccion),
+    rut: obtenerTexto(valor.rut),
+    logo: esLogoGuardado(valor.logo) ? valor.logo : null,
+    precioManoObraHora: esPrecioGuardado(valor.precioManoObraHora)
+      ? valor.precioManoObraHora
+      : null,
+    precioTrasladoKilometro: esPrecioGuardado(valor.precioTrasladoKilometro)
+      ? valor.precioTrasladoKilometro
+      : null,
+    mensajeFinal: obtenerTexto(valor.mensajeFinal) || MENSAJE_FINAL_PREDETERMINADO,
+    metodosPago: datosBancarios
+      ? [
+          {
+            id: crypto.randomUUID(),
+            nombre: 'Transferencia bancaria',
+            numeroCuenta: datosBancarios,
+          },
+        ]
+      : [crearMetodoPagoConfiguracion()],
+    fechaActualizacion:
+      typeof valor.fechaActualizacion === 'string' ? valor.fechaActualizacion : null,
+  };
 }
 
 function normalizarPrecio(valor: number | null): number | null {
@@ -127,4 +222,34 @@ function esLogoGuardado(valor: unknown): valor is LogoConfiguracion | null {
       typeof valor.datosUrl === 'string' &&
       valor.datosUrl.startsWith('data:image/'))
   );
+}
+
+function esListaMetodosPago(valor: unknown): valor is MetodoPagoConfiguracion[] {
+  return (
+    Array.isArray(valor) &&
+    valor.every(
+      (metodo) =>
+        esRegistro(metodo) &&
+        typeof metodo.id === 'string' &&
+        typeof metodo.nombre === 'string' &&
+        typeof metodo.numeroCuenta === 'string',
+    )
+  );
+}
+
+function esListaRedesSociales(valor: unknown): valor is RedSocialConfiguracion[] {
+  return (
+    Array.isArray(valor) &&
+    valor.every(
+      (redSocial) =>
+        esRegistro(redSocial) &&
+        typeof redSocial.id === 'string' &&
+        typeof redSocial.red === 'string' &&
+        typeof redSocial.usuarioOEnlace === 'string',
+    )
+  );
+}
+
+function obtenerTexto(valor: unknown): string {
+  return typeof valor === 'string' ? valor : '';
 }

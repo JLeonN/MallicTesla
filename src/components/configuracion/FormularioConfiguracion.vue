@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { Configuracion, DatosConfiguracion, LogoConfiguracion } from '@/dominio/configuracion';
+import {
+  crearMetodoPagoConfiguracion,
+  crearRedSocialConfiguracion,
+  REDES_SOCIALES_DISPONIBLES,
+  type Configuracion,
+  type DatosConfiguracion,
+  type LogoConfiguracion,
+  type MetodoPagoConfiguracion,
+  type RedSocialConfiguracion,
+} from '@/dominio/configuracion';
 
 const TAMANO_MAXIMO_LOGO_BYTES = 1024 * 1024;
 const TIPOS_LOGO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
@@ -25,12 +34,20 @@ const logo = ref<LogoConfiguracion | null>(null);
 const precioManoObraHora = ref<number | null>(null);
 const precioTrasladoKilometro = ref<number | null>(null);
 const mensajeFinal = ref('');
-const datosTransferenciaBancaria = ref('');
+const metodosPago = ref<MetodoPagoConfiguracion[]>([]);
+const redesSociales = ref<RedSocialConfiguracion[]>([]);
 const errorLogo = ref('');
 
 watch(
   () => props.configuracion,
   (configuracion) => {
+    const metodosGuardados = Array.isArray(configuracion.metodosPago)
+      ? configuracion.metodosPago
+      : [];
+    const redesGuardadas = Array.isArray(configuracion.redesSociales)
+      ? configuracion.redesSociales
+      : [];
+
     nombreEmpresa.value = configuracion.nombreEmpresa;
     nombreResponsable.value = configuracion.nombreResponsable;
     telefono.value = configuracion.telefono;
@@ -41,7 +58,12 @@ watch(
     precioManoObraHora.value = configuracion.precioManoObraHora;
     precioTrasladoKilometro.value = configuracion.precioTrasladoKilometro;
     mensajeFinal.value = configuracion.mensajeFinal;
-    datosTransferenciaBancaria.value = configuracion.datosTransferenciaBancaria;
+    metodosPago.value = metodosGuardados.length
+      ? metodosGuardados.map((metodo) => ({ ...metodo }))
+      : [crearMetodoPagoConfiguracion()];
+    redesSociales.value = redesGuardadas.length
+      ? redesGuardadas.map((redSocial) => ({ ...redSocial }))
+      : [crearRedSocialConfiguracion()];
     errorLogo.value = '';
   },
   { immediate: true },
@@ -100,6 +122,30 @@ function quitarLogo(): void {
   errorLogo.value = '';
 }
 
+function agregarMetodoPago(): void {
+  metodosPago.value.push(crearMetodoPagoConfiguracion());
+}
+
+function quitarMetodoPago(idMetodo: string): void {
+  if (metodosPago.value.length === 1) {
+    return;
+  }
+
+  metodosPago.value = metodosPago.value.filter((metodo) => metodo.id !== idMetodo);
+}
+
+function agregarRedSocial(): void {
+  redesSociales.value.push(crearRedSocialConfiguracion());
+}
+
+function quitarRedSocial(idRedSocial: string): void {
+  if (redesSociales.value.length === 1) {
+    return;
+  }
+
+  redesSociales.value = redesSociales.value.filter((redSocial) => redSocial.id !== idRedSocial);
+}
+
 function validarCorreo(valor: unknown): true | string {
   if (valor === null || valor === '') {
     return true;
@@ -138,7 +184,8 @@ function guardarConfiguracion(): void {
     precioManoObraHora: precioManoObraHora.value,
     precioTrasladoKilometro: precioTrasladoKilometro.value,
     mensajeFinal: mensajeFinal.value,
-    datosTransferenciaBancaria: datosTransferenciaBancaria.value,
+    metodosPago: metodosPago.value.map((metodo) => ({ ...metodo })),
+    redesSociales: redesSociales.value.map((redSocial) => ({ ...redSocial })),
   });
 }
 </script>
@@ -270,36 +317,124 @@ function guardarConfiguracion(): void {
         </div>
       </section>
 
-      <section class="seccion-formulario" aria-labelledby="titulo-textos-configuracion">
+      <section class="seccion-formulario" aria-labelledby="titulo-mensaje-configuracion">
         <div class="encabezado-seccion-formulario">
           <div>
-            <p class="etiqueta-seccion">Información adicional</p>
-            <h2 id="titulo-textos-configuracion" class="titulo-seccion">Textos y pagos</h2>
+            <p class="etiqueta-seccion">Comunicación</p>
+            <h2 id="titulo-mensaje-configuracion" class="titulo-seccion">Mensaje</h2>
             <p class="texto-secundario texto-ayuda-formulario">
-              Conservá los textos que Pablo quiera reutilizar más adelante.
+              Definí el texto general que se podrá reutilizar más adelante.
             </p>
           </div>
         </div>
 
-        <div class="campos-multilinea-configuracion">
-          <q-input
-            v-model="mensajeFinal"
-            class="campo-notas-generales"
-            dark
-            outlined
-            type="textarea"
-            autogrow
-            label="Mensaje final predeterminado"
+        <q-input
+          v-model="mensajeFinal"
+          class="campo-notas-generales"
+          dark
+          outlined
+          type="textarea"
+          autogrow
+          label="Mensaje final predeterminado"
+        />
+      </section>
+
+      <section class="seccion-formulario" aria-labelledby="titulo-pagos-configuracion">
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Cobros</p>
+            <h2 id="titulo-pagos-configuracion" class="titulo-seccion">Métodos de pago</h2>
+            <p class="texto-secundario texto-ayuda-formulario">
+              Agregá los bancos o medios de pago que estén disponibles.
+            </p>
+          </div>
+          <q-btn
+            class="boton-secundario"
+            flat
+            no-caps
+            icon="add"
+            label="Agregar método"
+            @click="agregarMetodoPago"
           />
-          <q-input
-            v-model="datosTransferenciaBancaria"
-            class="campo-notas-generales"
-            dark
-            outlined
-            type="textarea"
-            autogrow
-            label="Datos para transferencia bancaria"
+        </div>
+
+        <div class="lista-campos-repetibles">
+          <article
+            v-for="(metodo, indice) in metodosPago"
+            :key="metodo.id"
+            class="bloque-repetible"
+          >
+            <div class="bloque-repetible__campos campos-metodo-pago">
+              <q-input v-model="metodo.nombre" dark outlined label="Nombre del banco o método" />
+              <q-input v-model="metodo.numeroCuenta" dark outlined label="Número de cuenta" />
+            </div>
+            <q-btn
+              v-if="metodosPago.length > 1"
+              class="boton-icono-secundario"
+              flat
+              round
+              dense
+              icon="delete_outline"
+              :aria-label="`Quitar método de pago ${indice + 1}`"
+              @click="quitarMetodoPago(metodo.id)"
+            />
+          </article>
+        </div>
+      </section>
+
+      <section class="seccion-formulario" aria-labelledby="titulo-redes-configuracion">
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Presencia digital</p>
+            <h2 id="titulo-redes-configuracion" class="titulo-seccion">Redes sociales</h2>
+            <p class="texto-secundario texto-ayuda-formulario">
+              Guardá los perfiles o enlaces públicos de la empresa.
+            </p>
+          </div>
+          <q-btn
+            class="boton-secundario"
+            flat
+            no-caps
+            icon="add"
+            label="Agregar red"
+            @click="agregarRedSocial"
           />
+        </div>
+
+        <div class="lista-campos-repetibles">
+          <article
+            v-for="(redSocial, indice) in redesSociales"
+            :key="redSocial.id"
+            class="bloque-repetible"
+          >
+            <div class="bloque-repetible__campos campos-red-social">
+              <q-select
+                v-model="redSocial.red"
+                dark
+                outlined
+                use-input
+                new-value-mode="add-unique"
+                label="Red social"
+                :options="[...REDES_SOCIALES_DISPONIBLES]"
+              />
+              <q-input
+                v-model="redSocial.usuarioOEnlace"
+                dark
+                outlined
+                :label="`${redSocial.red || 'Red social'}: usuario o enlace`"
+              />
+            </div>
+            <q-btn
+              v-if="redesSociales.length > 1"
+              class="boton-icono-secundario"
+              flat
+              round
+              dense
+              icon="delete_outline"
+              :aria-label="`Quitar red social ${indice + 1}`"
+              @click="quitarRedSocial(redSocial.id)"
+            />
+          </article>
         </div>
       </section>
 

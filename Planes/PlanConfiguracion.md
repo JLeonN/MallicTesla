@@ -9,7 +9,7 @@ Implementar el apartado de Configuración de Mallic Tesla para que Pablo pueda r
 - Reemplazar la pantalla pendiente de Configuración por un formulario responsive
 - Guardar los datos de la empresa y de Pablo en SPA y Android
 - Registrar los precios habituales de mano de obra y traslado
-- Permitir guardar un mensaje final y datos opcionales para transferencias bancarias
+- Permitir guardar un mensaje final, varios métodos de pago y varias redes sociales
 - Preparar una estructura desacoplada que pueda conectarse posteriormente con otros módulos
 
 ## Reglas del plan
@@ -37,7 +37,8 @@ Definir un modelo tipado y normalizado para representar toda la información con
 - [x] Incluir el precio de mano de obra por hora
 - [x] Incluir el precio de traslado por kilómetro
 - [x] Incluir un mensaje final predeterminado de texto libre
-- [x] Incluir un único campo opcional y multilínea llamado `Datos para transferencia bancaria`
+- [x] Incluir una lista dinámica de métodos de pago con nombre y número de cuenta
+- [x] Incluir una lista dinámica de redes sociales con plataforma, usuario o enlace
 - [x] Definir valores iniciales seguros para una configuración todavía no completada
 - [x] Normalizar espacios y textos antes de guardar sin alterar el contenido multilínea necesario
 - [x] Rechazar precios negativos y aceptar cero mientras la tarifa todavía no esté definida
@@ -68,8 +69,9 @@ Crear una pantalla clara que agrupe los datos por responsabilidad y sea cómoda 
 - [x] Permitir seleccionar, previsualizar, reemplazar y quitar el logo
 - [x] Crear un bloque `Tarifas` con mano de obra por hora y traslado por kilómetro
 - [x] Mostrar claramente las unidades `por hora` y `por kilómetro` junto a sus campos
-- [x] Crear un bloque `Textos y pagos` con el mensaje final y los datos para transferencia bancaria
-- [x] Usar campos multilínea para el mensaje final y los datos bancarios
+- [x] Crear un bloque independiente para el mensaje final con un texto predeterminado
+- [x] Crear un bloque de métodos de pago que permita agregar y quitar bancos
+- [x] Crear un bloque de redes sociales que permita agregar y quitar perfiles
 - [x] Mostrar validaciones junto al campo correspondiente con textos claros
 - [x] Incorporar una acción principal para guardar los cambios
 - [x] Desactivar o proteger la acción de guardado mientras ya exista una operación en curso
@@ -102,7 +104,9 @@ Validar que la información pueda editarse, guardarse y recuperarse correctament
 - [ ] Reemplazar y quitar el logo y verificar que ambos cambios persistan
 - [ ] Guardar precios válidos de mano de obra y traslado, cerrar y reabrir la pantalla y comprobar su persistencia
 - [ ] Intentar guardar precios negativos y verificar que aparezca una validación clara
-- [ ] Guardar un mensaje final y datos bancarios multilínea y comprobar que mantengan sus saltos de línea
+- [ ] Guardar el mensaje final predeterminado y comprobar que pueda editarse y recuperarse
+- [ ] Agregar varios métodos de pago y comprobar que cada banco conserve su nombre y número de cuenta
+- [ ] Agregar varias redes sociales y comprobar que cada una conserve su plataforma, usuario o enlace
 - [ ] Simular datos locales ausentes o inválidos y verificar que la pantalla siga siendo utilizable
 - [x] Confirmar que ningún valor guardado se aplique todavía al formulario de presupuesto
 - [ ] Verificar navegación, controles táctiles, foco, textos visibles y ausencia de desbordes en móvil y escritorio

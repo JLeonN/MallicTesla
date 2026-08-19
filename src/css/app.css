@@ -1317,7 +1317,8 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .grilla-configuracion,
-.campos-multilinea-configuracion {
+.campos-metodo-pago,
+.campos-red-social {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--espaciado-mediano);
@@ -1415,7 +1416,8 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .grilla-configuracion,
-  .campos-multilinea-configuracion,
+  .campos-metodo-pago,
+  .campos-red-social,
   .selector-logo-configuracion {
     grid-template-columns: minmax(0, 1fr);
   }

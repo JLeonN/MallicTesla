@@ -1,6 +1,7 @@
 import {
   crearConfiguracionInicial,
   esConfiguracionGuardada,
+  migrarConfiguracionAnterior,
   type Configuracion,
 } from '@/dominio/configuracion';
 import type { AlmacenamientoClaveValor } from '@/repositorios/clientes/AlmacenamientoClaveValor';
@@ -21,9 +22,11 @@ export class RepositorioConfiguracionLocal implements RepositorioConfiguracion {
 
     try {
       const configuracion = JSON.parse(datosGuardados) as unknown;
-      return esConfiguracionGuardada(configuracion)
-        ? structuredClone(configuracion)
-        : crearConfiguracionInicial();
+      if (esConfiguracionGuardada(configuracion)) {
+        return structuredClone(configuracion);
+      }
+
+      return migrarConfiguracionAnterior(configuracion) ?? crearConfiguracionInicial();
     } catch {
       return crearConfiguracionInicial();
     }
