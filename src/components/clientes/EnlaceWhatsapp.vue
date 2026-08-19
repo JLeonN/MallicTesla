@@ -6,12 +6,20 @@ const props = defineProps<{
   nombreCliente: string;
   numero: string;
   etiqueta?: string;
+  mensaje?: string;
+  asumirCodigoUruguay?: boolean;
 }>();
 
 const numeroWhatsapp = computed(() => {
-  const numeroSoloDigitos = props.numero.replace(/\D/g, '').replace(/^00/, '');
+  const numeroIngresado = props.numero.trim();
+  const incluyeCodigoPais = numeroIngresado.startsWith('+') || numeroIngresado.startsWith('00');
+  const numeroSoloDigitos = numeroIngresado.replace(/\D/g, '').replace(/^00/, '');
 
   if (numeroSoloDigitos.startsWith('598')) {
+    return numeroSoloDigitos;
+  }
+
+  if (incluyeCodigoPais) {
     return numeroSoloDigitos;
   }
 
@@ -19,10 +27,18 @@ const numeroWhatsapp = computed(() => {
     return `598${numeroSoloDigitos.slice(1)}`;
   }
 
+  if (props.asumirCodigoUruguay && numeroSoloDigitos !== '') {
+    return `598${numeroSoloDigitos}`;
+  }
+
   return numeroSoloDigitos;
 });
 
-const enlaceWhatsapp = computed(() => `https://wa.me/${numeroWhatsapp.value}`);
+const enlaceWhatsapp = computed(() => {
+  const mensaje = props.mensaje?.trim();
+  const consultaMensaje = mensaje ? `?text=${encodeURIComponent(mensaje)}` : '';
+  return `https://wa.me/${numeroWhatsapp.value}${consultaMensaje}`;
+});
 </script>
 
 <template>
@@ -31,6 +47,7 @@ const enlaceWhatsapp = computed(() => `https://wa.me/${numeroWhatsapp.value}`);
     flat
     no-caps
     :href="enlaceWhatsapp"
+    :disable="numeroWhatsapp === ''"
     target="_blank"
     rel="noopener noreferrer"
     :icon="mdiWhatsapp"

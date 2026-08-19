@@ -990,7 +990,8 @@ input[type='number']::-webkit-outer-spin-button {
 
 .destinatario-presupuesto,
 .agregador-material,
-.ticket-presupuesto {
+.ticket-presupuesto,
+.acciones-presupuesto {
   background: var(--color-superficie-principal);
   border: var(--ancho-borde) solid var(--color-borde-principal);
   border-radius: var(--radio-grande);
@@ -1032,13 +1033,35 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .ticket-presupuesto__encabezado {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
   padding: var(--espaciado-grande);
   gap: var(--espaciado-mediano);
   background: var(--color-fondo-secundario);
   border-bottom: var(--ancho-borde) solid var(--color-borde-principal);
+}
+
+.ticket-presupuesto__encabezado-superior {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--espaciado-mediano);
+}
+
+.ticket-presupuesto__fecha {
+  width: var(--ancho-fecha-ticket);
+}
+
+.ticket-presupuesto__fecha-controles,
+.acciones-presupuesto {
+  display: flex;
+  align-items: center;
+  gap: var(--espaciado-pequeno);
+}
+
+.acciones-presupuesto {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding: var(--espaciado-mediano) var(--espaciado-grande);
 }
 
 .ticket-presupuesto__lineas {
@@ -1223,13 +1246,26 @@ input[type='number']::-webkit-outer-spin-button {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .ticket-presupuesto__encabezado-superior {
+    align-items: stretch;
+  }
+
+  .ticket-presupuesto__fecha {
+    width: var(--ancho-fecha-ticket);
+  }
+
+  .acciones-presupuesto > * {
+    flex: 1 1 auto;
+  }
+
   .agregador-material__controles > .q-btn {
     width: 100%;
   }
 
   .fila-presupuesto,
   .ticket-presupuesto__encabezado,
-  .resumen-presupuesto {
+  .resumen-presupuesto,
+  .acciones-presupuesto {
     padding: var(--espaciado-mediano);
   }
 

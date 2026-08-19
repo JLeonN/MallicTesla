@@ -67,6 +67,7 @@
   --ancho-ticket-presupuesto: 68rem;
   --ancho-columna-acciones: 8.5rem;
   --ancho-columna-accion-material: 9.5rem;
+  --ancho-fecha-ticket: 10rem;
   --columnas-tabla-materiales: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.2fr)
     var(--ancho-columna-accion-material);
   --columnas-linea-presupuesto: minmax(11rem, 1.7fr) minmax(5.5rem, 0.55fr) minmax(5.5rem, 0.55fr)

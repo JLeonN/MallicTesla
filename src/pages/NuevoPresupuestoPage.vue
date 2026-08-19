@@ -4,6 +4,7 @@ import AgregadorMaterialPresupuesto from '@/components/presupuestos/AgregadorMat
 import FilaPresupuesto from '@/components/presupuestos/FilaPresupuesto.vue';
 import ResumenPresupuesto from '@/components/presupuestos/ResumenPresupuesto.vue';
 import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorDestinatarioPresupuesto.vue';
+import EnlaceWhatsapp from '@/components/clientes/EnlaceWhatsapp.vue';
 import type { Material, Moneda } from '@/dominio/materiales';
 import {
   crearLineaDesdeMaterial,
@@ -22,10 +23,15 @@ const tipoDestinatario = ref<TipoDestinatario>('potencial');
 const idCliente = ref<string | null>(null);
 const nombreDestinatario = ref('');
 const telefonoDestinatario = ref('');
+const fechaPresupuesto = ref(obtenerFechaActualLocal());
 const monedaPresupuesto = ref<Moneda>('UYU');
 const lineas = ref<LineaPresupuesto[]>(crearLineasInicialesPresupuesto());
 
 const tieneErroresCarga = computed(() => clientesStore.error || materialesStore.error);
+const mensajeWhatsapp = computed(
+  () =>
+    `Hola, te envío el presupuesto hablado (${formatearFechaPresupuesto(fechaPresupuesto.value)}).`,
+);
 
 onMounted(() => {
   void cargarCatalogos();
@@ -45,6 +51,28 @@ function agregarMaterialManual(nombre: string): void {
 
 function eliminarLinea(idLinea: string): void {
   lineas.value = lineas.value.filter((linea) => linea.id !== idLinea);
+}
+
+function obtenerFechaActualLocal(): string {
+  const fecha = new Date();
+  const anio = fecha.getFullYear();
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  return `${anio}-${mes}-${dia}`;
+}
+
+function formatearFechaPresupuesto(fecha: string): string {
+  const [anio, mes, dia] = fecha.split('-');
+
+  if (!anio || !mes || !dia) {
+    return formatearFechaPresupuesto(obtenerFechaActualLocal());
+  }
+
+  return `${dia}/${mes}/${anio}`;
+}
+
+function restablecerFechaPresupuesto(): void {
+  fechaPresupuesto.value = obtenerFechaActualLocal();
 }
 </script>
 
@@ -85,9 +113,32 @@ function eliminarLinea(idLinea: string): void {
 
         <section class="ticket-presupuesto" aria-labelledby="titulo-ticket-presupuesto">
           <div class="ticket-presupuesto__encabezado">
-            <div>
-              <p class="etiqueta-seccion">Detalle editable</p>
-              <h2 id="titulo-ticket-presupuesto" class="titulo-seccion">Ticket</h2>
+            <div class="ticket-presupuesto__encabezado-superior">
+              <div>
+                <p class="etiqueta-seccion">Detalle editable</p>
+                <h2 id="titulo-ticket-presupuesto" class="titulo-seccion">Ticket</h2>
+              </div>
+
+              <div class="ticket-presupuesto__fecha-controles">
+                <q-input
+                  v-model="fechaPresupuesto"
+                  class="ticket-presupuesto__fecha"
+                  dark
+                  outlined
+                  dense
+                  type="date"
+                  label="Fecha"
+                />
+                <q-btn
+                  class="boton-icono-secundario"
+                  flat
+                  round
+                  dense
+                  icon="today"
+                  aria-label="Restablecer la fecha al día actual"
+                  @click="restablecerFechaPresupuesto"
+                />
+              </div>
             </div>
           </div>
 
@@ -108,6 +159,18 @@ function eliminarLinea(idLinea: string): void {
           </div>
 
           <ResumenPresupuesto v-model:moneda="monedaPresupuesto" :lineas="lineas" />
+        </section>
+
+        <section class="acciones-presupuesto" aria-label="Acciones del presupuesto">
+          <q-btn class="boton-secundario" flat no-caps icon="visibility" label="Vista previa" />
+          <q-btn class="boton-secundario" flat no-caps icon="download" label="Descargar PDF" />
+          <EnlaceWhatsapp
+            :nombre-cliente="nombreDestinatario || 'destinatario'"
+            :numero="telefonoDestinatario"
+            etiqueta="Enviar"
+            :mensaje="mensajeWhatsapp"
+            asumir-codigo-uruguay
+          />
         </section>
       </div>
     </main>
