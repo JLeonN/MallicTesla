@@ -199,7 +199,7 @@ function guardarConfiguracion(): void {
             <p class="etiqueta-seccion">Identidad y contacto</p>
             <h2 id="titulo-empresa-configuracion" class="titulo-seccion">Empresa y responsable</h2>
             <p class="texto-secundario texto-ayuda-formulario">
-              Guardá la información profesional de Mallic Tesla y de Pablo.
+              Guardá la información profesional y de contacto de Mallic Tesla.
             </p>
           </div>
         </div>
@@ -317,28 +317,6 @@ function guardarConfiguracion(): void {
         </div>
       </section>
 
-      <section class="seccion-formulario" aria-labelledby="titulo-mensaje-configuracion">
-        <div class="encabezado-seccion-formulario">
-          <div>
-            <p class="etiqueta-seccion">Comunicación</p>
-            <h2 id="titulo-mensaje-configuracion" class="titulo-seccion">Mensaje</h2>
-            <p class="texto-secundario texto-ayuda-formulario">
-              Definí el texto general que se podrá reutilizar más adelante.
-            </p>
-          </div>
-        </div>
-
-        <q-input
-          v-model="mensajeFinal"
-          class="campo-notas-generales"
-          dark
-          outlined
-          type="textarea"
-          autogrow
-          label="Mensaje final predeterminado"
-        />
-      </section>
-
       <section class="seccion-formulario" aria-labelledby="titulo-pagos-configuracion">
         <div class="encabezado-seccion-formulario">
           <div>
@@ -436,6 +414,28 @@ function guardarConfiguracion(): void {
             />
           </article>
         </div>
+      </section>
+
+      <section class="seccion-formulario" aria-labelledby="titulo-mensaje-configuracion">
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Comunicación</p>
+            <h2 id="titulo-mensaje-configuracion" class="titulo-seccion">Mensaje</h2>
+            <p class="texto-secundario texto-ayuda-formulario">
+              Definí el texto general que se podrá reutilizar más adelante.
+            </p>
+          </div>
+        </div>
+
+        <q-input
+          v-model="mensajeFinal"
+          class="campo-notas-generales"
+          dark
+          outlined
+          type="textarea"
+          autogrow
+          label="Mensaje final predeterminado"
+        />
       </section>
 
       <div class="acciones-formulario">
