@@ -22,6 +22,18 @@ button:focus-visible {
   outline-offset: var(--espaciado-minimo);
 }
 
+input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 .aplicacion-mallic-tesla,
 .pagina-contenido {
   background: var(--color-fondo-principal);
@@ -1068,6 +1080,26 @@ button:focus-visible {
   align-content: center;
   justify-items: end;
   gap: var(--espaciado-minimo);
+}
+
+.fila-presupuesto__unidad-fija {
+  display: grid;
+  min-height: var(--altura-control);
+  align-content: center;
+  padding-inline: var(--espaciado-control);
+  gap: var(--espaciado-minimo);
+  background: var(--color-superficie-interactiva);
+  border-radius: var(--radio-mediano);
+}
+
+.fila-presupuesto__unidad-fija span {
+  color: var(--color-texto-suave);
+  font-size: var(--tamano-texto-pequeno);
+}
+
+.fila-presupuesto__unidad-fija strong {
+  color: var(--color-texto-principal);
+  font-size: var(--tamano-texto-secundario);
 }
 
 .fila-presupuesto__subtotal span {

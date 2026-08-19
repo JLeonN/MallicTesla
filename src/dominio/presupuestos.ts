@@ -1,10 +1,11 @@
 import {
   crearIdentificadorMaterial,
-  obtenerImporteVisible,
+  obtenerPresentacion,
   obtenerPrecioPredeterminado,
-  obtenerUnidadVisible,
+  obtenerUnidadMedida,
   type Material,
   type Moneda,
+  type PrecioMaterial,
 } from '@/dominio/materiales';
 
 export const TIPOS_DESTINATARIO = ['potencial', 'guardado'] as const;
@@ -15,6 +16,11 @@ export type TipoDestinatario = (typeof TIPOS_DESTINATARIO)[number];
 export type TipoConceptoPresupuesto = (typeof TIPOS_CONCEPTO_PRESUPUESTO)[number];
 export type OrigenLineaPresupuesto = (typeof ORIGENES_LINEA_PRESUPUESTO)[number];
 
+export interface OpcionUnidadPresupuesto {
+  unidad: string;
+  precioUnitario: number | null;
+}
+
 export interface LineaPresupuesto {
   id: string;
   tipo: TipoConceptoPresupuesto;
@@ -23,6 +29,7 @@ export interface LineaPresupuesto {
   nombre: string;
   cantidad: number | null;
   unidad: string;
+  opcionesUnidad: OpcionUnidadPresupuesto[];
   precioUnitario: number | null;
   moneda: Moneda;
 }
@@ -50,6 +57,7 @@ export function crearLineaMaterialManual(nombre: string, moneda: Moneda = 'UYU')
     nombre: nombre.trim(),
     cantidad: 1,
     unidad: 'Unidad',
+    opcionesUnidad: [],
     precioUnitario: null,
     moneda,
   };
@@ -57,6 +65,10 @@ export function crearLineaMaterialManual(nombre: string, moneda: Moneda = 'UYU')
 
 export function crearLineaDesdeMaterial(material: Material): LineaPresupuesto {
   const precio = obtenerPrecioPredeterminado(material);
+  const opcionesUnidad = precio ? crearOpcionesUnidad(precio) : [];
+  const opcionPredeterminada = precio
+    ? obtenerOpcionPredeterminada(precio, opcionesUnidad)
+    : undefined;
 
   return {
     id: crearIdentificadorMaterial(),
@@ -65,8 +77,9 @@ export function crearLineaDesdeMaterial(material: Material): LineaPresupuesto {
     idMaterial: material.id,
     nombre: material.nombre,
     cantidad: 1,
-    unidad: precio ? obtenerUnidadVisible(precio) : 'Unidad',
-    precioUnitario: precio ? obtenerImporteVisible(precio) : null,
+    unidad: opcionPredeterminada?.unidad ?? 'Unidad',
+    opcionesUnidad,
+    precioUnitario: opcionPredeterminada?.precioUnitario ?? null,
     moneda: precio?.moneda ?? 'UYU',
   };
 }
@@ -118,9 +131,50 @@ function crearLineaImporteUnico(
     nombre,
     cantidad: null,
     unidad: '',
+    opcionesUnidad: [],
     precioUnitario: 0,
     moneda,
   };
+}
+
+function crearOpcionesUnidad(precio: PrecioMaterial): OpcionUnidadPresupuesto[] {
+  if (precio.modalidad === 'directo') {
+    return [
+      {
+        unidad: obtenerUnidadMedida(precio),
+        precioUnitario: precio.importe,
+      },
+    ];
+  }
+
+  const opciones = [
+    {
+      unidad: obtenerPresentacion(precio),
+      precioUnitario: precio.importe,
+    },
+    {
+      unidad: obtenerUnidadMedida(precio),
+      precioUnitario: precio.precioCantidadParcial,
+    },
+  ];
+
+  return opciones.filter(
+    (opcion, indice) =>
+      opciones.findIndex(
+        (actual) => actual.unidad.toLocaleLowerCase('es') === opcion.unidad.toLocaleLowerCase('es'),
+      ) === indice,
+  );
+}
+
+function obtenerOpcionPredeterminada(
+  precio: PrecioMaterial,
+  opciones: OpcionUnidadPresupuesto[],
+): OpcionUnidadPresupuesto | undefined {
+  if (precio.modalidad === 'directo' || precio.valorVisible === 'total') {
+    return opciones[0];
+  }
+
+  return opciones[1] ?? opciones[0];
 }
 
 function normalizarNumeroNoNegativo(valor: number | null): number {

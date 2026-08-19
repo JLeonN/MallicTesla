@@ -32,6 +32,18 @@ const monedaCompatible = computed(() =>
   lineaTieneMonedaCompatible(linea.value, props.monedaPresupuesto),
 );
 const subtotal = computed(() => calcularSubtotalLinea(linea.value));
+const opcionesUnidad = computed(() => {
+  if (linea.value.origen === 'catalogo') {
+    return linea.value.opcionesUnidad.map((opcion) => opcion.unidad);
+  }
+
+  return [...UNIDADES_MEDIDA];
+});
+const mostrarSelectorUnidad = computed(
+  () =>
+    esMaterial.value &&
+    (linea.value.origen !== 'catalogo' || linea.value.opcionesUnidad.length > 1),
+);
 const opcionesMateriales = computed(() => {
   const termino = terminoMaterial.value.trim().toLocaleLowerCase('es');
   return props.materiales.filter(
@@ -49,6 +61,13 @@ function reemplazarMaterial(material: Material | null): void {
   emitir('reemplazar', material);
   materialSeleccionado.value = null;
   terminoMaterial.value = '';
+}
+
+function actualizarPrecioPorUnidad(unidad: string): void {
+  const opcion = linea.value.opcionesUnidad.find((actual) => actual.unidad === unidad);
+  if (opcion !== undefined) {
+    linea.value.precioUnitario = opcion.precioUnitario;
+  }
 }
 </script>
 
@@ -75,6 +94,17 @@ function reemplazarMaterial(material: Material | null): void {
           label="Cantidad"
         />
         <q-select
+          v-if="mostrarSelectorUnidad && linea.origen === 'catalogo'"
+          v-model="linea.unidad"
+          dark
+          outlined
+          dense
+          label="Unidad"
+          :options="opcionesUnidad"
+          @update:model-value="actualizarPrecioPorUnidad"
+        />
+        <q-select
+          v-else-if="mostrarSelectorUnidad"
           v-model="linea.unidad"
           dark
           outlined
@@ -82,8 +112,12 @@ function reemplazarMaterial(material: Material | null): void {
           use-input
           new-value-mode="add-unique"
           label="Unidad"
-          :options="UNIDADES_MEDIDA"
+          :options="opcionesUnidad"
         />
+        <div v-else class="fila-presupuesto__unidad-fija">
+          <span>Unidad</span>
+          <strong>{{ linea.unidad }}</strong>
+        </div>
       </template>
 
       <q-input
