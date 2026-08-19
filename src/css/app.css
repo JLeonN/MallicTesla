@@ -1083,23 +1083,20 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .fila-presupuesto__unidad-fija {
-  display: grid;
+  display: flex;
   min-height: var(--altura-control);
-  align-content: center;
+  align-items: center;
   padding-inline: var(--espaciado-control);
-  gap: var(--espaciado-minimo);
   background: var(--color-superficie-interactiva);
   border-radius: var(--radio-mediano);
-}
-
-.fila-presupuesto__unidad-fija span {
-  color: var(--color-texto-suave);
-  font-size: var(--tamano-texto-pequeno);
 }
 
 .fila-presupuesto__unidad-fija strong {
   color: var(--color-texto-principal);
   font-size: var(--tamano-texto-secundario);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fila-presupuesto__subtotal span {
@@ -1115,10 +1112,6 @@ input[type='number']::-webkit-outer-spin-button {
 
 .fila-presupuesto__eliminar {
   margin-top: var(--espaciado-minimo);
-}
-
-.fila-presupuesto__reemplazo {
-  max-width: var(--ancho-texto-secundario);
 }
 
 .fila-presupuesto__aviso {

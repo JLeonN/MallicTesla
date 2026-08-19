@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import {
-  formatearImporte,
-  UNIDADES_MEDIDA,
-  type Material,
-  type Moneda,
-} from '@/dominio/materiales';
+import { computed } from 'vue';
+import { formatearImporte, UNIDADES_MEDIDA, type Moneda } from '@/dominio/materiales';
 import {
   calcularSubtotalLinea,
   lineaTieneMonedaCompatible,
@@ -14,18 +9,13 @@ import {
 
 const props = defineProps<{
   monedaPresupuesto: Moneda;
-  materiales: Material[];
 }>();
 
 const linea = defineModel<LineaPresupuesto>({ required: true });
 
 const emitir = defineEmits<{
   eliminar: [];
-  reemplazar: [material: Material];
 }>();
-
-const terminoMaterial = ref('');
-const materialSeleccionado = ref<Material | null>(null);
 
 const esMaterial = computed(() => linea.value.tipo === 'material');
 const monedaCompatible = computed(() =>
@@ -44,25 +34,6 @@ const mostrarSelectorUnidad = computed(
     esMaterial.value &&
     (linea.value.origen !== 'catalogo' || linea.value.opcionesUnidad.length > 1),
 );
-const opcionesMateriales = computed(() => {
-  const termino = terminoMaterial.value.trim().toLocaleLowerCase('es');
-  return props.materiales.filter(
-    (material) =>
-      material.id !== linea.value.idMaterial &&
-      (termino === '' || material.nombre.toLocaleLowerCase('es').includes(termino)),
-  );
-});
-
-function reemplazarMaterial(material: Material | null): void {
-  if (material === null) {
-    return;
-  }
-
-  emitir('reemplazar', material);
-  materialSeleccionado.value = null;
-  terminoMaterial.value = '';
-}
-
 function actualizarPrecioPorUnidad(unidad: string): void {
   const opcion = linea.value.opcionesUnidad.find((actual) => actual.unidad === unidad);
   if (opcion !== undefined) {
@@ -115,7 +86,6 @@ function actualizarPrecioPorUnidad(unidad: string): void {
           :options="opcionesUnidad"
         />
         <div v-else class="fila-presupuesto__unidad-fija">
-          <span>Unidad</span>
           <strong>{{ linea.unidad }}</strong>
         </div>
       </template>
@@ -147,26 +117,9 @@ function actualizarPrecioPorUnidad(unidad: string): void {
       />
     </div>
 
-    <div v-if="esMaterial && materiales.length" class="fila-presupuesto__reemplazo">
-      <q-select
-        v-model="materialSeleccionado"
-        dark
-        outlined
-        dense
-        clearable
-        use-input
-        input-debounce="0"
-        label="Reemplazar por material guardado"
-        :options="opcionesMateriales"
-        option-label="nombre"
-        @input-value="terminoMaterial = $event"
-        @update:model-value="reemplazarMaterial"
-      />
-    </div>
-
     <p v-if="!monedaCompatible" class="fila-presupuesto__aviso" role="alert">
       Esta línea está en {{ linea.moneda }} y no se incluye en el total {{ monedaPresupuesto }}.
-      Elegí la misma moneda en el resumen o reemplazá el material.
+      Elegí la misma moneda en el resumen o eliminá el material.
     </p>
   </article>
 </template>

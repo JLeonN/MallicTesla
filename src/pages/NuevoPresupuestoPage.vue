@@ -46,18 +46,6 @@ function agregarMaterialManual(nombre: string): void {
 function eliminarLinea(idLinea: string): void {
   lineas.value = lineas.value.filter((linea) => linea.id !== idLinea);
 }
-
-function reemplazarLinea(indice: number, material: Material): void {
-  const lineaActual = lineas.value[indice];
-  if (lineaActual === undefined) {
-    return;
-  }
-
-  lineas.value.splice(indice, 1, {
-    ...crearLineaDesdeMaterial(material),
-    id: lineaActual.id,
-  });
-}
 </script>
 
 <template>
@@ -109,9 +97,7 @@ function reemplazarLinea(indice: number, material: Material): void {
               :key="linea.id"
               v-model="lineas[indice]!"
               :moneda-presupuesto="monedaPresupuesto"
-              :materiales="materialesStore.materiales"
               @eliminar="eliminarLinea(linea.id)"
-              @reemplazar="reemplazarLinea(indice, $event)"
             />
           </div>
 
