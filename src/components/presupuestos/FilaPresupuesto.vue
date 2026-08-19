@@ -40,6 +40,12 @@ function actualizarPrecioPorUnidad(unidad: string): void {
     linea.value.precioUnitario = opcion.precioUnitario;
   }
 }
+
+function seleccionarContenidoNumerico(evento: Event): void {
+  if (evento.target instanceof HTMLInputElement) {
+    evento.target.select();
+  }
+}
 </script>
 
 <template>
@@ -63,6 +69,7 @@ function actualizarPrecioPorUnidad(unidad: string): void {
           min="0"
           step="0.01"
           label="Cantidad"
+          @focus="seleccionarContenidoNumerico"
         />
         <q-select
           v-if="mostrarSelectorUnidad && linea.origen === 'catalogo'"
@@ -99,6 +106,7 @@ function actualizarPrecioPorUnidad(unidad: string): void {
         min="0"
         step="0.01"
         :label="esMaterial ? 'Precio unitario' : 'Importe'"
+        @focus="seleccionarContenidoNumerico"
       />
 
       <div class="fila-presupuesto__subtotal">
