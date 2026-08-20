@@ -969,6 +969,7 @@ input[type='number']::-webkit-outer-spin-button {
   }
 }
 
+.encabezado-modulo-presupuestos,
 .encabezado-nuevo-presupuesto {
   display: flex;
   align-items: end;
@@ -977,9 +978,98 @@ input[type='number']::-webkit-outer-spin-button {
   gap: var(--espaciado-grande);
 }
 
+.encabezado-modulo-presupuestos__descripcion,
 .encabezado-nuevo-presupuesto__descripcion {
   max-width: var(--ancho-texto-secundario);
   margin: var(--espaciado-mediano) 0 0;
+}
+
+.buscador-presupuestos {
+  margin-bottom: var(--espaciado-grande);
+}
+
+.estado-presupuestos,
+.estado-vacio-presupuestos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espaciado-muy-grande) var(--espaciado-grande);
+  gap: var(--espaciado-mediano);
+  text-align: center;
+  background: var(--color-superficie-principal);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-grande);
+}
+
+.estado-vacio-presupuestos > .q-icon {
+  color: var(--color-accion-principal);
+  font-size: var(--tamano-titulo-pagina);
+}
+
+.estado-vacio-presupuestos .texto-secundario {
+  max-width: var(--ancho-texto-secundario);
+  margin: 0;
+}
+
+.tabla-presupuestos {
+  overflow: hidden;
+  background: var(--color-superficie-principal);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-grande);
+}
+
+.tabla-presupuestos__encabezado,
+.tabla-presupuestos__fila {
+  display: grid;
+  grid-template-columns: var(--columnas-tabla-presupuestos);
+  align-items: center;
+  padding: var(--espaciado-mediano) var(--espaciado-grande);
+  gap: var(--espaciado-mediano);
+}
+
+.tabla-presupuestos__encabezado {
+  color: var(--color-texto-suave);
+  font-size: var(--tamano-texto-pequeno);
+  font-weight: var(--peso-texto-fuerte);
+  text-transform: uppercase;
+  background: var(--color-fondo-secundario);
+}
+
+.tabla-presupuestos__fila + .tabla-presupuestos__fila {
+  border-top: var(--ancho-borde) solid var(--color-borde-principal);
+}
+
+.tabla-presupuestos__fila > span {
+  color: var(--color-texto-secundario);
+}
+
+.tabla-presupuestos__fila > .q-btn {
+  justify-self: end;
+}
+
+.tarjetas-presupuestos {
+  display: none;
+  gap: var(--espaciado-mediano);
+}
+
+.tarjeta-presupuesto-guardado {
+  display: grid;
+  padding: var(--espaciado-grande);
+  gap: var(--espaciado-mediano);
+  background: var(--color-superficie-principal);
+  border: var(--ancho-borde) solid var(--color-borde-principal);
+  border-radius: var(--radio-grande);
+  box-shadow: var(--sombra-control);
+}
+
+.tarjeta-presupuesto-guardado h2 {
+  margin: 0 0 var(--espaciado-minimo);
+  font-size: var(--tamano-texto-destacado);
+}
+
+.tarjeta-presupuesto-guardado > .q-btn {
+  justify-self: start;
 }
 
 .nuevo-presupuesto__contenido {
@@ -996,6 +1086,27 @@ input[type='number']::-webkit-outer-spin-button {
   border: var(--ancho-borde) solid var(--color-borde-principal);
   border-radius: var(--radio-grande);
   box-shadow: var(--sombra-control);
+}
+
+.confirmacion-cancelacion-presupuesto {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--espaciado-control);
+  gap: var(--espaciado-pequeno);
+  color: var(--color-texto-principal);
+  background: var(--color-superficie-interactiva);
+  border: var(--ancho-borde) solid var(--color-accion-borde);
+  border-radius: var(--radio-mediano);
+}
+
+.confirmacion-cancelacion-enter-active,
+.confirmacion-cancelacion-leave-active {
+  transition: opacity var(--duracion-transicion);
+}
+
+.confirmacion-cancelacion-enter-from,
+.confirmacion-cancelacion-leave-to {
+  opacity: 0;
 }
 
 .selector-tipo-destinatario {
@@ -1229,6 +1340,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @media (max-width: 767px) {
+  .encabezado-modulo-presupuestos,
   .encabezado-nuevo-presupuesto,
   .resumen-presupuesto {
     align-items: stretch;
@@ -1256,6 +1368,22 @@ input[type='number']::-webkit-outer-spin-button {
 
   .acciones-presupuesto > * {
     flex: 1 1 auto;
+  }
+
+  .encabezado-modulo-presupuestos > .q-btn {
+    width: 100%;
+  }
+
+  .tabla-presupuestos {
+    display: none;
+  }
+
+  .tarjetas-presupuestos {
+    display: grid;
+  }
+
+  .confirmacion-cancelacion-presupuesto {
+    flex-wrap: wrap;
   }
 
   .agregador-material__controles > .q-btn {

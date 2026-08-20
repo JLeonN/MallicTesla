@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { formatearImporte, UNIDADES_MEDIDA, type Moneda } from '@/dominio/materiales';
+import type { TarifaManoObraConfiguracion } from '@/dominio/configuracion';
 import {
   calcularSubtotalLinea,
   lineaTieneMonedaCompatible,
@@ -9,6 +10,8 @@ import {
 
 const props = defineProps<{
   monedaPresupuesto: Moneda;
+  tarifasManoObra?: TarifaManoObraConfiguracion[];
+  soloLectura?: boolean;
 }>();
 
 const linea = defineModel<LineaPresupuesto>({ required: true });
@@ -18,17 +21,32 @@ const emitir = defineEmits<{
 }>();
 
 const esMaterial = computed(() => linea.value.tipo === 'material');
+const esManoObra = computed(() => linea.value.tipo === 'manoObra');
+const textoBusquedaManoObra = ref('');
 const monedaCompatible = computed(() =>
   lineaTieneMonedaCompatible(linea.value, props.monedaPresupuesto),
 );
 const subtotal = computed(() => calcularSubtotalLinea(linea.value));
-const etiquetaCantidad = computed(() => (linea.value.tipo === 'nafta' ? 'Kilómetros' : 'Cantidad'));
+const etiquetaCantidad = computed(() => {
+  if (linea.value.tipo === 'traslado') {
+    return 'Kilómetros';
+  }
+
+  return linea.value.tipo === 'manoObra' ? 'Horas' : 'Cantidad';
+});
 const etiquetaPrecio = computed(() => {
-  if (linea.value.tipo === 'nafta') {
+  if (linea.value.tipo === 'traslado') {
     return 'Precio por km';
   }
 
-  return 'Precio unitario';
+  return linea.value.tipo === 'manoObra' ? 'Precio por hora' : 'Precio unitario';
+});
+const opcionesManoObra = computed(() => {
+  const termino = textoBusquedaManoObra.value.trim().toLocaleLowerCase('es');
+  const nombres = (props.tarifasManoObra ?? []).map((tarifa) => tarifa.nombre);
+  return termino === ''
+    ? nombres
+    : nombres.filter((nombre) => nombre.toLocaleLowerCase('es').includes(termino));
 });
 const opcionesUnidad = computed(() => {
   if (linea.value.origen === 'catalogo') {
@@ -49,6 +67,28 @@ function actualizarPrecioPorUnidad(unidad: string): void {
   }
 }
 
+function actualizarManoObra(nombre: string | null): void {
+  const nombreNormalizado = nombre?.trim() ?? '';
+  const tarifa = props.tarifasManoObra?.find(
+    (tarifaActual) => tarifaActual.nombre === nombreNormalizado,
+  );
+
+  linea.value.nombre = nombreNormalizado;
+  linea.value.origen = tarifa ? 'predefinido' : 'manual';
+  linea.value.precioUnitario = tarifa?.precioHora ?? 0;
+}
+
+function crearManoObraManual(nombre: string, finalizar: (valor?: string) => void): void {
+  const nombreNormalizado = nombre.trim();
+  if (nombreNormalizado === '') {
+    finalizar();
+    return;
+  }
+
+  finalizar(nombreNormalizado);
+  actualizarManoObra(nombreNormalizado);
+}
+
 function seleccionarContenidoNumerico(evento: Event): void {
   if (evento.target instanceof HTMLInputElement) {
     evento.target.select();
@@ -65,7 +105,41 @@ function seleccionarContenidoNumerico(evento: Event): void {
       class="fila-presupuesto__principal"
       :class="{ 'fila-presupuesto__principal--importe-unico': !esMaterial }"
     >
-      <q-input v-model="linea.nombre" dark outlined dense label="Concepto" />
+      <q-select
+        v-if="esManoObra"
+        v-model="linea.nombre"
+        dark
+        outlined
+        dense
+        use-input
+        fill-input
+        hide-selected
+        input-debounce="0"
+        label="Mano de obra"
+        :options="opcionesManoObra"
+        :readonly="soloLectura"
+        @input-value="textoBusquedaManoObra = $event"
+        @new-value="crearManoObraManual"
+        @update:model-value="actualizarManoObra"
+      >
+        <template #no-option>
+          <q-item>
+            <q-item-section>
+              <q-item-label>Usar “{{ textoBusquedaManoObra.trim() }}”</q-item-label>
+              <q-item-label caption>Se aplicará solamente a este presupuesto.</q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
+      <q-input
+        v-else
+        v-model="linea.nombre"
+        dark
+        outlined
+        dense
+        label="Concepto"
+        :readonly="soloLectura"
+      />
 
       <q-input
         v-model.number="linea.cantidad"
@@ -76,6 +150,7 @@ function seleccionarContenidoNumerico(evento: Event): void {
         min="0"
         step="0.01"
         :label="etiquetaCantidad"
+        :readonly="soloLectura"
         @focus="seleccionarContenidoNumerico"
       />
 
@@ -88,6 +163,7 @@ function seleccionarContenidoNumerico(evento: Event): void {
           dense
           label="Unidad"
           :options="opcionesUnidad"
+          :readonly="soloLectura"
           @update:model-value="actualizarPrecioPorUnidad"
         />
         <q-select
@@ -100,6 +176,7 @@ function seleccionarContenidoNumerico(evento: Event): void {
           new-value-mode="add-unique"
           label="Unidad"
           :options="opcionesUnidad"
+          :readonly="soloLectura"
         />
         <div v-else class="fila-presupuesto__unidad-fija">
           <strong>{{ linea.unidad }}</strong>
@@ -115,6 +192,7 @@ function seleccionarContenidoNumerico(evento: Event): void {
         min="0"
         step="0.01"
         :label="etiquetaPrecio"
+        :readonly="soloLectura"
         @focus="seleccionarContenidoNumerico"
       />
 
@@ -124,6 +202,7 @@ function seleccionarContenidoNumerico(evento: Event): void {
       </div>
 
       <q-btn
+        v-if="!soloLectura"
         class="boton-icono-secundario fila-presupuesto__eliminar"
         flat
         round

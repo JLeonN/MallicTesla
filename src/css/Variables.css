@@ -70,6 +70,7 @@
   --ancho-fecha-ticket: 10rem;
   --columnas-tabla-materiales: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.2fr)
     var(--ancho-columna-accion-material);
+  --columnas-tabla-presupuestos: minmax(0, 1.4fr) minmax(0, 0.7fr) minmax(0, 0.8fr) minmax(0, 0.9fr);
   --columnas-linea-presupuesto: minmax(11rem, 1.7fr) minmax(5.5rem, 0.55fr) minmax(5.5rem, 0.55fr)
     minmax(8rem, 0.75fr) minmax(8rem, 0.8fr) auto;
   --altura-control: 3rem;

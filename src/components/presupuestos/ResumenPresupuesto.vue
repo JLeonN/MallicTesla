@@ -10,6 +10,7 @@ import {
 
 const props = defineProps<{
   lineas: LineaPresupuesto[];
+  soloLectura?: boolean;
 }>();
 
 const moneda = defineModel<Moneda>('moneda', { required: true });
@@ -37,6 +38,7 @@ const cantidadPendientes = computed(
           v-model="moneda"
           :val="opcionMoneda"
           :label="opcionMoneda"
+          :disable="soloLectura"
         />
       </div>
 

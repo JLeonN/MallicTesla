@@ -6,6 +6,8 @@ Implementar el formulario responsive para crear y calcular presupuestos desde SP
 
 Este plan cubre la composición y el cálculo del presupuesto. No incluye historial, PDF, envío por WhatsApp, conversión automática de monedas ni la futura configuración de valores predeterminados para mano de obra y nafta.
 
+Ampliación acordada con Leo el 19 de agosto de 2026: conectar las tarifas de Configuración, guardar copias independientes de los presupuestos y agregar listado, visualización y edición explícita. La generación y descarga real del PDF continúa fuera de alcance.
+
 ## Objetivo principal
 
 - Crear presupuestos en una única pantalla clara y cómoda para móvil
@@ -133,7 +135,7 @@ Reemplazar la pantalla pendiente de nuevo presupuesto y mantener la integración
 
 Validar el flujo completo de creación y cálculo en escritorio y móvil sin alterar los datos existentes.
 
-- [ ] Abrir un presupuesto nuevo y verificar que `Potencial cliente`, `UYU`, mano de obra en cero y nafta en cero sean los valores iniciales
+- [ ] Abrir un presupuesto nuevo y verificar que `Potencial cliente`, `UYU`, horas en cero y kilómetros en cero sean los valores iniciales
 - [ ] Completar solamente el campo de nombre y verificar que el teléfono pueda quedar vacío
 - [ ] Elegir un cliente guardado y comprobar que se carguen su nombre y teléfono principal sin modificar el registro original
 - [ ] Agregar un material guardado y comprobar que utilice su precio predeterminado
@@ -141,7 +143,7 @@ Validar el flujo completo de creación y cálculo en escritorio y móvil sin alt
 - [ ] Agregar un material inexistente y comprobar que comience con cantidad `1`, unidad `Unidad` y precio vacío
 - [ ] Verificar que el material manual no se guarde en el catálogo
 - [ ] Editar nombre, cantidad, unidad y precio desde el ticket y comprobar subtotal y total
-- [ ] Eliminar materiales, mano de obra y nafta y comprobar que el total se actualice
+- [ ] Eliminar materiales, mano de obra y traslado y comprobar que el total se actualice
 - [ ] Agregar una línea en USD a un presupuesto UYU y verificar el marcado rojo, el mensaje y su exclusión del total
 - [ ] Cambiar la moneda general a USD y verificar nuevamente la detección de líneas incompatibles
 - [ ] Probar precios vacíos, cero, decimales y cantidades decimales sin producir `NaN` ni totales incorrectos
@@ -149,6 +151,24 @@ Validar el flujo completo de creación y cálculo en escritorio y móvil sin alt
 - [x] Ejecutar `npm run lint:check`
 - [x] Ejecutar `npm run typecheck`
 - [x] Ejecutar `npm run build`
+
+## FASE 7: Integrar configuración y presupuestos guardados
+
+### Objetivo
+
+Conectar los valores habituales de Pablo sin vincular retroactivamente los presupuestos y crear el flujo persistente de creación, consulta y edición.
+
+- [x] Copiar la primera tarifa de mano de obra y el precio de traslado al crear un presupuesto
+- [x] Iniciar horas y kilómetros en cero
+- [x] Reemplazar Nafta por Traslado en el modelo y la interfaz
+- [x] Permitir seleccionar o escribir manualmente una mano de obra dentro del ticket
+- [x] Guardar cada presupuesto como una copia independiente de clientes, materiales y configuración
+- [x] Crear el listado responsive de presupuestos con cliente, fecha, total y acceso al detalle
+- [x] Crear modos separados de visualización y edición explícita
+- [x] Desactivar envío y descarga durante la edición
+- [x] Incorporar cancelación integrada y animada sin modal
+- [x] Guardar y volver al listado desde las acciones Guardar, Descargar y Enviar de un presupuesto nuevo
+- [ ] Validar visualmente el flujo completo en navegador y Android
 
 ## Progreso del plan
 
@@ -158,8 +178,9 @@ Validar el flujo completo de creación y cálculo en escritorio y móvil sin alt
 - [x] Fase 4: Construir el ticket editable
 - [x] Fase 5: Resolver moneda, avisos y resumen
 - [x] Fase 6: Integrar la pantalla en la aplicación
+- [x] Fase 7: Integrar configuración y presupuestos guardados
 - [ ] Fase Testing
 
 Fecha de creación: 18 de Agosto 2026
-Fecha de última actualización: 18 de Agosto 2026
+Fecha de última actualización: 19 de Agosto 2026
 Estado: EN PROCESO

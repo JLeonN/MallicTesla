@@ -6,6 +6,7 @@ import type { TipoDestinatario } from '@/dominio/presupuestos';
 const props = defineProps<{
   clientes: Cliente[];
   cargando: boolean;
+  soloLectura?: boolean;
 }>();
 
 const tipo = defineModel<TipoDestinatario>('tipo', { required: true });
@@ -83,10 +84,11 @@ watch(idCliente, (idClienteActual) => {
       unelevated
       toggle-color="primary"
       :options="opcionesTipo"
+      :disable="soloLectura"
     />
 
     <q-select
-      v-if="tipo === 'guardado'"
+      v-if="tipo === 'guardado' && !soloLectura"
       v-model="idCliente"
       dark
       outlined
@@ -98,6 +100,7 @@ watch(idCliente, (idClienteActual) => {
       label="Buscar cliente guardado"
       :loading="cargando"
       :options="opcionesClientes"
+      :readonly="soloLectura"
       @input-value="terminoBusqueda = $event"
     >
       <template #no-option>
@@ -114,6 +117,7 @@ watch(idCliente, (idClienteActual) => {
         outlined
         label="Nombre, comercio o referencia"
         autocomplete="name"
+        :readonly="soloLectura"
       />
       <q-input
         v-model="telefono"
@@ -122,6 +126,7 @@ watch(idCliente, (idClienteActual) => {
         type="tel"
         label="Teléfono (opcional)"
         autocomplete="tel"
+        :readonly="soloLectura"
       />
     </div>
   </section>

@@ -9,7 +9,7 @@ import {
 } from '@/dominio/materiales';
 
 export const TIPOS_DESTINATARIO = ['potencial', 'guardado'] as const;
-export const TIPOS_CONCEPTO_PRESUPUESTO = ['material', 'manoObra', 'nafta'] as const;
+export const TIPOS_CONCEPTO_PRESUPUESTO = ['material', 'manoObra', 'traslado'] as const;
 export const ORIGENES_LINEA_PRESUPUESTO = ['predefinido', 'catalogo', 'manual'] as const;
 
 export type TipoDestinatario = (typeof TIPOS_DESTINATARIO)[number];
@@ -41,11 +41,101 @@ export interface DatosDestinatarioPresupuesto {
   telefono: string;
 }
 
-export function crearLineasInicialesPresupuesto(moneda: Moneda = 'UYU'): LineaPresupuesto[] {
+export interface ValoresInicialesPresupuesto {
+  nombreManoObra?: string | undefined;
+  precioManoObraHora?: number | null | undefined;
+  precioTrasladoKilometro?: number | null | undefined;
+}
+
+export interface DatosPresupuesto {
+  destinatario: DatosDestinatarioPresupuesto;
+  fechaPresupuesto: string;
+  moneda: Moneda;
+  lineas: LineaPresupuesto[];
+}
+
+export interface Presupuesto extends DatosPresupuesto {
+  id: string;
+  fechaCreacion: string;
+  fechaActualizacion: string;
+}
+
+export function crearLineasInicialesPresupuesto(
+  moneda: Moneda = 'UYU',
+  valores: ValoresInicialesPresupuesto = {},
+): LineaPresupuesto[] {
   return [
-    crearLineaPredefinida('manoObra', 'Mano de obra', moneda),
-    crearLineaPredefinida('nafta', 'Nafta', moneda),
+    crearLineaPredefinida(
+      'manoObra',
+      valores.nombreManoObra?.trim() || 'Mano de obra',
+      'Hora',
+      valores.precioManoObraHora,
+      moneda,
+    ),
+    crearLineaPredefinida(
+      'traslado',
+      'Traslado',
+      'Kilómetro',
+      valores.precioTrasladoKilometro,
+      moneda,
+    ),
   ];
+}
+
+export function crearPresupuesto(datos: DatosPresupuesto): Presupuesto {
+  const ahora = new Date().toISOString();
+
+  return {
+    id: crearIdentificadorMaterial(),
+    ...normalizarDatosPresupuesto(datos),
+    fechaCreacion: ahora,
+    fechaActualizacion: ahora,
+  };
+}
+
+export function actualizarPresupuesto(
+  presupuesto: Presupuesto,
+  datos: DatosPresupuesto,
+): Presupuesto {
+  return {
+    ...presupuesto,
+    ...normalizarDatosPresupuesto(datos),
+    fechaActualizacion: new Date().toISOString(),
+  };
+}
+
+export function normalizarDatosPresupuesto(datos: DatosPresupuesto): DatosPresupuesto {
+  return {
+    destinatario: {
+      tipo: datos.destinatario.tipo,
+      idCliente: datos.destinatario.idCliente,
+      nombre: datos.destinatario.nombre.trim(),
+      telefono: datos.destinatario.telefono.trim(),
+    },
+    fechaPresupuesto: datos.fechaPresupuesto,
+    moneda: datos.moneda,
+    lineas: structuredClone(datos.lineas).map((linea) => ({
+      ...linea,
+      nombre: linea.nombre.trim(),
+    })),
+  };
+}
+
+export function esPresupuestoGuardado(valor: unknown): valor is Presupuesto {
+  if (!esRegistro(valor)) {
+    return false;
+  }
+
+  return (
+    typeof valor.id === 'string' &&
+    typeof valor.fechaPresupuesto === 'string' &&
+    (valor.moneda === 'UYU' || valor.moneda === 'USD') &&
+    esDestinatarioGuardado(valor.destinatario) &&
+    Array.isArray(valor.lineas) &&
+    valor.lineas.every(esLineaPresupuestoGuardada) &&
+    typeof valor.fechaCreacion === 'string' &&
+    typeof valor.fechaActualizacion === 'string'
+  );
 }
 
 export function crearLineaMaterialManual(nombre: string, moneda: Moneda = 'UYU'): LineaPresupuesto {
@@ -116,6 +206,8 @@ export function lineaTienePrecioPendiente(linea: LineaPresupuesto): boolean {
 function crearLineaPredefinida(
   tipo: Exclude<TipoConceptoPresupuesto, 'material'>,
   nombre: string,
+  unidad: string,
+  precioUnitario: number | null | undefined,
   moneda: Moneda,
 ): LineaPresupuesto {
   return {
@@ -124,10 +216,10 @@ function crearLineaPredefinida(
     origen: 'predefinido',
     idMaterial: null,
     nombre,
-    cantidad: 1,
-    unidad: tipo === 'nafta' ? 'Kilómetro' : 'Unidad',
+    cantidad: 0,
+    unidad,
     opcionesUnidad: [],
-    precioUnitario: 0,
+    precioUnitario: precioUnitario ?? 0,
     moneda,
   };
 }
@@ -175,4 +267,38 @@ function obtenerOpcionPredeterminada(
 function normalizarNumeroNoNegativo(valor: number | null): number {
   const numero = Number(valor);
   return Number.isFinite(numero) && numero > 0 ? numero : 0;
+}
+
+function esRegistro(valor: unknown): valor is Record<string, unknown> {
+  return typeof valor === 'object' && valor !== null;
+}
+
+function esDestinatarioGuardado(valor: unknown): valor is DatosDestinatarioPresupuesto {
+  return (
+    esRegistro(valor) &&
+    (valor.tipo === 'potencial' || valor.tipo === 'guardado') &&
+    (valor.idCliente === null || typeof valor.idCliente === 'string') &&
+    typeof valor.nombre === 'string' &&
+    typeof valor.telefono === 'string'
+  );
+}
+
+function esLineaPresupuestoGuardada(valor: unknown): valor is LineaPresupuesto {
+  return (
+    esRegistro(valor) &&
+    typeof valor.id === 'string' &&
+    TIPOS_CONCEPTO_PRESUPUESTO.some((tipo) => tipo === valor.tipo) &&
+    ORIGENES_LINEA_PRESUPUESTO.some((origen) => origen === valor.origen) &&
+    (valor.idMaterial === null || typeof valor.idMaterial === 'string') &&
+    typeof valor.nombre === 'string' &&
+    esNumeroOpcional(valor.cantidad) &&
+    typeof valor.unidad === 'string' &&
+    Array.isArray(valor.opcionesUnidad) &&
+    esNumeroOpcional(valor.precioUnitario) &&
+    (valor.moneda === 'UYU' || valor.moneda === 'USD')
+  );
+}
+
+function esNumeroOpcional(valor: unknown): valor is number | null {
+  return valor === null || (typeof valor === 'number' && Number.isFinite(valor) && valor >= 0);
 }

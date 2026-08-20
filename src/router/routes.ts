@@ -13,16 +13,21 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'presupuestos',
         name: 'presupuestos',
-        component: () => import('@/components/PaginaModuloPendiente.vue'),
-        props: {
-          titulo: 'Presupuestos',
-          descripcion: 'Acá vas a consultar y administrar todos tus presupuestos.',
-          icono: 'request_quote',
-        },
+        component: () => import('@/pages/PresupuestosPage.vue'),
       },
       {
         path: 'presupuestos/nuevo',
         name: 'nuevo-presupuesto',
+        component: () => import('@/pages/NuevoPresupuestoPage.vue'),
+      },
+      {
+        path: 'presupuestos/:idPresupuesto/editar',
+        name: 'editar-presupuesto',
+        component: () => import('@/pages/NuevoPresupuestoPage.vue'),
+      },
+      {
+        path: 'presupuestos/:idPresupuesto',
+        name: 'detalle-presupuesto',
         component: () => import('@/pages/NuevoPresupuestoPage.vue'),
       },
       {
