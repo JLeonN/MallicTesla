@@ -1287,7 +1287,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .resumen-presupuesto__estado,
-.resumen-presupuesto__total {
+.resumen-presupuesto__importes {
   display: grid;
   gap: var(--espaciado-minimo);
 }
@@ -1312,17 +1312,35 @@ input[type='number']::-webkit-outer-spin-button {
   color: var(--color-error);
 }
 
-.resumen-presupuesto__total {
-  justify-items: end;
+.resumen-presupuesto__importes {
+  gap: var(--espaciado-pequeno);
 }
 
-.resumen-presupuesto__total span {
+.resumen-presupuesto__importe {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espaciado-grande);
+}
+
+.resumen-presupuesto__importe span {
   color: var(--color-texto-secundario);
   font-size: var(--tamano-texto-secundario);
   text-transform: uppercase;
 }
 
-.resumen-presupuesto__total strong {
+.resumen-presupuesto__importe strong {
+  color: var(--color-texto-principal);
+  font-size: var(--tamano-texto-destacado);
+  white-space: nowrap;
+}
+
+.resumen-presupuesto__importe--total {
+  padding-top: var(--espaciado-pequeno);
+  border-top: var(--ancho-borde) solid var(--color-borde-destacado);
+}
+
+.resumen-presupuesto__importe--total strong {
   color: var(--color-accion-principal);
   font-size: var(--tamano-titulo-seccion);
 }
@@ -1409,9 +1427,12 @@ input[type='number']::-webkit-outer-spin-button {
     padding: var(--espaciado-mediano);
   }
 
-  .fila-presupuesto__subtotal,
-  .resumen-presupuesto__total {
+  .fila-presupuesto__subtotal {
     justify-items: start;
+  }
+
+  .resumen-presupuesto__importes {
+    width: 100%;
   }
 
   .fila-presupuesto__eliminar {

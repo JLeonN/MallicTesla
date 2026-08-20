@@ -216,7 +216,7 @@ export function lineaTieneMonedaCompatible(
 }
 
 export function calcularTotalPresupuesto(
-  lineas: LineaPresupuesto[],
+  lineas: readonly LineaPresupuesto[],
   monedaPresupuesto: Moneda,
 ): number {
   return lineas.reduce((total, linea) => {
@@ -226,6 +226,20 @@ export function calcularTotalPresupuesto(
 
     return total + calcularSubtotalLinea(linea);
   }, 0);
+}
+
+export function calcularTotalTrabajoYTraslado(
+  lineas: readonly LineaPresupuesto[],
+  monedaPresupuesto: Moneda,
+): number {
+  return calcularTotalPorTiposConcepto(lineas, monedaPresupuesto, ['manoObra', 'traslado']);
+}
+
+export function calcularTotalMateriales(
+  lineas: readonly LineaPresupuesto[],
+  monedaPresupuesto: Moneda,
+): number {
+  return calcularTotalPorTiposConcepto(lineas, monedaPresupuesto, ['material']);
 }
 
 export function lineaTienePrecioPendiente(linea: LineaPresupuesto): boolean {
@@ -251,6 +265,23 @@ function crearLineaPredefinida(
     precioUnitario: precioUnitario ?? 0,
     moneda,
   };
+}
+
+function calcularTotalPorTiposConcepto(
+  lineas: readonly LineaPresupuesto[],
+  monedaPresupuesto: Moneda,
+  tiposIncluidos: readonly TipoConceptoPresupuesto[],
+): number {
+  return lineas.reduce((total, linea) => {
+    if (
+      !tiposIncluidos.includes(linea.tipo) ||
+      !lineaTieneMonedaCompatible(linea, monedaPresupuesto)
+    ) {
+      return total;
+    }
+
+    return total + calcularSubtotalLinea(linea);
+  }, 0);
 }
 
 function crearOpcionesUnidad(precio: PrecioMaterial): OpcionUnidadPresupuesto[] {

@@ -2,7 +2,9 @@
 import { computed } from 'vue';
 import { formatearImporte, MONEDAS, type Moneda } from '@/dominio/materiales';
 import {
+  calcularTotalMateriales,
   calcularTotalPresupuesto,
+  calcularTotalTrabajoYTraslado,
   lineaTieneMonedaCompatible,
   lineaTienePrecioPendiente,
   type LineaPresupuesto,
@@ -15,6 +17,10 @@ const props = defineProps<{
 
 const moneda = defineModel<Moneda>('moneda', { required: true });
 
+const totalTrabajoYTraslado = computed(() =>
+  calcularTotalTrabajoYTraslado(props.lineas, moneda.value),
+);
+const totalMateriales = computed(() => calcularTotalMateriales(props.lineas, moneda.value));
 const total = computed(() => calcularTotalPresupuesto(props.lineas, moneda.value));
 const cantidadIncompatibles = computed(
   () => props.lineas.filter((linea) => !lineaTieneMonedaCompatible(linea, moneda.value)).length,
@@ -50,9 +56,19 @@ const cantidadPendientes = computed(
         </span>
       </div>
     </div>
-    <div class="resumen-presupuesto__total">
-      <span>Total</span>
-      <strong>{{ formatearImporte(total, moneda) }}</strong>
+    <div class="resumen-presupuesto__importes">
+      <div class="resumen-presupuesto__importe">
+        <span>Trabajo y traslado</span>
+        <strong>{{ formatearImporte(totalTrabajoYTraslado, moneda) }}</strong>
+      </div>
+      <div class="resumen-presupuesto__importe">
+        <span>Materiales</span>
+        <strong>{{ formatearImporte(totalMateriales, moneda) }}</strong>
+      </div>
+      <div class="resumen-presupuesto__importe resumen-presupuesto__importe--total">
+        <span>Total</span>
+        <strong>{{ formatearImporte(total, moneda) }}</strong>
+      </div>
     </div>
   </footer>
 </template>
