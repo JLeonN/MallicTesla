@@ -1410,19 +1410,20 @@ input[type='number']::-webkit-outer-spin-button {
 
 .documento-presupuesto__marca {
   align-items: flex-start;
-  gap: var(--espaciado-mediano);
+  flex: 1 1 var(--ancho-texto-secundario);
+  flex-direction: column;
+  max-width: var(--ancho-texto-secundario);
+  gap: var(--espaciado-control);
 }
 
 .documento-presupuesto__marca img {
-  width: var(--tamano-logo-mediano);
-  height: var(--tamano-logo-mediano);
+  width: var(--tamano-logo-pequeno);
+  height: var(--tamano-logo-pequeno);
   object-fit: contain;
   background: var(--color-logo-fondo);
   border-radius: var(--radio-pequeno);
 }
 
-.documento-presupuesto__marca h2,
-.documento-presupuesto__marca p,
 .documento-presupuesto__identificacion span,
 .documento-presupuesto__identificacion strong,
 .documento-presupuesto__identificacion small,
@@ -1431,12 +1432,6 @@ input[type='number']::-webkit-outer-spin-button {
   margin: 0;
 }
 
-.documento-presupuesto__marca h2 {
-  color: var(--color-documento-destacado);
-  font-size: var(--tamano-titulo-seccion);
-}
-
-.documento-presupuesto__marca p,
 .documento-presupuesto__datos-empresa,
 .documento-presupuesto__identificacion small {
   color: var(--color-documento-texto-secundario);
@@ -1444,11 +1439,47 @@ input[type='number']::-webkit-outer-spin-button {
 
 .documento-presupuesto__datos-empresa {
   display: grid;
-  padding: 0;
-  margin: var(--espaciado-pequeno) 0 0;
-  gap: var(--espaciado-minimo);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  padding: var(--espaciado-control);
+  margin: 0;
+  gap: var(--espaciado-pequeno) var(--espaciado-mediano);
+  background: var(--color-documento-destacado-suave);
+  border: var(--ancho-borde) solid var(--color-documento-borde);
+  border-radius: var(--radio-mediano);
   font-size: var(--tamano-texto-secundario);
-  list-style: none;
+}
+
+.documento-presupuesto__datos-empresa > div {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--espaciado-minimo);
+}
+
+.documento-presupuesto__datos-empresa dt,
+.documento-presupuesto__datos-empresa dd {
+  margin: 0;
+}
+
+.documento-presupuesto__datos-empresa dt {
+  color: var(--color-documento-texto-secundario);
+  font-size: var(--tamano-texto-pequeno);
+  font-weight: var(--peso-texto-fuerte);
+  text-transform: uppercase;
+}
+
+.documento-presupuesto__datos-empresa dt::after {
+  content: ':';
+}
+
+.documento-presupuesto__datos-empresa dd {
+  color: var(--color-documento-texto);
+  overflow-wrap: anywhere;
+}
+
+.documento-presupuesto__datos-empresa > div:first-child dd {
+  color: var(--color-documento-destacado);
+  font-weight: var(--peso-texto-fuerte);
 }
 
 .documento-presupuesto__identificacion {
@@ -1599,13 +1630,30 @@ input[type='number']::-webkit-outer-spin-button {
 .documento-presupuesto__redes {
   justify-content: center;
   flex-wrap: wrap;
-  gap: var(--espaciado-mediano);
+  gap: var(--espaciado-pequeno);
   color: var(--color-documento-texto-secundario);
   font-size: var(--tamano-texto-secundario);
 }
 
-.documento-presupuesto__redes strong {
+.documento-presupuesto__redes a {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--espaciado-pequeno) var(--espaciado-control);
+  gap: var(--espaciado-minimo);
   color: var(--color-documento-destacado);
+  background: var(--color-documento-destacado-suave);
+  border: var(--ancho-borde) solid var(--color-documento-borde);
+  border-radius: var(--radio-redondo);
+  text-decoration: none;
+}
+
+.documento-presupuesto__redes a:hover,
+.documento-presupuesto__redes a:focus-visible {
+  border-color: var(--color-documento-destacado);
+}
+
+.documento-presupuesto__redes span {
+  color: var(--color-documento-texto-secundario);
 }
 
 @media (max-width: 1023px) {
@@ -1657,6 +1705,14 @@ input[type='number']::-webkit-outer-spin-button {
   .documento-presupuesto__cliente > div {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .documento-presupuesto__marca {
+    max-width: none;
+  }
+
+  .documento-presupuesto__datos-empresa {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .documento-presupuesto__identificacion {

@@ -121,6 +121,43 @@ function enviarPorWhatsapp(): void {
   );
 }
 
+function crearEnlaceRedSocial(red: string, usuarioOEnlace: string): string {
+  const valor = usuarioOEnlace.trim();
+
+  if (/^https?:\/\//i.test(valor)) {
+    return valor;
+  }
+
+  const usuario = valor.replace(/^@/, '');
+  const nombreRed = red.trim().toLowerCase();
+
+  if (nombreRed.includes('instagram')) {
+    return `https://www.instagram.com/${usuario}`;
+  }
+
+  if (nombreRed.includes('facebook')) {
+    return `https://www.facebook.com/${usuario}`;
+  }
+
+  if (nombreRed.includes('tiktok')) {
+    return `https://www.tiktok.com/@${usuario}`;
+  }
+
+  if (nombreRed === 'x' || nombreRed.includes('twitter')) {
+    return `https://x.com/${usuario}`;
+  }
+
+  if (nombreRed.includes('youtube')) {
+    return `https://www.youtube.com/@${usuario}`;
+  }
+
+  if (nombreRed.includes('linkedin')) {
+    return `https://www.linkedin.com/in/${usuario}`;
+  }
+
+  return `https://${valor}`;
+}
+
 function formatearFecha(fecha: string): string {
   const [anio, mes, dia] = fecha.split('-');
   return anio && mes && dia ? `${dia}/${mes}/${anio}` : fecha;
@@ -193,24 +230,32 @@ function formatearCantidad(cantidad: number | null): string {
           <header class="documento-presupuesto__encabezado">
             <div class="documento-presupuesto__marca">
               <img :src="logoEmpresa" :alt="`Logo de ${nombreEmpresa}`" />
-              <div>
-                <h2>{{ nombreEmpresa }}</h2>
-                <p v-if="configuracionDocumento.nombreResponsable">
-                  {{ configuracionDocumento.nombreResponsable }}
-                </p>
-                <ul class="documento-presupuesto__datos-empresa">
-                  <li v-if="configuracionDocumento.telefono">
-                    {{ configuracionDocumento.telefono }}
-                  </li>
-                  <li v-if="configuracionDocumento.correo">
-                    {{ configuracionDocumento.correo }}
-                  </li>
-                  <li v-if="configuracionDocumento.direccion">
-                    {{ configuracionDocumento.direccion }}
-                  </li>
-                  <li v-if="configuracionDocumento.rut">RUT {{ configuracionDocumento.rut }}</li>
-                </ul>
-              </div>
+              <dl class="documento-presupuesto__datos-empresa">
+                <div>
+                  <dt>Empresa</dt>
+                  <dd>{{ nombreEmpresa }}</dd>
+                </div>
+                <div v-if="configuracionDocumento.nombreResponsable">
+                  <dt>Nombre</dt>
+                  <dd>{{ configuracionDocumento.nombreResponsable }}</dd>
+                </div>
+                <div v-if="configuracionDocumento.telefono">
+                  <dt>Teléfono</dt>
+                  <dd>{{ configuracionDocumento.telefono }}</dd>
+                </div>
+                <div v-if="configuracionDocumento.correo">
+                  <dt>Email</dt>
+                  <dd>{{ configuracionDocumento.correo }}</dd>
+                </div>
+                <div v-if="configuracionDocumento.direccion">
+                  <dt>Dirección</dt>
+                  <dd>{{ configuracionDocumento.direccion }}</dd>
+                </div>
+                <div v-if="configuracionDocumento.rut">
+                  <dt>RUT</dt>
+                  <dd>{{ configuracionDocumento.rut }}</dd>
+                </div>
+              </dl>
             </div>
 
             <div class="documento-presupuesto__identificacion">
@@ -306,9 +351,16 @@ function formatearCantidad(cantidad: number | null): string {
             v-if="configuracionDocumento.redesSociales.length"
             class="documento-presupuesto__redes"
           >
-            <span v-for="redSocial in configuracionDocumento.redesSociales" :key="redSocial.id">
-              <strong>{{ redSocial.red }}</strong> {{ redSocial.usuarioOEnlace }}
-            </span>
+            <a
+              v-for="redSocial in configuracionDocumento.redesSociales"
+              :key="redSocial.id"
+              :href="crearEnlaceRedSocial(redSocial.red, redSocial.usuarioOEnlace)"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <strong>{{ redSocial.red }}</strong>
+              <span>{{ redSocial.usuarioOEnlace }}</span>
+            </a>
           </footer>
         </article>
       </div>
