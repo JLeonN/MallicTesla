@@ -528,7 +528,6 @@ function normalizarNumeroWhatsapp(numeroIngresado: string): string {
 
           <div class="acciones-presupuesto__salida">
             <q-btn
-              v-if="esNuevo"
               class="boton-secundario"
               no-caps
               flat
