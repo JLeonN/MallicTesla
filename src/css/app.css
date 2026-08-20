@@ -1317,11 +1317,17 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .grilla-configuracion,
+.campos-tarifa-mano-obra,
 .campos-metodo-pago,
 .campos-red-social {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--espaciado-mediano);
+}
+
+.grilla-configuracion--un-campo {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: var(--ancho-texto-secundario);
 }
 
 .selector-logo-configuracion {
@@ -1416,6 +1422,7 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .grilla-configuracion,
+  .campos-tarifa-mano-obra,
   .campos-metodo-pago,
   .campos-red-social,
   .selector-logo-configuracion {

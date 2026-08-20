@@ -29,6 +29,12 @@ export interface RedSocialConfiguracion {
   usuarioOEnlace: string;
 }
 
+export interface TarifaManoObraConfiguracion {
+  id: string;
+  nombre: string;
+  precioHora: number | null;
+}
+
 export interface DatosConfiguracion {
   nombreEmpresa: string;
   nombreResponsable: string;
@@ -37,7 +43,7 @@ export interface DatosConfiguracion {
   direccion: string;
   rut: string;
   logo: LogoConfiguracion | null;
-  precioManoObraHora: number | null;
+  tarifasManoObra: TarifaManoObraConfiguracion[];
   precioTrasladoKilometro: number | null;
   mensajeFinal: string;
   metodosPago: MetodoPagoConfiguracion[];
@@ -57,7 +63,7 @@ export function crearConfiguracionInicial(): Configuracion {
     direccion: '',
     rut: '',
     logo: null,
-    precioManoObraHora: null,
+    tarifasManoObra: [crearTarifaManoObraConfiguracion()],
     precioTrasladoKilometro: null,
     mensajeFinal: MENSAJE_FINAL_PREDETERMINADO,
     metodosPago: [crearMetodoPagoConfiguracion()],
@@ -82,6 +88,16 @@ export function crearRedSocialConfiguracion(): RedSocialConfiguracion {
   };
 }
 
+export function crearTarifaManoObraConfiguracion(
+  nombre = 'Mano de obra general',
+): TarifaManoObraConfiguracion {
+  return {
+    id: crypto.randomUUID(),
+    nombre,
+    precioHora: null,
+  };
+}
+
 export function actualizarConfiguracion(datos: DatosConfiguracion): Configuracion {
   return {
     ...normalizarDatosConfiguracion(datos),
@@ -98,7 +114,7 @@ export function normalizarDatosConfiguracion(datos: DatosConfiguracion): DatosCo
     direccion: datos.direccion.trim(),
     rut: datos.rut.trim(),
     logo: datos.logo ? { ...datos.logo, nombre: datos.logo.nombre.trim() } : null,
-    precioManoObraHora: normalizarPrecio(datos.precioManoObraHora),
+    tarifasManoObra: datos.tarifasManoObra.map(normalizarTarifaManoObra),
     precioTrasladoKilometro: normalizarPrecio(datos.precioTrasladoKilometro),
     mensajeFinal: normalizarTextoMultilinea(datos.mensajeFinal),
     metodosPago: datos.metodosPago
@@ -135,7 +151,7 @@ export function esConfiguracionGuardada(valor: unknown): valor is Configuracion 
 
   return (
     camposTexto.every((campo) => typeof valor[campo] === 'string') &&
-    esPrecioGuardado(valor.precioManoObraHora) &&
+    esListaTarifasManoObra(valor.tarifasManoObra) &&
     esPrecioGuardado(valor.precioTrasladoKilometro) &&
     esLogoGuardado(valor.logo) &&
     esListaMetodosPago(valor.metodosPago) &&
@@ -145,12 +161,15 @@ export function esConfiguracionGuardada(valor: unknown): valor is Configuracion 
 }
 
 export function migrarConfiguracionAnterior(valor: unknown): Configuracion | null {
-  if (!esRegistro(valor) || typeof valor.datosTransferenciaBancaria !== 'string') {
+  if (!esRegistro(valor)) {
     return null;
   }
 
   const configuracionBase = crearConfiguracionInicial();
-  const datosBancarios = valor.datosTransferenciaBancaria.trim();
+  const datosBancarios = obtenerTexto(valor.datosTransferenciaBancaria).trim();
+  const precioManoObraHora = esPrecioGuardado(valor.precioManoObraHora)
+    ? valor.precioManoObraHora
+    : null;
 
   return {
     ...configuracionBase,
@@ -161,22 +180,30 @@ export function migrarConfiguracionAnterior(valor: unknown): Configuracion | nul
     direccion: obtenerTexto(valor.direccion),
     rut: obtenerTexto(valor.rut),
     logo: esLogoGuardado(valor.logo) ? valor.logo : null,
-    precioManoObraHora: esPrecioGuardado(valor.precioManoObraHora)
-      ? valor.precioManoObraHora
-      : null,
+    tarifasManoObra: [
+      {
+        ...crearTarifaManoObraConfiguracion(),
+        precioHora: precioManoObraHora,
+      },
+    ],
     precioTrasladoKilometro: esPrecioGuardado(valor.precioTrasladoKilometro)
       ? valor.precioTrasladoKilometro
       : null,
     mensajeFinal: obtenerTexto(valor.mensajeFinal) || MENSAJE_FINAL_PREDETERMINADO,
-    metodosPago: datosBancarios
-      ? [
-          {
-            id: crypto.randomUUID(),
-            nombre: 'Transferencia bancaria',
-            numeroCuenta: datosBancarios,
-          },
-        ]
-      : [crearMetodoPagoConfiguracion()],
+    metodosPago: esListaMetodosPago(valor.metodosPago)
+      ? structuredClone(valor.metodosPago)
+      : datosBancarios
+        ? [
+            {
+              id: crypto.randomUUID(),
+              nombre: 'Transferencia bancaria',
+              numeroCuenta: datosBancarios,
+            },
+          ]
+        : [crearMetodoPagoConfiguracion()],
+    redesSociales: esListaRedesSociales(valor.redesSociales)
+      ? structuredClone(valor.redesSociales)
+      : [crearRedSocialConfiguracion()],
     fechaActualizacion:
       typeof valor.fechaActualizacion === 'string' ? valor.fechaActualizacion : null,
   };
@@ -194,6 +221,23 @@ function normalizarPrecio(valor: number | null): number | null {
   }
 
   return precio;
+}
+
+function normalizarTarifaManoObra(
+  tarifa: TarifaManoObraConfiguracion,
+): TarifaManoObraConfiguracion {
+  const nombre = tarifa.nombre.trim();
+  const precioHora = normalizarPrecio(tarifa.precioHora);
+
+  if (nombre === '' || precioHora === null) {
+    throw new RangeError('Completá el nombre y el precio de cada mano de obra.');
+  }
+
+  return {
+    ...tarifa,
+    nombre,
+    precioHora,
+  };
 }
 
 function normalizarTextoMultilinea(valor: string): string {
@@ -246,6 +290,21 @@ function esListaRedesSociales(valor: unknown): valor is RedSocialConfiguracion[]
         typeof redSocial.id === 'string' &&
         typeof redSocial.red === 'string' &&
         typeof redSocial.usuarioOEnlace === 'string',
+    )
+  );
+}
+
+function esListaTarifasManoObra(valor: unknown): valor is TarifaManoObraConfiguracion[] {
+  return (
+    Array.isArray(valor) &&
+    valor.length > 0 &&
+    valor.every(
+      (tarifa) =>
+        esRegistro(tarifa) &&
+        typeof tarifa.id === 'string' &&
+        typeof tarifa.nombre === 'string' &&
+        tarifa.nombre.trim() !== '' &&
+        esPrecioGuardado(tarifa.precioHora),
     )
   );
 }

@@ -3,12 +3,14 @@ import { ref, watch } from 'vue';
 import {
   crearMetodoPagoConfiguracion,
   crearRedSocialConfiguracion,
+  crearTarifaManoObraConfiguracion,
   REDES_SOCIALES_DISPONIBLES,
   type Configuracion,
   type DatosConfiguracion,
   type LogoConfiguracion,
   type MetodoPagoConfiguracion,
   type RedSocialConfiguracion,
+  type TarifaManoObraConfiguracion,
 } from '@/dominio/configuracion';
 
 const TAMANO_MAXIMO_LOGO_BYTES = 1024 * 1024;
@@ -31,7 +33,7 @@ const correo = ref('');
 const direccion = ref('');
 const rut = ref('');
 const logo = ref<LogoConfiguracion | null>(null);
-const precioManoObraHora = ref<number | null>(null);
+const tarifasManoObra = ref<TarifaManoObraConfiguracion[]>([]);
 const precioTrasladoKilometro = ref<number | null>(null);
 const mensajeFinal = ref('');
 const metodosPago = ref<MetodoPagoConfiguracion[]>([]);
@@ -47,6 +49,9 @@ watch(
     const redesGuardadas = Array.isArray(configuracion.redesSociales)
       ? configuracion.redesSociales
       : [];
+    const tarifasGuardadas = Array.isArray(configuracion.tarifasManoObra)
+      ? configuracion.tarifasManoObra
+      : [];
 
     nombreEmpresa.value = configuracion.nombreEmpresa;
     nombreResponsable.value = configuracion.nombreResponsable;
@@ -55,7 +60,9 @@ watch(
     direccion.value = configuracion.direccion;
     rut.value = configuracion.rut;
     logo.value = configuracion.logo ? { ...configuracion.logo } : null;
-    precioManoObraHora.value = configuracion.precioManoObraHora;
+    tarifasManoObra.value = tarifasGuardadas.length
+      ? tarifasGuardadas.map((tarifa) => ({ ...tarifa }))
+      : [crearTarifaManoObraConfiguracion()];
     precioTrasladoKilometro.value = configuracion.precioTrasladoKilometro;
     mensajeFinal.value = configuracion.mensajeFinal;
     metodosPago.value = metodosGuardados.length
@@ -122,6 +129,18 @@ function quitarLogo(): void {
   errorLogo.value = '';
 }
 
+function agregarTarifaManoObra(): void {
+  tarifasManoObra.value.push(crearTarifaManoObraConfiguracion(''));
+}
+
+function quitarTarifaManoObra(idTarifa: string): void {
+  if (tarifasManoObra.value.length === 1) {
+    return;
+  }
+
+  tarifasManoObra.value = tarifasManoObra.value.filter((tarifa) => tarifa.id !== idTarifa);
+}
+
 function agregarMetodoPago(): void {
   metodosPago.value.push(crearMetodoPagoConfiguracion());
 }
@@ -172,6 +191,14 @@ function validarPrecio(valor: unknown): true | string {
   return (Number.isFinite(Number(valor)) && Number(valor) >= 0) || 'Ingresá un precio válido.';
 }
 
+function validarPrecioObligatorio(valor: unknown): true | string {
+  if (valor === null || valor === '') {
+    return 'Ingresá el precio por hora.';
+  }
+
+  return validarPrecio(valor);
+}
+
 function guardarConfiguracion(): void {
   emitir('guardar', {
     nombreEmpresa: nombreEmpresa.value,
@@ -181,7 +208,7 @@ function guardarConfiguracion(): void {
     direccion: direccion.value,
     rut: rut.value,
     logo: logo.value ? { ...logo.value } : null,
-    precioManoObraHora: precioManoObraHora.value,
+    tarifasManoObra: tarifasManoObra.value.map((tarifa) => ({ ...tarifa })),
     precioTrasladoKilometro: precioTrasladoKilometro.value,
     mensajeFinal: mensajeFinal.value,
     metodosPago: metodosPago.value.map((metodo) => ({ ...metodo })),
@@ -280,29 +307,77 @@ function guardarConfiguracion(): void {
         </div>
       </section>
 
-      <section class="seccion-formulario" aria-labelledby="titulo-tarifas-configuracion">
+      <section class="seccion-formulario" aria-labelledby="titulo-mano-obra-configuracion">
         <div class="encabezado-seccion-formulario">
           <div>
             <p class="etiqueta-seccion">Valores habituales</p>
-            <h2 id="titulo-tarifas-configuracion" class="titulo-seccion">Tarifas</h2>
+            <h2 id="titulo-mano-obra-configuracion" class="titulo-seccion">Mano de obra</h2>
             <p class="texto-secundario texto-ayuda-formulario">
-              Estos precios quedan guardados como información de referencia.
+              Definí un nombre y un precio por hora para cada tipo de trabajo.
+            </p>
+          </div>
+          <q-btn
+            class="boton-secundario"
+            flat
+            no-caps
+            icon="add"
+            label="Agregar mano de obra"
+            @click="agregarTarifaManoObra"
+          />
+        </div>
+
+        <div class="lista-campos-repetibles">
+          <article
+            v-for="(tarifa, indice) in tarifasManoObra"
+            :key="tarifa.id"
+            class="bloque-repetible"
+          >
+            <div class="bloque-repetible__campos campos-tarifa-mano-obra">
+              <q-input
+                v-model="tarifa.nombre"
+                dark
+                outlined
+                label="Nombre de la mano de obra"
+                :rules="[(valor) => Boolean(String(valor).trim()) || 'Ingresá un nombre.']"
+              />
+              <q-input
+                v-model.number="tarifa.precioHora"
+                dark
+                outlined
+                type="number"
+                min="0"
+                step="0.01"
+                label="Precio"
+                suffix="por hora"
+                :rules="[validarPrecioObligatorio]"
+              />
+            </div>
+            <q-btn
+              v-if="tarifasManoObra.length > 1"
+              class="boton-icono-secundario"
+              flat
+              round
+              dense
+              icon="delete_outline"
+              :aria-label="`Quitar mano de obra ${indice + 1}`"
+              @click="quitarTarifaManoObra(tarifa.id)"
+            />
+          </article>
+        </div>
+      </section>
+
+      <section class="seccion-formulario" aria-labelledby="titulo-traslado-configuracion">
+        <div class="encabezado-seccion-formulario">
+          <div>
+            <p class="etiqueta-seccion">Valores habituales</p>
+            <h2 id="titulo-traslado-configuracion" class="titulo-seccion">Traslado</h2>
+            <p class="texto-secundario texto-ayuda-formulario">
+              Guardá un único precio de referencia por kilómetro.
             </p>
           </div>
         </div>
 
-        <div class="grilla-configuracion">
-          <q-input
-            v-model.number="precioManoObraHora"
-            dark
-            outlined
-            type="number"
-            min="0"
-            step="0.01"
-            label="Precio de mano de obra"
-            suffix="por hora"
-            :rules="[validarPrecio]"
-          />
+        <div class="grilla-configuracion grilla-configuracion--un-campo">
           <q-input
             v-model.number="precioTrasladoKilometro"
             dark

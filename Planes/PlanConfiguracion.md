@@ -8,7 +8,7 @@ Implementar el apartado de Configuración de Mallic Tesla para que Pablo pueda r
 
 - Reemplazar la pantalla pendiente de Configuración por un formulario responsive
 - Guardar los datos de la empresa y de Pablo en SPA y Android
-- Registrar los precios habituales de mano de obra y traslado
+- Registrar varias tarifas de mano de obra y un único precio de traslado
 - Permitir guardar un mensaje final, varios métodos de pago y varias redes sociales
 - Preparar una estructura desacoplada que pueda conectarse posteriormente con otros módulos
 
@@ -34,7 +34,7 @@ Definir un modelo tipado y normalizado para representar toda la información con
 - [x] Crear el dominio de Configuración con tipos para datos de empresa, responsable, tarifas y textos generales
 - [x] Incluir nombre de la empresa, nombre de Pablo, teléfono, correo electrónico, dirección y RUT
 - [x] Incluir un logo configurable con su referencia o contenido persistible
-- [x] Incluir el precio de mano de obra por hora
+- [x] Incluir una lista dinámica de manos de obra con nombre y precio por hora
 - [x] Incluir el precio de traslado por kilómetro
 - [x] Incluir un mensaje final predeterminado de texto libre
 - [x] Incluir una lista dinámica de métodos de pago con nombre y número de cuenta
@@ -67,7 +67,9 @@ Crear una pantalla clara que agrupe los datos por responsabilidad y sea cómoda 
 - [x] Crear una página específica para Configuración y sustituir el componente de módulo pendiente en la ruta existente
 - [x] Crear un bloque `Empresa y responsable` con los datos generales y de contacto
 - [x] Permitir seleccionar, previsualizar, reemplazar y quitar el logo
-- [x] Crear un bloque `Tarifas` con mano de obra por hora y traslado por kilómetro
+- [x] Crear un bloque independiente de mano de obra con opción para agregar y quitar tarifas
+- [x] Exigir nombre y precio por hora en cada mano de obra
+- [x] Crear un bloque independiente de traslado con un único precio por kilómetro
 - [x] Mostrar claramente las unidades `por hora` y `por kilómetro` junto a sus campos
 - [x] Crear un bloque independiente para el mensaje final con un texto predeterminado
 - [x] Crear un bloque de métodos de pago que permita agregar y quitar bancos
@@ -102,7 +104,8 @@ Validar que la información pueda editarse, guardarse y recuperarse correctament
 - [ ] Guardar teléfono, correo, dirección y RUT vacíos y verificar que los campos opcionales no bloqueen el formulario
 - [ ] Seleccionar un logo, verificar su vista previa, guardar y comprobar que se recupere correctamente
 - [ ] Reemplazar y quitar el logo y verificar que ambos cambios persistan
-- [ ] Guardar precios válidos de mano de obra y traslado, cerrar y reabrir la pantalla y comprobar su persistencia
+- [ ] Agregar varias manos de obra y comprobar que cada nombre y precio por hora se recupere correctamente
+- [ ] Guardar el precio único de traslado, cerrar y reabrir la pantalla y comprobar su persistencia
 - [ ] Intentar guardar precios negativos y verificar que aparezca una validación clara
 - [ ] Guardar el mensaje final predeterminado y comprobar que pueda editarse y recuperarse
 - [ ] Agregar varios métodos de pago y comprobar que cada banco conserve su nombre y número de cuenta
