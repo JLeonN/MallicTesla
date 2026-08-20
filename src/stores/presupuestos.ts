@@ -2,6 +2,7 @@ import { computed, ref } from 'vue';
 import {
   actualizarPresupuesto,
   crearPresupuesto,
+  normalizarDatosPresupuesto,
   type DatosPresupuesto,
   type Presupuesto,
 } from '@/dominio/presupuestos';
@@ -10,11 +11,20 @@ import { defineStore } from 'pinia';
 
 const repositorioPresupuestos = crearRepositorioPresupuestos();
 
+interface BorradorVistaPreviaPresupuesto {
+  datos: DatosPresupuesto;
+  rutaRetorno: string;
+  idPresupuesto: string | null;
+  estadoInicial: string;
+  recuperarAlVolver: boolean;
+}
+
 export const usePresupuestosStore = defineStore('presupuestos', () => {
   const presupuestos = ref<Presupuesto[]>([]);
   const cargando = ref(false);
   const guardando = ref(false);
   const error = ref<string | null>(null);
+  const borradorVistaPrevia = ref<BorradorVistaPreviaPresupuesto | null>(null);
 
   const presupuestosOrdenados = computed(() =>
     [...presupuestos.value].sort((presupuestoA, presupuestoB) => {
@@ -123,6 +133,54 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     );
   }
 
+  function establecerBorradorVistaPrevia(
+    datos: DatosPresupuesto,
+    rutaRetorno: string,
+    idPresupuesto: string | null,
+    estadoInicial: string,
+  ): void {
+    borradorVistaPrevia.value = {
+      datos: normalizarDatosPresupuesto(datos),
+      rutaRetorno,
+      idPresupuesto,
+      estadoInicial,
+      recuperarAlVolver: false,
+    };
+  }
+
+  function obtenerBorradorVistaPrevia(
+    idPresupuesto: string | null,
+  ): BorradorVistaPreviaPresupuesto | null {
+    return borradorVistaPrevia.value?.idPresupuesto === idPresupuesto
+      ? borradorVistaPrevia.value
+      : null;
+  }
+
+  function marcarRetornoVistaPrevia(rutaRetorno: string): void {
+    if (borradorVistaPrevia.value?.rutaRetorno === rutaRetorno) {
+      borradorVistaPrevia.value.recuperarAlVolver = true;
+    }
+  }
+
+  function consumirBorradorVistaPrevia(
+    rutaActual: string,
+    idPresupuesto: string | null,
+  ): BorradorVistaPreviaPresupuesto | null {
+    const borrador = borradorVistaPrevia.value;
+
+    if (
+      borrador === null ||
+      !borrador.recuperarAlVolver ||
+      borrador.rutaRetorno !== rutaActual ||
+      borrador.idPresupuesto !== idPresupuesto
+    ) {
+      return null;
+    }
+
+    borradorVistaPrevia.value = null;
+    return borrador;
+  }
+
   return {
     presupuestos,
     presupuestosOrdenados,
@@ -134,5 +192,9 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     editarPresupuesto,
     obtenerPresupuestoPorId,
     buscarPresupuestos,
+    establecerBorradorVistaPrevia,
+    obtenerBorradorVistaPrevia,
+    marcarRetornoVistaPrevia,
+    consumirBorradorVistaPrevia,
   };
 });

@@ -21,6 +21,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/NuevoPresupuestoPage.vue'),
       },
       {
+        path: 'presupuestos/nuevo/vista-previa',
+        name: 'vista-previa-nuevo-presupuesto',
+        component: () => import('@/pages/VistaPreviaPresupuestoPage.vue'),
+      },
+      {
+        path: 'presupuestos/:idPresupuesto/vista-previa',
+        name: 'vista-previa-presupuesto',
+        component: () => import('@/pages/VistaPreviaPresupuestoPage.vue'),
+      },
+      {
         path: 'presupuestos/:idPresupuesto/editar',
         name: 'editar-presupuesto',
         component: () => import('@/pages/NuevoPresupuestoPage.vue'),

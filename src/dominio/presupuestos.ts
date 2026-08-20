@@ -7,6 +7,12 @@ import {
   type Moneda,
   type PrecioMaterial,
 } from '@/dominio/materiales';
+import type {
+  Configuracion,
+  LogoConfiguracion,
+  MetodoPagoConfiguracion,
+  RedSocialConfiguracion,
+} from '@/dominio/configuracion';
 
 export const TIPOS_DESTINATARIO = ['potencial', 'guardado'] as const;
 export const TIPOS_CONCEPTO_PRESUPUESTO = ['material', 'manoObra', 'traslado'] as const;
@@ -41,6 +47,19 @@ export interface DatosDestinatarioPresupuesto {
   telefono: string;
 }
 
+export interface ConfiguracionDocumentoPresupuesto {
+  nombreEmpresa: string;
+  nombreResponsable: string;
+  telefono: string;
+  correo: string;
+  direccion: string;
+  rut: string;
+  logo: LogoConfiguracion | null;
+  mensajeFinal: string;
+  metodosPago: MetodoPagoConfiguracion[];
+  redesSociales: RedSocialConfiguracion[];
+}
+
 export interface ValoresInicialesPresupuesto {
   nombreManoObra?: string | undefined;
   precioManoObraHora?: number | null | undefined;
@@ -52,6 +71,7 @@ export interface DatosPresupuesto {
   fechaPresupuesto: string;
   moneda: Moneda;
   lineas: LineaPresupuesto[];
+  configuracionDocumento: ConfiguracionDocumentoPresupuesto | null;
 }
 
 export interface Presupuesto extends DatosPresupuesto {
@@ -115,7 +135,27 @@ export function normalizarDatosPresupuesto(datos: DatosPresupuesto): DatosPresup
     fechaPresupuesto: datos.fechaPresupuesto.trim(),
     moneda: datos.moneda === 'USD' ? 'USD' : 'UYU',
     lineas: datos.lineas.map(normalizarLineaPresupuesto),
+    configuracionDocumento: datos.configuracionDocumento
+      ? clonarConfiguracionDocumento(datos.configuracionDocumento)
+      : null,
   };
+}
+
+export function crearConfiguracionDocumento(
+  configuracion: Configuracion,
+): ConfiguracionDocumentoPresupuesto {
+  return clonarConfiguracionDocumento({
+    nombreEmpresa: configuracion.nombreEmpresa,
+    nombreResponsable: configuracion.nombreResponsable,
+    telefono: configuracion.telefono,
+    correo: configuracion.correo,
+    direccion: configuracion.direccion,
+    rut: configuracion.rut,
+    logo: configuracion.logo,
+    mensajeFinal: configuracion.mensajeFinal,
+    metodosPago: configuracion.metodosPago,
+    redesSociales: configuracion.redesSociales,
+  });
 }
 
 export function clonarLineasPresupuesto(lineas: readonly LineaPresupuesto[]): LineaPresupuesto[] {
@@ -145,6 +185,7 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
     fechaPresupuesto: obtenerTexto(valor.fechaPresupuesto),
     moneda: valor.moneda === 'USD' ? 'USD' : 'UYU',
     lineas,
+    configuracionDocumento: recuperarConfiguracionDocumento(valor.configuracionDocumento),
     fechaCreacion: obtenerTexto(valor.fechaCreacion) || ahora,
     fechaActualizacion: obtenerTexto(valor.fechaActualizacion) || ahora,
   };
@@ -162,6 +203,9 @@ export function esPresupuestoGuardado(valor: unknown): valor is Presupuesto {
     esDestinatarioGuardado(valor.destinatario) &&
     Array.isArray(valor.lineas) &&
     valor.lineas.every(esLineaPresupuestoGuardada) &&
+    (valor.configuracionDocumento === null ||
+      valor.configuracionDocumento === undefined ||
+      recuperarConfiguracionDocumento(valor.configuracionDocumento) !== null) &&
     typeof valor.fechaCreacion === 'string' &&
     typeof valor.fechaActualizacion === 'string'
   );
@@ -340,6 +384,116 @@ function normalizarLineaPresupuesto(linea: LineaPresupuesto): LineaPresupuesto {
       precioUnitario: normalizarNumeroEditable(opcion.precioUnitario, null),
     })),
   };
+}
+
+function clonarConfiguracionDocumento(
+  configuracion: ConfiguracionDocumentoPresupuesto,
+): ConfiguracionDocumentoPresupuesto {
+  return {
+    nombreEmpresa: configuracion.nombreEmpresa.trim(),
+    nombreResponsable: configuracion.nombreResponsable.trim(),
+    telefono: configuracion.telefono.trim(),
+    correo: configuracion.correo.trim(),
+    direccion: configuracion.direccion.trim(),
+    rut: configuracion.rut.trim(),
+    logo: configuracion.logo ? { ...configuracion.logo } : null,
+    mensajeFinal: configuracion.mensajeFinal.trim(),
+    metodosPago: configuracion.metodosPago.map((metodo) => ({ ...metodo })),
+    redesSociales: configuracion.redesSociales.map((redSocial) => ({ ...redSocial })),
+  };
+}
+
+function recuperarConfiguracionDocumento(valor: unknown): ConfiguracionDocumentoPresupuesto | null {
+  if (!esRegistro(valor)) {
+    return null;
+  }
+
+  const logo = recuperarLogoConfiguracion(valor.logo);
+  const metodosPago = recuperarMetodosPago(valor.metodosPago);
+  const redesSociales = recuperarRedesSociales(valor.redesSociales);
+
+  if (logo === undefined || metodosPago === null || redesSociales === null) {
+    return null;
+  }
+
+  return clonarConfiguracionDocumento({
+    nombreEmpresa: obtenerTexto(valor.nombreEmpresa),
+    nombreResponsable: obtenerTexto(valor.nombreResponsable),
+    telefono: obtenerTexto(valor.telefono),
+    correo: obtenerTexto(valor.correo),
+    direccion: obtenerTexto(valor.direccion),
+    rut: obtenerTexto(valor.rut),
+    logo,
+    mensajeFinal: obtenerTexto(valor.mensajeFinal),
+    metodosPago,
+    redesSociales,
+  });
+}
+
+function recuperarLogoConfiguracion(valor: unknown): LogoConfiguracion | null | undefined {
+  if (valor === null || valor === undefined) {
+    return null;
+  }
+
+  if (
+    !esRegistro(valor) ||
+    typeof valor.nombre !== 'string' ||
+    typeof valor.tipoMime !== 'string' ||
+    typeof valor.datosUrl !== 'string' ||
+    !valor.datosUrl.startsWith('data:image/')
+  ) {
+    return undefined;
+  }
+
+  return {
+    nombre: valor.nombre,
+    tipoMime: valor.tipoMime,
+    datosUrl: valor.datosUrl,
+  };
+}
+
+function recuperarMetodosPago(valor: unknown): MetodoPagoConfiguracion[] | null {
+  if (!Array.isArray(valor)) {
+    return null;
+  }
+
+  const metodosPago = valor
+    .filter(
+      (metodo) =>
+        esRegistro(metodo) &&
+        typeof metodo.id === 'string' &&
+        typeof metodo.nombre === 'string' &&
+        typeof metodo.numeroCuenta === 'string',
+    )
+    .map((metodo) => ({
+      id: String(metodo.id),
+      nombre: String(metodo.nombre),
+      numeroCuenta: String(metodo.numeroCuenta),
+    }));
+
+  return metodosPago.length === valor.length ? metodosPago : null;
+}
+
+function recuperarRedesSociales(valor: unknown): RedSocialConfiguracion[] | null {
+  if (!Array.isArray(valor)) {
+    return null;
+  }
+
+  const redesSociales = valor
+    .filter(
+      (redSocial) =>
+        esRegistro(redSocial) &&
+        typeof redSocial.id === 'string' &&
+        typeof redSocial.red === 'string' &&
+        typeof redSocial.usuarioOEnlace === 'string',
+    )
+    .map((redSocial) => ({
+      id: String(redSocial.id),
+      red: String(redSocial.red),
+      usuarioOEnlace: String(redSocial.usuarioOEnlace),
+    }));
+
+  return redesSociales.length === valor.length ? redesSociales : null;
 }
 
 function recuperarDestinatario(valor: unknown): DatosDestinatarioPresupuesto | null {

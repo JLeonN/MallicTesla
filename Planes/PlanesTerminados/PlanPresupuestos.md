@@ -171,6 +171,9 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [x] Normalizar valores editables y recuperar presupuestos persistidos sin descartarlos silenciosamente
 - [x] Separar las acciones de edición a la izquierda y las acciones de salida a la derecha
 - [x] Confirmar la cancelación solamente cuando existan cambios sin guardar
+- [x] Crear una vista previa profesional en una página independiente y preparada para impresión A4
+- [x] Conservar en cada presupuesto una copia del nombre comercial, contacto, logo, métodos de pago, redes y mensaje final
+- [x] Permitir volver al formulario sin perder cambios y abrir WhatsApp cuando el destinatario tenga teléfono
 - [ ] Validar visualmente el flujo completo en navegador y Android
 
 ## Progreso del plan

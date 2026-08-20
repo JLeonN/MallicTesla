@@ -1345,6 +1345,269 @@ input[type='number']::-webkit-outer-spin-button {
   font-size: var(--tamano-titulo-seccion);
 }
 
+.pagina-vista-previa {
+  padding: var(--espaciado-extra-grande);
+  background: var(--color-fondo-principal);
+}
+
+.vista-previa-presupuesto {
+  display: grid;
+  gap: var(--espaciado-grande);
+  width: min(100%, var(--ancho-contenido-principal));
+  margin-inline: auto;
+}
+
+.encabezado-vista-previa-app,
+.acciones-vista-previa {
+  display: flex;
+  align-items: center;
+  gap: var(--espaciado-pequeno);
+}
+
+.encabezado-vista-previa-app {
+  justify-content: space-between;
+}
+
+.acciones-vista-previa {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.vista-previa-presupuesto__lienzo {
+  overflow-x: auto;
+  padding-bottom: var(--espaciado-mediano);
+}
+
+.documento-presupuesto {
+  display: grid;
+  align-content: start;
+  width: min(100%, var(--ancho-documento-a4));
+  min-height: var(--alto-documento-a4);
+  margin-inline: auto;
+  padding: var(--espaciado-extra-grande);
+  gap: var(--espaciado-extra-grande);
+  color: var(--color-documento-texto);
+  background: var(--color-documento-fondo);
+  box-shadow: var(--sombra-principal);
+}
+
+.documento-presupuesto__encabezado,
+.documento-presupuesto__marca,
+.documento-presupuesto__cliente > div,
+.documento-presupuesto__totales > div,
+.documento-presupuesto__metodos-pago > div,
+.documento-presupuesto__redes {
+  display: flex;
+}
+
+.documento-presupuesto__encabezado {
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: var(--espaciado-grande);
+  gap: var(--espaciado-grande);
+  border-bottom: var(--ancho-borde-foco) solid var(--color-documento-destacado);
+}
+
+.documento-presupuesto__marca {
+  align-items: flex-start;
+  gap: var(--espaciado-mediano);
+}
+
+.documento-presupuesto__marca img {
+  width: var(--tamano-logo-mediano);
+  height: var(--tamano-logo-mediano);
+  object-fit: contain;
+  background: var(--color-logo-fondo);
+  border-radius: var(--radio-pequeno);
+}
+
+.documento-presupuesto__marca h2,
+.documento-presupuesto__marca p,
+.documento-presupuesto__identificacion span,
+.documento-presupuesto__identificacion strong,
+.documento-presupuesto__identificacion small,
+.documento-presupuesto__etiqueta,
+.documento-presupuesto__mensaje-final p {
+  margin: 0;
+}
+
+.documento-presupuesto__marca h2 {
+  color: var(--color-documento-destacado);
+  font-size: var(--tamano-titulo-seccion);
+}
+
+.documento-presupuesto__marca p,
+.documento-presupuesto__datos-empresa,
+.documento-presupuesto__identificacion small {
+  color: var(--color-documento-texto-secundario);
+}
+
+.documento-presupuesto__datos-empresa {
+  display: grid;
+  padding: 0;
+  margin: var(--espaciado-pequeno) 0 0;
+  gap: var(--espaciado-minimo);
+  font-size: var(--tamano-texto-secundario);
+  list-style: none;
+}
+
+.documento-presupuesto__identificacion {
+  display: grid;
+  justify-items: end;
+  gap: var(--espaciado-minimo);
+  text-align: right;
+}
+
+.documento-presupuesto__identificacion span {
+  color: var(--color-documento-destacado);
+  font-size: var(--tamano-titulo-pagina);
+  font-weight: var(--peso-texto-fuerte);
+  line-height: var(--altura-linea-compacta);
+  text-transform: uppercase;
+}
+
+.documento-presupuesto__identificacion strong {
+  font-size: var(--tamano-texto-destacado);
+}
+
+.documento-presupuesto__seccion {
+  display: grid;
+  gap: var(--espaciado-mediano);
+}
+
+.documento-presupuesto__etiqueta {
+  color: var(--color-documento-destacado);
+  font-size: var(--tamano-texto-secundario);
+  font-weight: var(--peso-texto-fuerte);
+  letter-spacing: var(--espaciado-letras-etiqueta);
+  text-transform: uppercase;
+}
+
+.documento-presupuesto__cliente {
+  padding: var(--espaciado-mediano);
+  background: var(--color-documento-destacado-suave);
+  border-radius: var(--radio-pequeno);
+}
+
+.documento-presupuesto__cliente > div {
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaciado-mediano);
+}
+
+.documento-presupuesto__tabla-contenedor {
+  overflow-x: auto;
+}
+
+.documento-presupuesto__tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.documento-presupuesto__tabla th,
+.documento-presupuesto__tabla td {
+  padding: var(--espaciado-control);
+  border-bottom: var(--ancho-borde) solid var(--color-documento-borde);
+  text-align: right;
+  vertical-align: top;
+}
+
+.documento-presupuesto__tabla th {
+  color: var(--color-documento-texto-secundario);
+  font-size: var(--tamano-texto-pequeno);
+  letter-spacing: var(--espaciado-letras-etiqueta);
+  text-transform: uppercase;
+}
+
+.documento-presupuesto__tabla th:first-child,
+.documento-presupuesto__tabla td:first-child {
+  text-align: left;
+}
+
+.documento-presupuesto__linea--incompatible {
+  color: var(--color-documento-error);
+}
+
+.documento-presupuesto__advertencia {
+  margin: 0;
+  color: var(--color-documento-error);
+  font-size: var(--tamano-texto-secundario);
+}
+
+.documento-presupuesto__totales {
+  display: grid;
+  justify-self: end;
+  width: min(100%, var(--ancho-texto-secundario));
+  gap: var(--espaciado-pequeno);
+}
+
+.documento-presupuesto__totales > div {
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espaciado-grande);
+}
+
+.documento-presupuesto__totales span {
+  color: var(--color-documento-texto-secundario);
+  text-transform: uppercase;
+}
+
+.documento-presupuesto__total-final {
+  padding: var(--espaciado-mediano);
+  color: var(--color-documento-fondo);
+  background: var(--color-documento-destacado);
+  border-radius: var(--radio-pequeno);
+}
+
+.documento-presupuesto__total-final span {
+  color: inherit;
+  font-weight: var(--peso-texto-fuerte);
+}
+
+.documento-presupuesto__total-final strong {
+  font-size: var(--tamano-titulo-seccion);
+}
+
+.documento-presupuesto__metodos-pago {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--ancho-fecha-ticket), 1fr));
+  gap: var(--espaciado-pequeno);
+}
+
+.documento-presupuesto__metodos-pago > div {
+  align-items: flex-start;
+  flex-direction: column;
+  padding: var(--espaciado-control);
+  gap: var(--espaciado-minimo);
+  background: var(--color-documento-destacado-suave);
+  border-radius: var(--radio-pequeno);
+}
+
+.documento-presupuesto__metodos-pago span {
+  color: var(--color-documento-texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+.documento-presupuesto__mensaje-final {
+  padding: var(--espaciado-mediano);
+  color: var(--color-documento-texto-secundario);
+  text-align: center;
+  white-space: pre-line;
+  border-block: var(--ancho-borde) solid var(--color-documento-borde);
+}
+
+.documento-presupuesto__redes {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--espaciado-mediano);
+  color: var(--color-documento-texto-secundario);
+  font-size: var(--tamano-texto-secundario);
+}
+
+.documento-presupuesto__redes strong {
+  color: var(--color-documento-destacado);
+}
+
 @media (max-width: 1023px) {
   .fila-presupuesto__principal {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1366,9 +1629,43 @@ input[type='number']::-webkit-outer-spin-button {
 @media (max-width: 767px) {
   .encabezado-modulo-presupuestos,
   .encabezado-nuevo-presupuesto,
+  .encabezado-vista-previa-app,
   .resumen-presupuesto {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .pagina-vista-previa {
+    padding: var(--espaciado-mediano);
+  }
+
+  .acciones-vista-previa {
+    justify-content: stretch;
+  }
+
+  .acciones-vista-previa > * {
+    flex: 1 1 auto;
+  }
+
+  .documento-presupuesto {
+    min-height: auto;
+    padding: var(--espaciado-mediano);
+    gap: var(--espaciado-grande);
+  }
+
+  .documento-presupuesto__encabezado,
+  .documento-presupuesto__cliente > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .documento-presupuesto__identificacion {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .documento-presupuesto__tabla {
+    min-width: var(--ancho-texto-secundario);
   }
 
   .resumen-presupuesto__controles {
@@ -1437,6 +1734,56 @@ input[type='number']::-webkit-outer-spin-button {
 
   .fila-presupuesto__eliminar {
     justify-self: end;
+  }
+}
+
+@media print {
+  /* Medidas fijas requeridas por el formato físico A4. */
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  .encabezado-movil,
+  .menu-escritorio,
+  .navegacion-movil,
+  .encabezado-vista-previa-app,
+  .acciones-vista-previa,
+  .aviso-error {
+    display: none !important;
+  }
+
+  .q-page-container {
+    padding: 0 !important;
+  }
+
+  .pagina-vista-previa,
+  .vista-previa-presupuesto,
+  .vista-previa-presupuesto__lienzo {
+    display: block;
+    width: 100%;
+    min-height: auto !important;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    background: var(--color-documento-fondo);
+  }
+
+  .documento-presupuesto {
+    width: 100%;
+    min-height: auto;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .documento-presupuesto__tabla-contenedor {
+    overflow: visible;
+  }
+
+  .documento-presupuesto__tabla tr,
+  .documento-presupuesto__metodos-pago > div,
+  .documento-presupuesto__totales {
+    break-inside: avoid;
   }
 }
 

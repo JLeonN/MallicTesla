@@ -10,10 +10,12 @@ import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorD
 import type { Material, Moneda } from '@/dominio/materiales';
 import {
   clonarLineasPresupuesto,
+  crearConfiguracionDocumento,
   crearLineaDesdeMaterial,
   crearLineaMaterialManual,
   crearLineasInicialesPresupuesto,
   type DatosPresupuesto,
+  type ConfiguracionDocumentoPresupuesto,
   type LineaPresupuesto,
   type Presupuesto,
   type TipoDestinatario,
@@ -22,6 +24,7 @@ import { useClientesStore } from '@/stores/clientes';
 import { useConfiguracionStore } from '@/stores/configuracion';
 import { useMaterialesStore } from '@/stores/materiales';
 import { usePresupuestosStore } from '@/stores/presupuestos';
+import { crearEnlaceWhatsapp, normalizarNumeroWhatsapp } from '@/dominio/whatsapp';
 
 type AccionFinalPresupuesto = 'guardar' | 'descargar' | 'enviar';
 
@@ -46,6 +49,7 @@ const presupuestoNoEncontrado = ref(false);
 const mostrarConfirmacionCancelar = ref(false);
 const estadoInicial = ref('');
 const errorAccion = ref<string | null>(null);
+const configuracionDocumento = ref<ConfiguracionDocumentoPresupuesto | null>(null);
 
 const esNuevo = computed(() => ruta.name === 'nuevo-presupuesto');
 const esEdicion = computed(() => ruta.name === 'editar-presupuesto');
@@ -95,7 +99,19 @@ async function inicializarPantalla(): Promise<void> {
       esNuevo.value ? Promise.resolve() : presupuestosStore.cargarPresupuestos(),
     ]);
 
+    const idPresupuestoActual = esNuevo.value ? null : String(ruta.params.idPresupuesto);
+    const borradorRecuperado = presupuestosStore.consumirBorradorVistaPrevia(
+      ruta.path,
+      idPresupuestoActual,
+    );
+
     if (esNuevo.value) {
+      if (borradorRecuperado) {
+        cargarDatosFormulario(borradorRecuperado.datos);
+        estadoInicial.value = borradorRecuperado.estadoInicial;
+        return;
+      }
+
       restablecerFormularioNuevo();
       return;
     }
@@ -107,7 +123,12 @@ async function inicializarPantalla(): Promise<void> {
 
     if (presupuestoEncontrado) {
       presupuesto.value = presupuestoEncontrado;
-      cargarDatosPresupuesto(presupuestoEncontrado);
+      if (borradorRecuperado) {
+        cargarDatosFormulario(borradorRecuperado.datos);
+        estadoInicial.value = borradorRecuperado.estadoInicial;
+      } else {
+        cargarDatosPresupuesto(presupuestoEncontrado);
+      }
     }
   } finally {
     cargandoPagina.value = false;
@@ -129,19 +150,26 @@ function restablecerFormularioNuevo(): void {
     precioManoObraHora: primeraTarifa?.precioHora,
     precioTrasladoKilometro: configuracionStore.configuracion.precioTrasladoKilometro,
   });
+  configuracionDocumento.value = crearConfiguracionDocumento(configuracionStore.configuracion);
   mostrarConfirmacionCancelar.value = false;
   estadoInicial.value = serializarDatosFormulario();
 }
 
 function cargarDatosPresupuesto(presupuestoGuardado: Presupuesto): void {
-  tipoDestinatario.value = presupuestoGuardado.destinatario.tipo;
-  idCliente.value = presupuestoGuardado.destinatario.idCliente;
-  nombreDestinatario.value = presupuestoGuardado.destinatario.nombre;
-  telefonoDestinatario.value = presupuestoGuardado.destinatario.telefono;
-  fechaPresupuesto.value = presupuestoGuardado.fechaPresupuesto;
-  monedaPresupuesto.value = presupuestoGuardado.moneda;
-  lineas.value = clonarLineasPresupuesto(presupuestoGuardado.lineas);
+  cargarDatosFormulario(presupuestoGuardado);
   estadoInicial.value = serializarDatosFormulario();
+}
+
+function cargarDatosFormulario(datos: DatosPresupuesto): void {
+  tipoDestinatario.value = datos.destinatario.tipo;
+  idCliente.value = datos.destinatario.idCliente;
+  nombreDestinatario.value = datos.destinatario.nombre;
+  telefonoDestinatario.value = datos.destinatario.telefono;
+  fechaPresupuesto.value = datos.fechaPresupuesto;
+  monedaPresupuesto.value = datos.moneda;
+  lineas.value = clonarLineasPresupuesto(datos.lineas);
+  configuracionDocumento.value =
+    datos.configuracionDocumento ?? crearConfiguracionDocumento(configuracionStore.configuracion);
 }
 
 function obtenerDatosFormulario(): DatosPresupuesto {
@@ -155,11 +183,18 @@ function obtenerDatosFormulario(): DatosPresupuesto {
     fechaPresupuesto: fechaPresupuesto.value,
     moneda: monedaPresupuesto.value,
     lineas: clonarLineasPresupuesto(lineas.value),
+    configuracionDocumento: configuracionDocumento.value,
   };
 }
 
 function serializarDatosFormulario(): string {
-  return JSON.stringify(obtenerDatosFormulario());
+  const datos = obtenerDatosFormulario();
+  return JSON.stringify({
+    destinatario: datos.destinatario,
+    fechaPresupuesto: datos.fechaPresupuesto,
+    moneda: datos.moneda,
+    lineas: datos.lineas,
+  });
 }
 
 function agregarMaterial(material: Material): void {
@@ -172,6 +207,21 @@ function agregarMaterialManual(nombre: string): void {
 
 function eliminarLinea(idLinea: string): void {
   lineas.value = lineas.value.filter((linea) => linea.id !== idLinea);
+}
+
+function abrirVistaPrevia(): void {
+  const idPresupuesto = presupuesto.value?.id ?? null;
+  presupuestosStore.establecerBorradorVistaPrevia(
+    obtenerDatosFormulario(),
+    ruta.path,
+    idPresupuesto,
+    estadoInicial.value,
+  );
+
+  const rutaVistaPrevia = idPresupuesto
+    ? `/presupuestos/${idPresupuesto}/vista-previa`
+    : '/presupuestos/nuevo/vista-previa';
+  void router.push(rutaVistaPrevia);
 }
 
 function solicitarCancelacion(): void {
@@ -265,7 +315,7 @@ function abrirWhatsapp(): void {
     return;
   }
 
-  const enlace = `https://wa.me/${numero}?text=${encodeURIComponent(mensajeWhatsapp.value)}`;
+  const enlace = crearEnlaceWhatsapp(numero, mensajeWhatsapp.value);
   window.open(enlace, '_blank', 'noopener,noreferrer');
 }
 
@@ -310,25 +360,6 @@ function formatearFechaPresupuesto(fecha: string): string {
 
 function restablecerFechaPresupuesto(): void {
   fechaPresupuesto.value = obtenerFechaActualLocal();
-}
-
-function normalizarNumeroWhatsapp(numeroIngresado: string): string {
-  const incluyeCodigoPais = numeroIngresado.startsWith('+') || numeroIngresado.startsWith('00');
-  const numeroSoloDigitos = numeroIngresado.replace(/\D/g, '').replace(/^00/, '');
-
-  if (numeroSoloDigitos.startsWith('598')) {
-    return numeroSoloDigitos;
-  }
-
-  if (incluyeCodigoPais) {
-    return numeroSoloDigitos;
-  }
-
-  return numeroSoloDigitos.startsWith('0')
-    ? `598${numeroSoloDigitos.slice(1)}`
-    : numeroSoloDigitos === ''
-      ? ''
-      : `598${numeroSoloDigitos}`;
 }
 </script>
 
@@ -533,7 +564,7 @@ function normalizarNumeroWhatsapp(numeroIngresado: string): string {
               flat
               icon="visibility"
               label="Vista previa"
-              @click="notificarPdfPendiente"
+              @click="abrirVistaPrevia"
             />
             <q-btn
               class="boton-secundario"
