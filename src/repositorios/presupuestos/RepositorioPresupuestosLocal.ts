@@ -1,4 +1,4 @@
-import { esPresupuestoGuardado, type Presupuesto } from '@/dominio/presupuestos';
+import { recuperarPresupuestoGuardado, type Presupuesto } from '@/dominio/presupuestos';
 import type { AlmacenamientoClaveValor } from '@/repositorios/clientes/AlmacenamientoClaveValor';
 import type { RepositorioPresupuestos } from './RepositorioPresupuestos';
 
@@ -15,14 +15,27 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
       return [];
     }
 
+    let presupuestos: unknown;
+
     try {
-      const presupuestos = JSON.parse(datosGuardados) as unknown;
-      return Array.isArray(presupuestos)
-        ? structuredClone(presupuestos.filter(esPresupuestoGuardado))
-        : [];
-    } catch {
-      return [];
+      presupuestos = JSON.parse(datosGuardados) as unknown;
+    } catch (error) {
+      throw new Error('Los presupuestos guardados tienen un formato ilegible.', { cause: error });
     }
+
+    if (!Array.isArray(presupuestos)) {
+      throw new Error('El almacenamiento de presupuestos no contiene una lista válida.');
+    }
+
+    const presupuestosRecuperados = presupuestos.map(recuperarPresupuestoGuardado);
+
+    if (presupuestosRecuperados.some((presupuesto) => presupuesto === null)) {
+      throw new Error('Hay presupuestos guardados que no se pudieron recuperar de forma segura.');
+    }
+
+    return presupuestosRecuperados.filter(
+      (presupuesto): presupuesto is Presupuesto => presupuesto !== null,
+    );
   }
 
   async guardar(presupuesto: Presupuesto): Promise<void> {

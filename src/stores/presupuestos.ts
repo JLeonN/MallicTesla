@@ -33,8 +33,11 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
 
     try {
       presupuestos.value = await repositorioPresupuestos.obtenerTodos();
-    } catch {
-      error.value = 'No se pudieron cargar los presupuestos guardados.';
+    } catch (errorCapturado) {
+      error.value =
+        errorCapturado instanceof Error
+          ? errorCapturado.message
+          : 'No se pudieron cargar los presupuestos guardados.';
     } finally {
       cargando.value = false;
     }
@@ -43,15 +46,27 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
   async function agregarPresupuesto(datos: DatosPresupuesto): Promise<Presupuesto> {
     guardando.value = true;
     error.value = null;
-    const presupuesto = crearPresupuesto(datos);
 
     try {
+      const presupuesto = crearPresupuesto(datos);
       await repositorioPresupuestos.guardar(presupuesto);
-      presupuestos.value = [...presupuestos.value, presupuesto];
-      return presupuesto;
-    } catch {
-      error.value = 'No se pudo guardar el presupuesto.';
-      throw new Error(error.value);
+      const presupuestosPersistidos = await repositorioPresupuestos.obtenerTodos();
+      const presupuestoPersistido = presupuestosPersistidos.find(
+        (presupuestoActual) => presupuestoActual.id === presupuesto.id,
+      );
+
+      if (presupuestoPersistido === undefined) {
+        throw new Error('El presupuesto no apareció en el almacenamiento después de guardarlo.');
+      }
+
+      presupuestos.value = presupuestosPersistidos;
+      return presupuestoPersistido;
+    } catch (errorCapturado) {
+      error.value =
+        errorCapturado instanceof Error
+          ? errorCapturado.message
+          : 'No se pudo guardar el presupuesto.';
+      throw new Error(error.value, { cause: errorCapturado });
     } finally {
       guardando.value = false;
     }
@@ -69,17 +84,20 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
 
     guardando.value = true;
     error.value = null;
-    const presupuestoActualizado = actualizarPresupuesto(presupuestoActual, datos);
 
     try {
+      const presupuestoActualizado = actualizarPresupuesto(presupuestoActual, datos);
       await repositorioPresupuestos.guardar(presupuestoActualizado);
       presupuestos.value = presupuestos.value.map((presupuesto) =>
         presupuesto.id === idPresupuesto ? presupuestoActualizado : presupuesto,
       );
       return presupuestoActualizado;
-    } catch {
-      error.value = 'No se pudieron guardar los cambios del presupuesto.';
-      throw new Error(error.value);
+    } catch (errorCapturado) {
+      error.value =
+        errorCapturado instanceof Error
+          ? errorCapturado.message
+          : 'No se pudieron guardar los cambios del presupuesto.';
+      throw new Error(error.value, { cause: errorCapturado });
     } finally {
       guardando.value = false;
     }

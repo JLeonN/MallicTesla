@@ -168,6 +168,9 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [x] Desactivar envío y descarga durante la edición
 - [x] Incorporar cancelación integrada y animada sin modal
 - [x] Guardar y volver al listado desde las acciones Guardar, Descargar y Enviar de un presupuesto nuevo
+- [x] Normalizar valores editables y recuperar presupuestos persistidos sin descartarlos silenciosamente
+- [x] Separar las acciones de edición a la izquierda y las acciones de salida a la derecha
+- [x] Confirmar la cancelación solamente cuando existan cambios sin guardar
 - [ ] Validar visualmente el flujo completo en navegador y Android
 
 ## Progreso del plan
@@ -182,5 +185,5 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [ ] Fase Testing
 
 Fecha de creación: 18 de Agosto 2026
-Fecha de última actualización: 19 de Agosto 2026
+Fecha de última actualización: 20 de Agosto 2026
 Estado: EN PROCESO

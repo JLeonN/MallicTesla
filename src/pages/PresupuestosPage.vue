@@ -12,7 +12,9 @@ const presupuestosFiltrados = computed(() =>
 );
 
 onMounted(() => {
-  void presupuestosStore.cargarPresupuestos();
+  if (presupuestosStore.presupuestos.length === 0) {
+    void presupuestosStore.cargarPresupuestos();
+  }
 });
 
 function formatearFecha(fecha: string): string {

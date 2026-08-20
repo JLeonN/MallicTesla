@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { formatearImporte, UNIDADES_MEDIDA, type Moneda } from '@/dominio/materiales';
 import type { TarifaManoObraConfiguracion } from '@/dominio/configuracion';
 import {
@@ -23,6 +23,7 @@ const emitir = defineEmits<{
 const esMaterial = computed(() => linea.value.tipo === 'material');
 const esManoObra = computed(() => linea.value.tipo === 'manoObra');
 const textoBusquedaManoObra = ref('');
+const seleccionManoObra = ref<TarifaManoObraConfiguracion | string | null>(null);
 const monedaCompatible = computed(() =>
   lineaTieneMonedaCompatible(linea.value, props.monedaPresupuesto),
 );
@@ -43,10 +44,11 @@ const etiquetaPrecio = computed(() => {
 });
 const opcionesManoObra = computed(() => {
   const termino = textoBusquedaManoObra.value.trim().toLocaleLowerCase('es');
-  const nombres = (props.tarifasManoObra ?? []).map((tarifa) => tarifa.nombre);
   return termino === ''
-    ? nombres
-    : nombres.filter((nombre) => nombre.toLocaleLowerCase('es').includes(termino));
+    ? (props.tarifasManoObra ?? [])
+    : (props.tarifasManoObra ?? []).filter((tarifa) =>
+        tarifa.nombre.toLocaleLowerCase('es').includes(termino),
+      );
 });
 const opcionesUnidad = computed(() => {
   if (linea.value.origen === 'catalogo') {
@@ -60,6 +62,21 @@ const mostrarSelectorUnidad = computed(
     esMaterial.value &&
     (linea.value.origen !== 'catalogo' || linea.value.opcionesUnidad.length > 1),
 );
+
+watch(
+  [() => linea.value.nombre, () => props.tarifasManoObra],
+  () => {
+    if (!esManoObra.value) {
+      return;
+    }
+
+    seleccionManoObra.value =
+      props.tarifasManoObra?.find((tarifa) => tarifa.nombre === linea.value.nombre) ??
+      linea.value.nombre;
+  },
+  { immediate: true, deep: true },
+);
+
 function actualizarPrecioPorUnidad(unidad: string): void {
   const opcion = linea.value.opcionesUnidad.find((actual) => actual.unidad === unidad);
   if (opcion !== undefined) {
@@ -67,15 +84,25 @@ function actualizarPrecioPorUnidad(unidad: string): void {
   }
 }
 
-function actualizarManoObra(nombre: string | null): void {
-  const nombreNormalizado = nombre?.trim() ?? '';
-  const tarifa = props.tarifasManoObra?.find(
-    (tarifaActual) => tarifaActual.nombre === nombreNormalizado,
-  );
+function etiquetaManoObra(opcion: TarifaManoObraConfiguracion | string): string {
+  return typeof opcion === 'string' ? opcion : opcion.nombre;
+}
 
-  linea.value.nombre = nombreNormalizado;
-  linea.value.origen = tarifa ? 'predefinido' : 'manual';
-  linea.value.precioUnitario = tarifa?.precioHora ?? 0;
+function seleccionarManoObra(opcion: TarifaManoObraConfiguracion | string | null): void {
+  if (opcion === null) {
+    aplicarManoObraManual('');
+    return;
+  }
+
+  if (typeof opcion === 'string') {
+    aplicarManoObraManual(opcion);
+    return;
+  }
+
+  linea.value.nombre = opcion.nombre;
+  linea.value.origen = 'predefinido';
+  linea.value.precioUnitario = opcion.precioHora ?? 0;
+  textoBusquedaManoObra.value = '';
 }
 
 function crearManoObraManual(nombre: string, finalizar: (valor?: string) => void): void {
@@ -86,7 +113,18 @@ function crearManoObraManual(nombre: string, finalizar: (valor?: string) => void
   }
 
   finalizar(nombreNormalizado);
-  actualizarManoObra(nombreNormalizado);
+  aplicarManoObraManual(nombreNormalizado);
+}
+
+function aplicarManoObraManual(nombre: string): void {
+  linea.value.nombre = nombre.trim();
+  linea.value.origen = 'manual';
+  linea.value.precioUnitario = 0;
+  textoBusquedaManoObra.value = '';
+}
+
+function mostrarTodasLasManosObra(): void {
+  textoBusquedaManoObra.value = '';
 }
 
 function seleccionarContenidoNumerico(evento: Event): void {
@@ -106,21 +144,21 @@ function seleccionarContenidoNumerico(evento: Event): void {
       :class="{ 'fila-presupuesto__principal--importe-unico': !esMaterial }"
     >
       <q-select
-        v-if="esManoObra"
-        v-model="linea.nombre"
+        v-if="esManoObra && !soloLectura"
+        v-model="seleccionManoObra"
         dark
         outlined
         dense
+        clearable
         use-input
-        fill-input
-        hide-selected
         input-debounce="0"
         label="Mano de obra"
         :options="opcionesManoObra"
-        :readonly="soloLectura"
+        :option-label="etiquetaManoObra"
         @input-value="textoBusquedaManoObra = $event"
         @new-value="crearManoObraManual"
-        @update:model-value="actualizarManoObra"
+        @popup-show="mostrarTodasLasManosObra"
+        @update:model-value="seleccionarManoObra"
       >
         <template #no-option>
           <q-item>

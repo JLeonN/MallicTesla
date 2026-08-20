@@ -1091,12 +1091,7 @@ input[type='number']::-webkit-outer-spin-button {
 .confirmacion-cancelacion-presupuesto {
   display: flex;
   align-items: center;
-  padding-inline: var(--espaciado-control);
   gap: var(--espaciado-pequeno);
-  color: var(--color-texto-principal);
-  background: var(--color-superficie-interactiva);
-  border: var(--ancho-borde) solid var(--color-accion-borde);
-  border-radius: var(--radio-mediano);
 }
 
 .confirmacion-cancelacion-enter-active,
@@ -1163,7 +1158,9 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .ticket-presupuesto__fecha-controles,
-.acciones-presupuesto {
+.acciones-presupuesto,
+.acciones-presupuesto__edicion,
+.acciones-presupuesto__salida {
   display: flex;
   align-items: center;
   gap: var(--espaciado-pequeno);
@@ -1171,8 +1168,17 @@ input[type='number']::-webkit-outer-spin-button {
 
 .acciones-presupuesto {
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: var(--espaciado-mediano) var(--espaciado-grande);
+}
+
+.acciones-presupuesto__edicion,
+.acciones-presupuesto__salida {
+  flex-wrap: wrap;
+}
+
+.acciones-presupuesto__salida {
+  justify-content: flex-end;
 }
 
 .ticket-presupuesto__lineas {
@@ -1366,7 +1372,13 @@ input[type='number']::-webkit-outer-spin-button {
     width: var(--ancho-fecha-ticket);
   }
 
-  .acciones-presupuesto > * {
+  .acciones-presupuesto__edicion,
+  .acciones-presupuesto__salida {
+    width: 100%;
+  }
+
+  .acciones-presupuesto__edicion > *,
+  .acciones-presupuesto__salida > * {
     flex: 1 1 auto;
   }
 

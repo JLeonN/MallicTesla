@@ -9,6 +9,7 @@ import ResumenPresupuesto from '@/components/presupuestos/ResumenPresupuesto.vue
 import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorDestinatarioPresupuesto.vue';
 import type { Material, Moneda } from '@/dominio/materiales';
 import {
+  clonarLineasPresupuesto,
   crearLineaDesdeMaterial,
   crearLineaMaterialManual,
   crearLineasInicialesPresupuesto,
@@ -44,12 +45,14 @@ const cargandoPagina = ref(true);
 const presupuestoNoEncontrado = ref(false);
 const mostrarConfirmacionCancelar = ref(false);
 const estadoInicial = ref('');
+const errorAccion = ref<string | null>(null);
 
 const esNuevo = computed(() => ruta.name === 'nuevo-presupuesto');
 const esEdicion = computed(() => ruta.name === 'editar-presupuesto');
 const soloLectura = computed(() => ruta.name === 'detalle-presupuesto');
 const tieneErroresCarga = computed(
   () =>
+    errorAccion.value ||
     presupuestosStore.error ||
     clientesStore.error ||
     materialesStore.error ||
@@ -82,6 +85,7 @@ async function inicializarPantalla(): Promise<void> {
   cargandoPagina.value = true;
   presupuestoNoEncontrado.value = false;
   mostrarConfirmacionCancelar.value = false;
+  errorAccion.value = null;
 
   try {
     await Promise.all([
@@ -136,7 +140,7 @@ function cargarDatosPresupuesto(presupuestoGuardado: Presupuesto): void {
   telefonoDestinatario.value = presupuestoGuardado.destinatario.telefono;
   fechaPresupuesto.value = presupuestoGuardado.fechaPresupuesto;
   monedaPresupuesto.value = presupuestoGuardado.moneda;
-  lineas.value = structuredClone(presupuestoGuardado.lineas);
+  lineas.value = clonarLineasPresupuesto(presupuestoGuardado.lineas);
   estadoInicial.value = serializarDatosFormulario();
 }
 
@@ -150,7 +154,7 @@ function obtenerDatosFormulario(): DatosPresupuesto {
     },
     fechaPresupuesto: fechaPresupuesto.value,
     moneda: monedaPresupuesto.value,
-    lineas: structuredClone(lineas.value),
+    lineas: clonarLineasPresupuesto(lineas.value),
   };
 }
 
@@ -181,16 +185,16 @@ function solicitarCancelacion(): void {
 
 function confirmarCancelacion(): void {
   if (esNuevo.value) {
-    restablecerFormularioNuevo();
+    void router.replace('/');
     return;
   }
 
-  if (presupuesto.value) {
-    void router.replace(`/presupuestos/${presupuesto.value.id}`);
-  }
+  void router.replace('/presupuestos');
 }
 
 async function guardarNuevoYFinalizar(accion: AccionFinalPresupuesto): Promise<void> {
+  errorAccion.value = null;
+
   try {
     await presupuestosStore.agregarPresupuesto(obtenerDatosFormulario());
 
@@ -200,8 +204,8 @@ async function guardarNuevoYFinalizar(accion: AccionFinalPresupuesto): Promise<v
 
     notificarAccionCompletada(accion);
     await router.replace('/presupuestos');
-  } catch {
-    // El store mantiene el mensaje de error visible en la pantalla.
+  } catch (errorCapturado) {
+    errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
   }
 }
 
@@ -209,6 +213,8 @@ async function guardarCambios(): Promise<void> {
   if (!presupuesto.value) {
     return;
   }
+
+  errorAccion.value = null;
 
   try {
     const presupuestoActualizado = await presupuestosStore.editarPresupuesto(
@@ -221,9 +227,18 @@ async function guardarCambios(): Promise<void> {
       classes: 'notificacion-exito',
     });
     await router.replace(`/presupuestos/${presupuestoActualizado.id}`);
-  } catch {
-    // El store mantiene el mensaje de error visible en la pantalla.
+  } catch (errorCapturado) {
+    errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
   }
+}
+
+function obtenerMensajeErrorGuardado(errorCapturado: unknown): string {
+  return (
+    presupuestosStore.error ||
+    (errorCapturado instanceof Error
+      ? errorCapturado.message
+      : 'No se pudo guardar el presupuesto.')
+  );
 }
 
 function descargarPresupuesto(): void {
@@ -449,38 +464,9 @@ function normalizarNumeroWhatsapp(numeroIngresado: string): string {
         </section>
 
         <section class="acciones-presupuesto" aria-label="Acciones del presupuesto">
-          <q-btn
-            v-if="esNuevo"
-            class="boton-secundario"
-            flat
-            no-caps
-            icon="visibility"
-            label="Vista previa"
-            @click="notificarPdfPendiente"
-          />
-          <q-btn
-            class="boton-secundario"
-            flat
-            no-caps
-            icon="download"
-            label="Descargar PDF"
-            :disable="esEdicion || presupuestosStore.guardando"
-            @click="descargarPresupuesto"
-          />
-          <q-btn
-            class="boton-secundario"
-            flat
-            no-caps
-            :icon="mdiWhatsapp"
-            label="Enviar"
-            :disable="
-              esEdicion || presupuestosStore.guardando || telefonoDestinatario.trim() === ''
-            "
-            @click="enviarPresupuesto"
-          />
-
-          <template v-if="soloLectura && presupuesto">
+          <div class="acciones-presupuesto__edicion">
             <q-btn
+              v-if="soloLectura && presupuesto"
               class="boton-accion-principal"
               unelevated
               no-caps
@@ -488,60 +474,89 @@ function normalizarNumeroWhatsapp(numeroIngresado: string): string {
               label="Editar"
               :to="`/presupuestos/${presupuesto.id}/editar`"
             />
-          </template>
-
-          <template v-else>
-            <Transition name="confirmacion-cancelacion" mode="out-in">
-              <div
-                v-if="mostrarConfirmacionCancelar"
-                key="confirmacion"
-                class="confirmacion-cancelacion-presupuesto"
-                role="alert"
-              >
-                <span>Tenés cambios. ¿Seguro que querés cancelar?</span>
-                <q-btn
-                  class="boton-peligro"
-                  flat
-                  round
-                  dense
-                  icon="check"
-                  aria-label="Sí, descartar los cambios"
-                  @click="confirmarCancelacion"
-                />
-                <q-btn
-                  class="boton-icono-secundario"
-                  flat
-                  round
-                  dense
-                  icon="close"
-                  aria-label="No cancelar"
-                  @click="mostrarConfirmacionCancelar = false"
-                />
-              </div>
+            <template v-else>
               <q-btn
-                v-else
-                key="cancelar"
-                class="boton-secundario"
-                flat
+                class="boton-accion-principal"
+                unelevated
                 no-caps
-                icon="close"
-                :label="esEdicion ? 'Cancelar cambios' : 'Cancelar'"
+                icon="save"
+                :label="esEdicion ? 'Guardar cambios' : 'Guardar'"
+                :loading="presupuestosStore.guardando"
                 :disable="presupuestosStore.guardando"
-                @click="solicitarCancelacion"
+                @click="esEdicion ? guardarCambios() : guardarNuevoYFinalizar('guardar')"
               />
-            </Transition>
 
+              <Transition name="confirmacion-cancelacion" mode="out-in">
+                <div
+                  v-if="mostrarConfirmacionCancelar"
+                  key="confirmacion"
+                  class="confirmacion-cancelacion-presupuesto"
+                  role="alert"
+                >
+                  <q-btn
+                    class="boton-peligro"
+                    flat
+                    no-caps
+                    icon="warning_amber"
+                    label="Hay cambios sin guardar. ¿Descartar?"
+                    @click="confirmarCancelacion"
+                  />
+                  <q-btn
+                    class="boton-icono-secundario"
+                    flat
+                    round
+                    dense
+                    icon="close"
+                    aria-label="Anular la cancelación"
+                    @click="mostrarConfirmacionCancelar = false"
+                  />
+                </div>
+                <q-btn
+                  v-else
+                  key="cancelar"
+                  class="boton-secundario"
+                  flat
+                  no-caps
+                  icon="close"
+                  :label="esEdicion ? 'Cancelar cambios' : 'Cancelar'"
+                  :disable="presupuestosStore.guardando"
+                  @click="solicitarCancelacion"
+                />
+              </Transition>
+            </template>
+          </div>
+
+          <div class="acciones-presupuesto__salida">
             <q-btn
-              class="boton-accion-principal"
-              unelevated
+              v-if="esNuevo"
+              class="boton-secundario"
               no-caps
-              icon="save"
-              :label="esEdicion ? 'Guardar cambios' : 'Guardar'"
-              :loading="presupuestosStore.guardando"
-              :disable="presupuestosStore.guardando"
-              @click="esEdicion ? guardarCambios() : guardarNuevoYFinalizar('guardar')"
+              flat
+              icon="visibility"
+              label="Vista previa"
+              @click="notificarPdfPendiente"
             />
-          </template>
+            <q-btn
+              class="boton-secundario"
+              flat
+              no-caps
+              icon="download"
+              label="Descargar PDF"
+              :disable="esEdicion || presupuestosStore.guardando"
+              @click="descargarPresupuesto"
+            />
+            <q-btn
+              class="boton-secundario"
+              flat
+              no-caps
+              :icon="mdiWhatsapp"
+              label="Enviar"
+              :disable="
+                esEdicion || presupuestosStore.guardando || telefonoDestinatario.trim() === ''
+              "
+              @click="enviarPresupuesto"
+            />
+          </div>
         </section>
       </div>
     </main>

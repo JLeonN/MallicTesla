@@ -112,12 +112,41 @@ export function normalizarDatosPresupuesto(datos: DatosPresupuesto): DatosPresup
       nombre: datos.destinatario.nombre.trim(),
       telefono: datos.destinatario.telefono.trim(),
     },
-    fechaPresupuesto: datos.fechaPresupuesto,
-    moneda: datos.moneda,
-    lineas: structuredClone(datos.lineas).map((linea) => ({
-      ...linea,
-      nombre: linea.nombre.trim(),
-    })),
+    fechaPresupuesto: datos.fechaPresupuesto.trim(),
+    moneda: datos.moneda === 'USD' ? 'USD' : 'UYU',
+    lineas: datos.lineas.map(normalizarLineaPresupuesto),
+  };
+}
+
+export function clonarLineasPresupuesto(lineas: readonly LineaPresupuesto[]): LineaPresupuesto[] {
+  return lineas.map((linea) => ({
+    ...linea,
+    opcionesUnidad: linea.opcionesUnidad.map((opcion) => ({ ...opcion })),
+  }));
+}
+
+export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null {
+  if (!esRegistro(valor) || typeof valor.id !== 'string' || !Array.isArray(valor.lineas)) {
+    return null;
+  }
+
+  const destinatario = recuperarDestinatario(valor.destinatario);
+  const lineas = valor.lineas.map(recuperarLineaPresupuesto).filter(esLineaRecuperada);
+
+  if (destinatario === null || lineas.length !== valor.lineas.length) {
+    return null;
+  }
+
+  const ahora = new Date().toISOString();
+
+  return {
+    id: valor.id,
+    destinatario,
+    fechaPresupuesto: obtenerTexto(valor.fechaPresupuesto),
+    moneda: valor.moneda === 'USD' ? 'USD' : 'UYU',
+    lineas,
+    fechaCreacion: obtenerTexto(valor.fechaCreacion) || ahora,
+    fechaActualizacion: obtenerTexto(valor.fechaActualizacion) || ahora,
   };
 }
 
@@ -269,6 +298,85 @@ function normalizarNumeroNoNegativo(valor: number | null): number {
   return Number.isFinite(numero) && numero > 0 ? numero : 0;
 }
 
+function normalizarLineaPresupuesto(linea: LineaPresupuesto): LineaPresupuesto {
+  return {
+    ...linea,
+    nombre: linea.nombre.trim(),
+    cantidad: normalizarNumeroEditable(linea.cantidad, 0),
+    precioUnitario: normalizarNumeroEditable(linea.precioUnitario, null),
+    opcionesUnidad: linea.opcionesUnidad.map((opcion) => ({
+      unidad: opcion.unidad.trim(),
+      precioUnitario: normalizarNumeroEditable(opcion.precioUnitario, null),
+    })),
+  };
+}
+
+function recuperarDestinatario(valor: unknown): DatosDestinatarioPresupuesto | null {
+  if (!esRegistro(valor)) {
+    return null;
+  }
+
+  return {
+    tipo: valor.tipo === 'guardado' ? 'guardado' : 'potencial',
+    idCliente: typeof valor.idCliente === 'string' ? valor.idCliente : null,
+    nombre: obtenerTexto(valor.nombre).trim(),
+    telefono: obtenerTexto(valor.telefono).trim(),
+  };
+}
+
+function recuperarLineaPresupuesto(valor: unknown): LineaPresupuesto | null {
+  if (!esRegistro(valor)) {
+    return null;
+  }
+
+  const tipo = valor.tipo === 'nafta' ? 'traslado' : valor.tipo;
+  if (!esTipoConceptoPresupuesto(tipo)) {
+    return null;
+  }
+
+  const opcionesUnidad = Array.isArray(valor.opcionesUnidad)
+    ? valor.opcionesUnidad.map(recuperarOpcionUnidad).filter(esOpcionRecuperada)
+    : [];
+
+  return {
+    id: typeof valor.id === 'string' ? valor.id : crearIdentificadorMaterial(),
+    tipo,
+    origen: esOrigenLineaPresupuesto(valor.origen) ? valor.origen : 'manual',
+    idMaterial: typeof valor.idMaterial === 'string' ? valor.idMaterial : null,
+    nombre: obtenerTexto(valor.nombre).trim(),
+    cantidad: normalizarNumeroEditable(valor.cantidad, 0),
+    unidad: obtenerTexto(valor.unidad).trim() || 'Unidad',
+    opcionesUnidad,
+    precioUnitario: normalizarNumeroEditable(valor.precioUnitario, null),
+    moneda: valor.moneda === 'USD' ? 'USD' : 'UYU',
+  };
+}
+
+function recuperarOpcionUnidad(valor: unknown): OpcionUnidadPresupuesto | null {
+  if (!esRegistro(valor)) {
+    return null;
+  }
+
+  const unidad = obtenerTexto(valor.unidad).trim();
+  if (unidad === '') {
+    return null;
+  }
+
+  return {
+    unidad,
+    precioUnitario: normalizarNumeroEditable(valor.precioUnitario, null),
+  };
+}
+
+function normalizarNumeroEditable(valor: unknown, valorVacio: number | null): number | null {
+  if (valor === null || valor === undefined || valor === '') {
+    return valorVacio;
+  }
+
+  const numero = Number(valor);
+  return Number.isFinite(numero) && numero >= 0 ? numero : valorVacio;
+}
+
 function esRegistro(valor: unknown): valor is Record<string, unknown> {
   return typeof valor === 'object' && valor !== null;
 }
@@ -301,4 +409,26 @@ function esLineaPresupuestoGuardada(valor: unknown): valor is LineaPresupuesto {
 
 function esNumeroOpcional(valor: unknown): valor is number | null {
   return valor === null || (typeof valor === 'number' && Number.isFinite(valor) && valor >= 0);
+}
+
+function esTipoConceptoPresupuesto(valor: unknown): valor is TipoConceptoPresupuesto {
+  return TIPOS_CONCEPTO_PRESUPUESTO.some((tipo) => tipo === valor);
+}
+
+function esOrigenLineaPresupuesto(valor: unknown): valor is OrigenLineaPresupuesto {
+  return ORIGENES_LINEA_PRESUPUESTO.some((origen) => origen === valor);
+}
+
+function esLineaRecuperada(linea: LineaPresupuesto | null): linea is LineaPresupuesto {
+  return linea !== null;
+}
+
+function esOpcionRecuperada(
+  opcion: OpcionUnidadPresupuesto | null,
+): opcion is OpcionUnidadPresupuesto {
+  return opcion !== null;
+}
+
+function obtenerTexto(valor: unknown): string {
+  return typeof valor === 'string' ? valor : '';
 }
