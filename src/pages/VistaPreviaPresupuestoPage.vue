@@ -109,6 +109,10 @@ function imprimir(): void {
   window.print();
 }
 
+function descargar(): void {
+  window.print();
+}
+
 function enviarPorWhatsapp(): void {
   if (numeroWhatsapp.value === '') {
     return;
@@ -186,6 +190,15 @@ function formatearCantidad(cantidad: number | null): string {
             icon="arrow_back"
             label="Volver"
             @click="volver"
+          />
+          <q-btn
+            class="boton-secundario"
+            flat
+            no-caps
+            icon="download"
+            label="Descargar"
+            :disable="datosPresupuesto === null"
+            @click="descargar"
           />
           <q-btn
             class="boton-secundario"
