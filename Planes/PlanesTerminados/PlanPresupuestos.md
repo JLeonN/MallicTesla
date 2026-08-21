@@ -170,6 +170,8 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [x] Consolidar mano de obra y traslado en el desglose de totales del Ticket
 - [x] Consolidar mano de obra y traslado en una única línea final para el cliente
 - [x] Repetir el importe consolidado en el resumen para evitar diferencias visibles
+- [x] Centralizar el mensaje de WhatsApp con cliente, presentación, fecha y resumen de importes
+- [x] Reutilizar el mismo documento y flujo para descargar o enviar directamente desde Ticket y vista previa
 - [x] Guardar cada presupuesto como una copia independiente de clientes, materiales y configuración
 - [x] Crear el listado responsive de presupuestos con cliente, fecha, total y acceso al detalle
 - [x] Crear modos separados de visualización y edición explícita

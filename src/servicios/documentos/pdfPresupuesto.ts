@@ -11,6 +11,7 @@ export async function generarPdfPresupuesto(elementoDocumento: HTMLElement): Pro
 
   contenedorExportacion.className = 'contenedor-exportacion-pdf';
   copiaDocumento.classList.add('documento-presupuesto--exportando');
+  copiaDocumento.classList.remove('documento-presupuesto--oculto');
   contenedorExportacion.append(copiaDocumento);
   document.body.append(contenedorExportacion);
 

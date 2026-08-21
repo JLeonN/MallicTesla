@@ -1395,6 +1395,13 @@ input[type='number']::-webkit-outer-spin-button {
   box-shadow: var(--sombra-principal);
 }
 
+.documento-presupuesto--oculto {
+  position: fixed;
+  top: 0;
+  left: var(--desplazamiento-documento-oculto);
+  pointer-events: none;
+}
+
 .documento-presupuesto__encabezado,
 .documento-presupuesto__marca,
 .documento-presupuesto__cliente > div,
@@ -1814,7 +1821,7 @@ input[type='number']::-webkit-outer-spin-button {
 .contenedor-exportacion-pdf {
   position: fixed;
   top: 0;
-  left: -10000px;
+  left: var(--desplazamiento-documento-oculto);
   width: var(--ancho-documento-a4);
   background: var(--color-documento-fondo);
   pointer-events: none;

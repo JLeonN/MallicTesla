@@ -74,6 +74,7 @@
   --ancho-ticket-presupuesto: 68rem;
   --ancho-documento-a4: 210mm;
   --alto-documento-a4: 297mm;
+  --desplazamiento-documento-oculto: -10000px;
   --ancho-columna-acciones: 8.5rem;
   --ancho-columna-accion-material: 9.5rem;
   --ancho-fecha-ticket: 10rem;

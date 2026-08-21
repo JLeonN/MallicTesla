@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { mdiWhatsapp } from '@quasar/extras/mdi-v7';
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import AgregadorMaterialPresupuesto from '@/components/presupuestos/AgregadorMaterialPresupuesto.vue';
+import DocumentoPresupuesto from '@/components/presupuestos/DocumentoPresupuesto.vue';
 import FilaPresupuesto from '@/components/presupuestos/FilaPresupuesto.vue';
 import ResumenPresupuesto from '@/components/presupuestos/ResumenPresupuesto.vue';
 import SelectorDestinatarioPresupuesto from '@/components/presupuestos/SelectorDestinatarioPresupuesto.vue';
@@ -25,9 +26,15 @@ import { useClientesStore } from '@/stores/clientes';
 import { useConfiguracionStore } from '@/stores/configuracion';
 import { useMaterialesStore } from '@/stores/materiales';
 import { usePresupuestosStore } from '@/stores/presupuestos';
-import { crearEnlaceWhatsapp, normalizarNumeroWhatsapp } from '@/dominio/whatsapp';
+import {
+  descargarDocumentoPresupuesto,
+  enviarDocumentoPresupuesto,
+} from '@/servicios/documentos/accionesPresupuesto';
 
-type AccionFinalPresupuesto = 'guardar' | 'descargar' | 'enviar';
+type AccionDocumentoPresupuesto = 'descargar' | 'enviar';
+type DocumentoPresupuestoExpuesto = {
+  obtenerElemento: () => HTMLElement | null;
+};
 
 const ruta = useRoute();
 const router = useRouter();
@@ -51,6 +58,8 @@ const mostrarConfirmacionCancelar = ref(false);
 const estadoInicial = ref('');
 const errorAccion = ref<string | null>(null);
 const configuracionDocumento = ref<ConfiguracionDocumentoPresupuesto | null>(null);
+const documentoPresupuesto = ref<DocumentoPresupuestoExpuesto | null>(null);
+const accionDocumento = ref<AccionDocumentoPresupuesto | null>(null);
 
 const esNuevo = computed(() => ruta.name === 'nuevo-presupuesto');
 const esEdicion = computed(() => ruta.name === 'editar-presupuesto');
@@ -66,9 +75,10 @@ const tieneErroresCarga = computed(
 const hayCambios = computed(
   () => estadoInicial.value !== '' && serializarDatosFormulario() !== estadoInicial.value,
 );
-const mensajeWhatsapp = computed(
+const datosDocumento = computed(() => obtenerDatosFormulario());
+const configuracionDocumentoEfectiva = computed(
   () =>
-    `Hola, te envío el presupuesto hablado (${formatearFechaPresupuesto(fechaPresupuesto.value)}).`,
+    configuracionDocumento.value ?? crearConfiguracionDocumento(configuracionStore.configuracion),
 );
 const tituloPagina = computed(() => {
   if (esNuevo.value) {
@@ -251,17 +261,19 @@ function confirmarCancelacion(): void {
   void router.replace('/presupuestos');
 }
 
-async function guardarNuevoYFinalizar(accion: AccionFinalPresupuesto): Promise<void> {
+async function guardarNuevoYFinalizar(): Promise<void> {
   errorAccion.value = null;
 
   try {
-    await presupuestosStore.agregarPresupuesto(obtenerDatosFormulario());
-
-    if (accion === 'enviar') {
-      abrirWhatsapp();
+    if (!presupuesto.value) {
+      presupuesto.value = await presupuestosStore.agregarPresupuesto(obtenerDatosFormulario());
     }
 
-    notificarAccionCompletada(accion);
+    $q.notify({
+      message: 'Presupuesto guardado correctamente.',
+      position: 'top',
+      classes: 'notificacion-exito',
+    });
     await router.replace('/presupuestos');
   } catch (errorCapturado) {
     errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
@@ -301,52 +313,64 @@ function obtenerMensajeErrorGuardado(errorCapturado: unknown): string {
 }
 
 function descargarPresupuesto(): void {
-  if (esNuevo.value) {
-    void guardarNuevoYFinalizar('descargar');
-    return;
-  }
-
-  notificarPdfPendiente();
+  void ejecutarAccionDocumento('descargar');
 }
 
 function enviarPresupuesto(): void {
-  if (esNuevo.value) {
-    void guardarNuevoYFinalizar('enviar');
+  void ejecutarAccionDocumento('enviar');
+}
+
+async function ejecutarAccionDocumento(accion: AccionDocumentoPresupuesto): Promise<void> {
+  if (esEdicion.value || accionDocumento.value || !documentoPresupuesto.value?.obtenerElemento()) {
     return;
   }
 
-  abrirWhatsapp();
-}
+  const datos = obtenerDatosFormulario();
+  accionDocumento.value = accion;
+  errorAccion.value = null;
 
-function abrirWhatsapp(): void {
-  const numero = normalizarNumeroWhatsapp(telefonoDestinatario.value);
-  if (numero === '') {
-    return;
+  try {
+    const opciones = {
+      datos,
+      configuracion: configuracionDocumentoEfectiva.value,
+      obtenerElemento: () => documentoPresupuesto.value?.obtenerElemento() ?? null,
+      antesDeGenerar: async () => {
+        if (esNuevo.value && !presupuesto.value) {
+          presupuesto.value = await presupuestosStore.agregarPresupuesto(datos);
+        }
+        await nextTick();
+      },
+    };
+
+    if (accion === 'descargar') {
+      const plataforma = await descargarDocumentoPresupuesto(opciones);
+      $q.notify({
+        message:
+          plataforma === 'nativo'
+            ? 'El PDF se guardó en la carpeta Documentos.'
+            : 'El PDF se descargó correctamente.',
+        position: 'top',
+        classes: 'notificacion-exito',
+      });
+    } else {
+      const plataforma = await enviarDocumentoPresupuesto(opciones);
+      if (plataforma === 'web') {
+        $q.notify({
+          message: 'PDF descargado. Adjuntalo en la conversación de WhatsApp que abrimos.',
+          position: 'top',
+          classes: 'notificacion-exito',
+        });
+      }
+    }
+
+    if (esNuevo.value) {
+      await router.replace('/presupuestos');
+    }
+  } catch (errorCapturado) {
+    errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
+  } finally {
+    accionDocumento.value = null;
   }
-
-  const enlace = crearEnlaceWhatsapp(numero, mensajeWhatsapp.value);
-  window.open(enlace, '_blank', 'noopener,noreferrer');
-}
-
-function notificarAccionCompletada(accion: AccionFinalPresupuesto): void {
-  const mensajes: Record<AccionFinalPresupuesto, string> = {
-    guardar: 'Presupuesto guardado correctamente.',
-    descargar: 'Presupuesto guardado. La descarga del PDF se incorporará próximamente.',
-    enviar: 'Presupuesto guardado correctamente.',
-  };
-
-  $q.notify({
-    message: mensajes[accion],
-    position: 'top',
-    classes: 'notificacion-exito',
-  });
-}
-
-function notificarPdfPendiente(): void {
-  $q.notify({
-    message: 'La descarga del PDF se incorporará en el módulo de documentos.',
-    position: 'top',
-  });
 }
 
 function obtenerFechaActualLocal(): string {
@@ -355,16 +379,6 @@ function obtenerFechaActualLocal(): string {
   const mes = String(fecha.getMonth() + 1).padStart(2, '0');
   const dia = String(fecha.getDate()).padStart(2, '0');
   return `${anio}-${mes}-${dia}`;
-}
-
-function formatearFechaPresupuesto(fecha: string): string {
-  const [anio, mes, dia] = fecha.split('-');
-
-  if (!anio || !mes || !dia) {
-    return formatearFechaPresupuesto(obtenerFechaActualLocal());
-  }
-
-  return `${dia}/${mes}/${anio}`;
 }
 
 function restablecerFechaPresupuesto(): void {
@@ -523,6 +537,7 @@ function restablecerFechaPresupuesto(): void {
               no-caps
               icon="edit"
               label="Editar"
+              :disable="accionDocumento !== null"
               :to="`/presupuestos/${presupuesto.id}/editar`"
             />
             <template v-else>
@@ -533,8 +548,8 @@ function restablecerFechaPresupuesto(): void {
                 icon="save"
                 :label="esEdicion ? 'Guardar cambios' : 'Guardar'"
                 :loading="presupuestosStore.guardando"
-                :disable="presupuestosStore.guardando"
-                @click="esEdicion ? guardarCambios() : guardarNuevoYFinalizar('guardar')"
+                :disable="presupuestosStore.guardando || accionDocumento !== null"
+                @click="esEdicion ? guardarCambios() : guardarNuevoYFinalizar()"
               />
 
               <Transition name="confirmacion-cancelacion" mode="out-in">
@@ -570,7 +585,7 @@ function restablecerFechaPresupuesto(): void {
                   no-caps
                   icon="close"
                   :label="esEdicion ? 'Cancelar cambios' : 'Cancelar'"
-                  :disable="presupuestosStore.guardando"
+                  :disable="presupuestosStore.guardando || accionDocumento !== null"
                   @click="solicitarCancelacion"
                 />
               </Transition>
@@ -584,30 +599,46 @@ function restablecerFechaPresupuesto(): void {
               flat
               icon="visibility"
               label="Vista previa"
+              :disable="accionDocumento !== null"
               @click="abrirVistaPrevia"
             />
             <q-btn
+              v-if="!esEdicion"
               class="boton-secundario"
               flat
               no-caps
               icon="download"
               label="Descargar PDF"
-              :disable="esEdicion || presupuestosStore.guardando"
+              :loading="accionDocumento === 'descargar'"
+              :disable="presupuestosStore.guardando || accionDocumento !== null"
               @click="descargarPresupuesto"
             />
             <q-btn
+              v-if="!esEdicion"
               class="boton-secundario"
               flat
               no-caps
               :icon="mdiWhatsapp"
               label="Enviar"
+              :loading="accionDocumento === 'enviar'"
               :disable="
-                esEdicion || presupuestosStore.guardando || telefonoDestinatario.trim() === ''
+                presupuestosStore.guardando ||
+                accionDocumento !== null ||
+                telefonoDestinatario.trim() === '' ||
+                nombreDestinatario.trim() === ''
               "
               @click="enviarPresupuesto"
             />
           </div>
         </section>
+
+        <DocumentoPresupuesto
+          v-if="!esEdicion"
+          ref="documentoPresupuesto"
+          :datos="datosDocumento"
+          :configuracion="configuracionDocumentoEfectiva"
+          oculto
+        />
       </div>
     </main>
   </q-page>
