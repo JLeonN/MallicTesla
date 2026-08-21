@@ -279,11 +279,11 @@ export function calcularTotalPresupuesto(
   }, 0);
 }
 
-export function calcularTotalTrabajoYTraslado(
+export function calcularTotalManoObra(
   lineas: readonly LineaPresupuesto[],
   monedaPresupuesto: Moneda,
 ): number {
-  return calcularTotalPorTiposConcepto(lineas, monedaPresupuesto, ['manoObra', 'traslado']);
+  return calcularTotalPorTiposConcepto(lineas, monedaPresupuesto, ['manoObra']);
 }
 
 export function calcularTotalMateriales(

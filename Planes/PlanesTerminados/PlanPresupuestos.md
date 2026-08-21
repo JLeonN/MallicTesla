@@ -167,6 +167,7 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [x] Reemplazar Nafta por Traslado en el modelo y la interfaz
 - [x] Permitir seleccionar o escribir manualmente una mano de obra dentro del ticket
 - [x] Permitir agregar varias manos de obra y mantenerlas agrupadas al comienzo del ticket
+- [x] Mostrar la mano de obra sin mezclar el traslado en el desglose de totales
 - [x] Guardar cada presupuesto como una copia independiente de clientes, materiales y configuración
 - [x] Crear el listado responsive de presupuestos con cliente, fecha, total y acceso al detalle
 - [x] Crear modos separados de visualización y edición explícita

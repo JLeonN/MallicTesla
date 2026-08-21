@@ -4,7 +4,7 @@ import { formatearImporte, MONEDAS, type Moneda } from '@/dominio/materiales';
 import {
   calcularTotalMateriales,
   calcularTotalPresupuesto,
-  calcularTotalTrabajoYTraslado,
+  calcularTotalManoObra,
   lineaTieneMonedaCompatible,
   lineaTienePrecioPendiente,
   type LineaPresupuesto,
@@ -17,9 +17,7 @@ const props = defineProps<{
 
 const moneda = defineModel<Moneda>('moneda', { required: true });
 
-const totalTrabajoYTraslado = computed(() =>
-  calcularTotalTrabajoYTraslado(props.lineas, moneda.value),
-);
+const totalManoObra = computed(() => calcularTotalManoObra(props.lineas, moneda.value));
 const totalMateriales = computed(() => calcularTotalMateriales(props.lineas, moneda.value));
 const total = computed(() => calcularTotalPresupuesto(props.lineas, moneda.value));
 const cantidadIncompatibles = computed(
@@ -58,8 +56,8 @@ const cantidadPendientes = computed(
     </div>
     <div class="resumen-presupuesto__importes">
       <div class="resumen-presupuesto__importe">
-        <span>Trabajo y traslado</span>
-        <strong>{{ formatearImporte(totalTrabajoYTraslado, moneda) }}</strong>
+        <span>Mano de obra</span>
+        <strong>{{ formatearImporte(totalManoObra, moneda) }}</strong>
       </div>
       <div class="resumen-presupuesto__importe">
         <span>Materiales</span>

@@ -9,7 +9,7 @@ import {
   calcularSubtotalLinea,
   calcularTotalMateriales,
   calcularTotalPresupuesto,
-  calcularTotalTrabajoYTraslado,
+  calcularTotalManoObra,
   crearConfiguracionDocumento,
   lineaTieneMonedaCompatible,
   normalizarDatosPresupuesto,
@@ -59,9 +59,7 @@ const nombreEmpresa = computed(
 const logoEmpresa = computed(() => configuracionDocumento.value.logo?.datosUrl || logoMallicTesla);
 const lineas = computed(() => datosPresupuesto.value?.lineas ?? []);
 const moneda = computed(() => datosPresupuesto.value?.moneda ?? 'UYU');
-const totalTrabajoYTraslado = computed(() =>
-  calcularTotalTrabajoYTraslado(lineas.value, moneda.value),
-);
+const totalManoObra = computed(() => calcularTotalManoObra(lineas.value, moneda.value));
 const totalMateriales = computed(() => calcularTotalMateriales(lineas.value, moneda.value));
 const total = computed(() => calcularTotalPresupuesto(lineas.value, moneda.value));
 const cantidadMonedasIncompatibles = computed(
@@ -444,8 +442,8 @@ function formatearCantidad(cantidad: number | null): string {
 
           <section class="documento-presupuesto__totales" aria-label="Totales del presupuesto">
             <div>
-              <span>Trabajo y traslado</span>
-              <strong>{{ formatearImporte(totalTrabajoYTraslado, moneda) }}</strong>
+              <span>Mano de obra</span>
+              <strong>{{ formatearImporte(totalManoObra, moneda) }}</strong>
             </div>
             <div>
               <span>Materiales</span>
