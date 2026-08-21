@@ -12,6 +12,7 @@ import {
   clonarLineasPresupuesto,
   crearConfiguracionDocumento,
   crearLineaDesdeMaterial,
+  crearLineaManoObra,
   crearLineaMaterialManual,
   crearLineasInicialesPresupuesto,
   type DatosPresupuesto,
@@ -203,6 +204,14 @@ function agregarMaterial(material: Material): void {
 
 function agregarMaterialManual(nombre: string): void {
   lineas.value.push(crearLineaMaterialManual(nombre, monedaPresupuesto.value));
+}
+
+function agregarManoObra(): void {
+  const indicePrimeraLineaDistinta = lineas.value.findIndex((linea) => linea.tipo !== 'manoObra');
+  const indiceInsercion =
+    indicePrimeraLineaDistinta === -1 ? lineas.value.length : indicePrimeraLineaDistinta;
+
+  lineas.value.splice(indiceInsercion, 0, crearLineaManoObra(monedaPresupuesto.value));
 }
 
 function eliminarLinea(idLinea: string): void {
@@ -440,6 +449,17 @@ function restablecerFechaPresupuesto(): void {
               <div>
                 <p class="etiqueta-seccion">Detalle {{ soloLectura ? 'guardado' : 'editable' }}</p>
                 <h2 id="titulo-ticket-presupuesto" class="titulo-seccion">Ticket</h2>
+                <q-btn
+                  v-if="!soloLectura"
+                  class="boton-secundario ticket-presupuesto__agregar-mano-obra"
+                  flat
+                  dense
+                  no-caps
+                  icon="add"
+                  label="Mano de obra"
+                  aria-label="Agregar otra mano de obra"
+                  @click="agregarManoObra"
+                />
               </div>
 
               <div class="ticket-presupuesto__fecha-controles">

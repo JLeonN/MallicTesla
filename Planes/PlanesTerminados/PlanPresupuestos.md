@@ -10,6 +10,8 @@ Ampliación acordada con Leo el 19 de agosto de 2026: conectar las tarifas de Co
 
 Ampliación acordada con Leo el 20 de agosto de 2026: generar el PDF desde la vista previa, descargarlo y compartirlo mediante el selector nativo de Android para enviarlo por WhatsApp. En web se descarga el archivo y se abre la conversación para adjuntarlo manualmente debido a las restricciones del navegador.
 
+Ampliación acordada con Leo el 20 de agosto de 2026: permitir agregar varias líneas de mano de obra en un mismo ticket, eligiendo una tarifa guardada o escribiendo un concepto manual para cada línea.
+
 ## Objetivo principal
 
 - Crear presupuestos en una única pantalla clara y cómoda para móvil
@@ -164,6 +166,7 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [x] Iniciar horas y kilómetros en cero
 - [x] Reemplazar Nafta por Traslado en el modelo y la interfaz
 - [x] Permitir seleccionar o escribir manualmente una mano de obra dentro del ticket
+- [x] Permitir agregar varias manos de obra y mantenerlas agrupadas al comienzo del ticket
 - [x] Guardar cada presupuesto como una copia independiente de clientes, materiales y configuración
 - [x] Crear el listado responsive de presupuestos con cliente, fecha, total y acceso al detalle
 - [x] Crear modos separados de visualización y edición explícita

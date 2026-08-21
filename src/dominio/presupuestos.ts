@@ -226,6 +226,13 @@ export function crearLineaMaterialManual(nombre: string, moneda: Moneda = 'UYU')
   };
 }
 
+export function crearLineaManoObra(moneda: Moneda = 'UYU'): LineaPresupuesto {
+  return {
+    ...crearLineaPredefinida('manoObra', '', 'Hora', 0, moneda),
+    origen: 'manual',
+  };
+}
+
 export function crearLineaDesdeMaterial(material: Material): LineaPresupuesto {
   const precio = obtenerPrecioPredeterminado(material);
   const opcionesUnidad = precio ? crearOpcionesUnidad(precio) : [];
