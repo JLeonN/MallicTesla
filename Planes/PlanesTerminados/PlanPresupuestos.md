@@ -6,7 +6,9 @@ Implementar el formulario responsive para crear y calcular presupuestos desde SP
 
 Este plan cubre la composición y el cálculo del presupuesto. No incluye historial, PDF, envío por WhatsApp, conversión automática de monedas ni la futura configuración de valores predeterminados para mano de obra y nafta.
 
-Ampliación acordada con Leo el 19 de agosto de 2026: conectar las tarifas de Configuración, guardar copias independientes de los presupuestos y agregar listado, visualización y edición explícita. La generación y descarga real del PDF continúa fuera de alcance.
+Ampliación acordada con Leo el 19 de agosto de 2026: conectar las tarifas de Configuración, guardar copias independientes de los presupuestos y agregar listado, visualización y edición explícita.
+
+Ampliación acordada con Leo el 20 de agosto de 2026: generar el PDF desde la vista previa, descargarlo y compartirlo mediante el selector nativo de Android para enviarlo por WhatsApp. En web se descarga el archivo y se abre la conversación para adjuntarlo manualmente debido a las restricciones del navegador.
 
 ## Objetivo principal
 
@@ -176,6 +178,21 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [x] Permitir volver al formulario sin perder cambios y abrir WhatsApp cuando el destinatario tenga teléfono
 - [ ] Validar visualmente el flujo completo en navegador y Android
 
+## FASE 8: Descargar y compartir el PDF
+
+### Objetivo
+
+Convertir la vista previa profesional en un archivo PDF real y permitir descargarlo o compartirlo desde Android.
+
+- [x] Generar un PDF A4 usando el mismo documento presentado en la vista previa
+- [x] Nombrar el archivo con cliente, fecha, hora y minutos
+- [x] Guardar cambios pendientes antes de descargar o enviar
+- [x] Descargar el PDF desde web y guardarlo en Documentos desde Android
+- [x] Compartir el archivo mediante el selector nativo de Android
+- [x] Descargar el PDF y abrir WhatsApp en web para adjuntarlo manualmente
+- [x] Mostrar carga, confirmación y errores durante las acciones
+- [ ] Validar visualmente el PDF descargado y el envío en un dispositivo Android
+
 ## Progreso del plan
 
 - [x] Fase 1: Modelar el presupuesto y sus cálculos
@@ -185,6 +202,7 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [x] Fase 5: Resolver moneda, avisos y resumen
 - [x] Fase 6: Integrar la pantalla en la aplicación
 - [x] Fase 7: Integrar configuración y presupuestos guardados
+- [x] Fase 8: Descargar y compartir el PDF
 - [ ] Fase Testing
 
 Fecha de creación: 18 de Agosto 2026

@@ -162,6 +162,10 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     }
   }
 
+  function descartarBorradorVistaPrevia(): void {
+    borradorVistaPrevia.value = null;
+  }
+
   function consumirBorradorVistaPrevia(
     rutaActual: string,
     idPresupuesto: string | null,
@@ -195,6 +199,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     establecerBorradorVistaPrevia,
     obtenerBorradorVistaPrevia,
     marcarRetornoVistaPrevia,
+    descartarBorradorVistaPrevia,
     consumirBorradorVistaPrevia,
   };
 });

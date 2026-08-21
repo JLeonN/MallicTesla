@@ -1807,6 +1807,47 @@ input[type='number']::-webkit-outer-spin-button {
   }
 }
 
+.contenedor-exportacion-pdf {
+  position: fixed;
+  top: 0;
+  left: -10000px;
+  width: var(--ancho-documento-a4);
+  background: var(--color-documento-fondo);
+  pointer-events: none;
+}
+
+.documento-presupuesto--exportando {
+  width: var(--ancho-documento-a4);
+  min-height: 0;
+  padding: 12mm;
+  box-shadow: none;
+}
+
+.documento-presupuesto--exportando .documento-presupuesto__encabezado,
+.documento-presupuesto--exportando .documento-presupuesto__cliente > div {
+  align-items: flex-start;
+  flex-direction: row;
+}
+
+.documento-presupuesto--exportando .documento-presupuesto__marca {
+  flex: 1 1 var(--ancho-texto-secundario);
+  width: auto;
+  max-width: var(--ancho-texto-secundario);
+}
+
+.documento-presupuesto--exportando .documento-presupuesto__datos-empresa {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.documento-presupuesto--exportando .documento-presupuesto__identificacion {
+  justify-items: end;
+  text-align: right;
+}
+
+.documento-presupuesto--exportando .documento-presupuesto__tabla {
+  min-width: 0;
+}
+
 @media print {
   /* Medidas fijas requeridas por el formato físico A4. */
   @page {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { mdiWhatsapp } from '@quasar/extras/mdi-v7';
+import { useQuasar } from 'quasar';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 import logoMallicTesla from '@/assets/LogoMallicTeslaOriginal.jpg';
 import { formatearImporte } from '@/dominio/materiales';
@@ -17,15 +18,26 @@ import {
 import { crearEnlaceWhatsapp, normalizarNumeroWhatsapp } from '@/dominio/whatsapp';
 import { useConfiguracionStore } from '@/stores/configuracion';
 import { usePresupuestosStore } from '@/stores/presupuestos';
+import {
+  compartirPdfPresupuesto,
+  crearNombreArchivoPresupuesto,
+  descargarPdfPresupuesto,
+  esPlataformaNativa,
+  generarPdfPresupuesto,
+} from '@/servicios/documentos/pdfPresupuesto';
 
 const ruta = useRoute();
 const router = useRouter();
+const $q = useQuasar();
 const configuracionStore = useConfiguracionStore();
 const presupuestosStore = usePresupuestosStore();
 
 const datosPresupuesto = ref<DatosPresupuesto | null>(null);
 const cargando = ref(true);
 const presupuestoNoEncontrado = ref(false);
+const documentoPresupuesto = ref<HTMLElement | null>(null);
+const accionDocumento = ref<'descargar' | 'enviar' | null>(null);
+const errorDocumento = ref<string | null>(null);
 const esVistaPreviaNueva = computed(() => ruta.name === 'vista-previa-nuevo-presupuesto');
 const idPresupuesto = computed(() =>
   esVistaPreviaNueva.value ? null : String(ruta.params.idPresupuesto),
@@ -63,7 +75,9 @@ const mensajeWhatsapp = computed(() => {
   const saludo = nombreCliente ? `Hola, ${nombreCliente}.` : 'Hola.';
   return `${saludo} Te envío el presupuesto de ${nombreEmpresa.value} por ${formatearImporte(total.value, moneda.value)}.`;
 });
-const errorCarga = computed(() => presupuestosStore.error || configuracionStore.error);
+const errorCarga = computed(
+  () => errorDocumento.value || presupuestosStore.error || configuracionStore.error,
+);
 
 onMounted(() => {
   void cargarVistaPrevia();
@@ -109,19 +123,114 @@ function imprimir(): void {
   window.print();
 }
 
-function descargar(): void {
-  window.print();
-}
-
-function enviarPorWhatsapp(): void {
-  if (numeroWhatsapp.value === '') {
+async function descargar(): Promise<void> {
+  if (!datosPresupuesto.value || !documentoPresupuesto.value || accionDocumento.value) {
     return;
   }
 
-  window.open(
-    crearEnlaceWhatsapp(numeroWhatsapp.value, mensajeWhatsapp.value),
-    '_blank',
-    'noopener,noreferrer',
+  accionDocumento.value = 'descargar';
+  errorDocumento.value = null;
+
+  try {
+    await guardarCambiosPendientes();
+    await nextTick();
+    const nombreArchivo = crearNombreArchivoPresupuesto(datosPresupuesto.value.destinatario.nombre);
+    const pdf = await generarPdfPresupuesto(documentoPresupuesto.value);
+    await descargarPdfPresupuesto(pdf, nombreArchivo);
+    $q.notify({
+      message: esPlataformaNativa()
+        ? 'El PDF se guardó en la carpeta Documentos.'
+        : 'El PDF se descargó correctamente.',
+      position: 'top',
+      classes: 'notificacion-exito',
+    });
+  } catch (errorCapturado) {
+    errorDocumento.value = obtenerMensajeError(errorCapturado);
+  } finally {
+    accionDocumento.value = null;
+  }
+}
+
+async function enviarPorWhatsapp(): Promise<void> {
+  if (
+    numeroWhatsapp.value === '' ||
+    !datosPresupuesto.value ||
+    !documentoPresupuesto.value ||
+    accionDocumento.value
+  ) {
+    return;
+  }
+
+  const ventanaWhatsapp = esPlataformaNativa() ? null : window.open('about:blank', '_blank');
+  accionDocumento.value = 'enviar';
+  errorDocumento.value = null;
+
+  try {
+    await guardarCambiosPendientes();
+    await nextTick();
+    const nombreArchivo = crearNombreArchivoPresupuesto(datosPresupuesto.value.destinatario.nombre);
+    const pdf = await generarPdfPresupuesto(documentoPresupuesto.value);
+
+    if (esPlataformaNativa()) {
+      await compartirPdfPresupuesto(pdf, nombreArchivo, mensajeWhatsapp.value);
+      return;
+    }
+
+    await descargarPdfPresupuesto(pdf, nombreArchivo);
+    const enlaceWhatsapp = crearEnlaceWhatsapp(numeroWhatsapp.value, mensajeWhatsapp.value);
+
+    if (ventanaWhatsapp) {
+      ventanaWhatsapp.opener = null;
+      ventanaWhatsapp.location.href = enlaceWhatsapp;
+    } else {
+      window.open(enlaceWhatsapp, '_blank', 'noopener,noreferrer');
+    }
+
+    $q.notify({
+      message: 'PDF descargado. Adjuntalo en la conversación de WhatsApp que abrimos.',
+      position: 'top',
+      classes: 'notificacion-exito',
+    });
+  } catch (errorCapturado) {
+    ventanaWhatsapp?.close();
+    errorDocumento.value = obtenerMensajeError(errorCapturado);
+  } finally {
+    accionDocumento.value = null;
+  }
+}
+
+async function guardarCambiosPendientes(): Promise<void> {
+  const borradorPendiente = borrador.value;
+
+  if (!borradorPendiente || !datosPresupuesto.value) {
+    return;
+  }
+
+  let idGuardado = borradorPendiente.idPresupuesto;
+
+  if (idGuardado) {
+    await presupuestosStore.cargarPresupuestos();
+    const presupuestoActualizado = await presupuestosStore.editarPresupuesto(
+      idGuardado,
+      datosPresupuesto.value,
+    );
+    datosPresupuesto.value = normalizarDatosPresupuesto(presupuestoActualizado);
+  } else {
+    const presupuestoNuevo = await presupuestosStore.agregarPresupuesto(datosPresupuesto.value);
+    idGuardado = presupuestoNuevo.id;
+    datosPresupuesto.value = normalizarDatosPresupuesto(presupuestoNuevo);
+  }
+
+  presupuestosStore.descartarBorradorVistaPrevia();
+  await router.replace(`/presupuestos/${idGuardado}/vista-previa`);
+}
+
+function obtenerMensajeError(errorCapturado: unknown): string {
+  return (
+    presupuestosStore.error ||
+    (errorCapturado instanceof Error
+      ? errorCapturado.message
+      : 'No se pudo preparar el archivo PDF.')
   );
 }
 
@@ -197,7 +306,8 @@ function formatearCantidad(cantidad: number | null): string {
             no-caps
             icon="download"
             label="Descargar"
-            :disable="datosPresupuesto === null"
+            :disable="datosPresupuesto === null || accionDocumento !== null"
+            :loading="accionDocumento === 'descargar'"
             @click="descargar"
           />
           <q-btn
@@ -206,7 +316,7 @@ function formatearCantidad(cantidad: number | null): string {
             no-caps
             icon="print"
             label="Imprimir"
-            :disable="datosPresupuesto === null"
+            :disable="datosPresupuesto === null || accionDocumento !== null"
             @click="imprimir"
           />
           <q-btn
@@ -215,7 +325,10 @@ function formatearCantidad(cantidad: number | null): string {
             no-caps
             :icon="mdiWhatsapp"
             label="Enviar"
-            :disable="numeroWhatsapp === '' || datosPresupuesto === null"
+            :disable="
+              numeroWhatsapp === '' || datosPresupuesto === null || accionDocumento !== null
+            "
+            :loading="accionDocumento === 'enviar'"
             @click="enviarPorWhatsapp"
           />
         </div>
@@ -239,7 +352,11 @@ function formatearCantidad(cantidad: number | null): string {
       </section>
 
       <div v-else-if="datosPresupuesto" class="vista-previa-presupuesto__lienzo">
-        <article class="documento-presupuesto" aria-label="Presupuesto listo para imprimir">
+        <article
+          ref="documentoPresupuesto"
+          class="documento-presupuesto"
+          aria-label="Presupuesto listo para imprimir"
+        >
           <header class="documento-presupuesto__encabezado">
             <div class="documento-presupuesto__marca">
               <img :src="logoEmpresa" :alt="`Logo de ${nombreEmpresa}`" />
