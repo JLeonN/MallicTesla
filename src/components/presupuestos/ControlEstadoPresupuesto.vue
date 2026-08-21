@@ -41,7 +41,7 @@ function solicitarCambio(estado: EstadoPresupuesto): void {
   <section class="estado-presupuesto" aria-labelledby="titulo-estado-presupuesto">
     <div class="estado-presupuesto__informacion">
       <p class="etiqueta-seccion">Seguimiento interno</p>
-      <div class="estado-presupuesto__encabezado">
+      <div class="estado-presupuesto__encabezado" aria-live="polite">
         <h2 id="titulo-estado-presupuesto" class="titulo-seccion">Estado del presupuesto</h2>
         <InsigniaEstadoPresupuesto :estado="estado" />
       </div>
@@ -60,6 +60,7 @@ function solicitarCambio(estado: EstadoPresupuesto): void {
         no-caps
         icon="check_circle"
         label="Aceptar"
+        :aria-pressed="estado === 'aceptado'"
         :disable="estado === 'aceptado' || estadoEnProceso !== null"
         :loading="estadoEnProceso === 'aceptado'"
         @click="solicitarCambio('aceptado')"
@@ -70,18 +71,19 @@ function solicitarCambio(estado: EstadoPresupuesto): void {
         no-caps
         icon="cancel"
         label="Rechazar"
+        :aria-pressed="estado === 'rechazado'"
         :disable="estado === 'rechazado' || estadoEnProceso !== null"
         :loading="estadoEnProceso === 'rechazado'"
         @click="solicitarCambio('rechazado')"
       />
       <q-btn
-        v-if="estado !== 'pendiente'"
-        class="boton-secundario"
+        class="boton-estado-presupuesto boton-estado-presupuesto--pendiente"
         flat
         no-caps
         icon="undo"
         label="Volver a pendiente"
-        :disable="estadoEnProceso !== null"
+        :aria-pressed="estado === 'pendiente'"
+        :disable="estado === 'pendiente' || estadoEnProceso !== null"
         :loading="estadoEnProceso === 'pendiente'"
         @click="solicitarCambio('pendiente')"
       />

@@ -45,9 +45,9 @@ export class RepositorioPresupuestosLocal implements RepositorioPresupuestos {
     );
 
     if (indicePresupuesto === -1) {
-      presupuestos.push(structuredClone(presupuesto));
+      presupuestos.push(presupuesto);
     } else {
-      presupuestos.splice(indicePresupuesto, 1, structuredClone(presupuesto));
+      presupuestos.splice(indicePresupuesto, 1, presupuesto);
     }
 
     await this.almacenamiento.guardar(CLAVE_PRESUPUESTOS, JSON.stringify(presupuestos));

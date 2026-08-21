@@ -328,6 +328,11 @@ async function cambiarEstado(estado: EstadoPresupuesto): Promise<void> {
     });
   } catch (errorCapturado) {
     errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
+    $q.notify({
+      message: errorAccion.value,
+      position: 'top',
+      classes: 'notificacion-error',
+    });
   } finally {
     estadoEnProceso.value = null;
   }
@@ -558,14 +563,6 @@ function restablecerFechaPresupuesto(): void {
           />
         </section>
 
-        <ControlEstadoPresupuesto
-          v-if="soloLectura && presupuesto"
-          :estado="presupuesto.estado"
-          :fecha-cambio-estado="presupuesto.fechaCambioEstado"
-          :estado-en-proceso="estadoEnProceso"
-          @cambiar="cambiarEstado"
-        />
-
         <section class="acciones-presupuesto" aria-label="Acciones del presupuesto">
           <div class="acciones-presupuesto__edicion">
             <q-btn
@@ -669,6 +666,14 @@ function restablecerFechaPresupuesto(): void {
             />
           </div>
         </section>
+
+        <ControlEstadoPresupuesto
+          v-if="soloLectura && presupuesto"
+          :estado="presupuesto.estado"
+          :fecha-cambio-estado="presupuesto.fechaCambioEstado"
+          :estado-en-proceso="estadoEnProceso"
+          @cambiar="cambiarEstado"
+        />
 
         <DocumentoPresupuesto
           v-if="!esEdicion"

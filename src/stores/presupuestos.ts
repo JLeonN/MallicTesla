@@ -9,7 +9,7 @@ import {
   type Presupuesto,
 } from '@/dominio/presupuestos';
 import { crearRepositorioPresupuestos } from '@/repositorios/presupuestos/crearRepositorioPresupuestos';
-import { defineStore } from 'pinia';
+import { acceptHMRUpdate, defineStore } from 'pinia';
 
 const repositorioPresupuestos = crearRepositorioPresupuestos();
 
@@ -241,3 +241,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     consumirBorradorVistaPrevia,
   };
 });
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(usePresupuestosStore, import.meta.hot));
+}
