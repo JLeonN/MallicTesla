@@ -7,9 +7,9 @@ import logoMallicTesla from '@/assets/LogoMallicTeslaOriginal.jpg';
 import { formatearImporte } from '@/dominio/materiales';
 import {
   calcularSubtotalLinea,
+  calcularTotalManoObraYTraslado,
   calcularTotalMateriales,
   calcularTotalPresupuesto,
-  calcularTotalManoObra,
   crearConfiguracionDocumento,
   lineaTieneMonedaCompatible,
   normalizarDatosPresupuesto,
@@ -58,8 +58,11 @@ const nombreEmpresa = computed(
 );
 const logoEmpresa = computed(() => configuracionDocumento.value.logo?.datosUrl || logoMallicTesla);
 const lineas = computed(() => datosPresupuesto.value?.lineas ?? []);
+const lineasMateriales = computed(() => lineas.value.filter((linea) => linea.tipo === 'material'));
 const moneda = computed(() => datosPresupuesto.value?.moneda ?? 'UYU');
-const totalManoObra = computed(() => calcularTotalManoObra(lineas.value, moneda.value));
+const totalManoObraYTraslado = computed(() =>
+  calcularTotalManoObraYTraslado(lineas.value, moneda.value),
+);
 const totalMateriales = computed(() => calcularTotalMateriales(lineas.value, moneda.value));
 const total = computed(() => calcularTotalPresupuesto(lineas.value, moneda.value));
 const cantidadMonedasIncompatibles = computed(
@@ -417,7 +420,7 @@ function formatearCantidad(cantidad: number | null): string {
                 </thead>
                 <tbody>
                   <tr
-                    v-for="linea in lineas"
+                    v-for="linea in lineasMateriales"
                     :key="linea.id"
                     :class="{
                       'documento-presupuesto__linea--incompatible': !lineaTieneMonedaCompatible(
@@ -431,6 +434,12 @@ function formatearCantidad(cantidad: number | null): string {
                     <td>{{ formatearImporte(linea.precioUnitario ?? 0, linea.moneda) }}</td>
                     <td>{{ formatearImporte(calcularSubtotalLinea(linea), linea.moneda) }}</td>
                   </tr>
+                  <tr>
+                    <td>Mano de obra</td>
+                    <td aria-label="Sin cantidad"></td>
+                    <td aria-label="Sin precio unitario"></td>
+                    <td>{{ formatearImporte(totalManoObraYTraslado, moneda) }}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -443,7 +452,7 @@ function formatearCantidad(cantidad: number | null): string {
           <section class="documento-presupuesto__totales" aria-label="Totales del presupuesto">
             <div>
               <span>Mano de obra</span>
-              <strong>{{ formatearImporte(totalManoObra, moneda) }}</strong>
+              <strong>{{ formatearImporte(totalManoObraYTraslado, moneda) }}</strong>
             </div>
             <div>
               <span>Materiales</span>
