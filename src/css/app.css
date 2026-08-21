@@ -1072,6 +1072,40 @@ input[type='number']::-webkit-outer-spin-button {
   justify-self: start;
 }
 
+.tarjeta-presupuesto-guardado > .insignia-estado-presupuesto {
+  justify-self: start;
+}
+
+.insignia-estado-presupuesto {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: var(--espaciado-extra-grande);
+  padding-inline: var(--espaciado-control);
+  color: var(--color-texto-principal);
+  font-size: var(--tamano-texto-pequeno);
+  font-weight: var(--peso-texto-fuerte);
+  text-transform: uppercase;
+  letter-spacing: var(--espaciado-letras-etiqueta);
+  border: var(--ancho-borde) solid currentcolor;
+  border-radius: var(--radio-redondo);
+}
+
+.insignia-estado-presupuesto--pendiente {
+  color: var(--color-advertencia);
+  background: var(--color-estado-pendiente-fondo);
+}
+
+.insignia-estado-presupuesto--aceptado {
+  color: var(--color-exito);
+  background: var(--color-estado-aceptado-fondo);
+}
+
+.insignia-estado-presupuesto--rechazado {
+  color: var(--color-error);
+  background: var(--color-estado-rechazado-fondo);
+}
+
 .nuevo-presupuesto__contenido {
   display: grid;
   max-width: var(--ancho-ticket-presupuesto);
@@ -1081,11 +1115,49 @@ input[type='number']::-webkit-outer-spin-button {
 .destinatario-presupuesto,
 .agregador-material,
 .ticket-presupuesto,
+.estado-presupuesto,
 .acciones-presupuesto {
   background: var(--color-superficie-principal);
   border: var(--ancho-borde) solid var(--color-borde-principal);
   border-radius: var(--radio-grande);
   box-shadow: var(--sombra-control);
+}
+
+.estado-presupuesto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espaciado-grande);
+  gap: var(--espaciado-grande);
+}
+
+.estado-presupuesto__informacion {
+  display: grid;
+  gap: var(--espaciado-pequeno);
+}
+
+.estado-presupuesto__encabezado,
+.estado-presupuesto__acciones {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--espaciado-pequeno);
+}
+
+.estado-presupuesto__fecha {
+  margin: 0;
+}
+
+.estado-presupuesto__acciones {
+  justify-content: flex-end;
+}
+
+.boton-estado-presupuesto--aceptar {
+  color: var(--color-exito);
+}
+
+.boton-estado-presupuesto--rechazar {
+  color: var(--color-error);
 }
 
 .confirmacion-cancelacion-presupuesto {
@@ -1769,12 +1841,20 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .acciones-presupuesto__edicion,
-  .acciones-presupuesto__salida {
+  .acciones-presupuesto__salida,
+  .estado-presupuesto,
+  .estado-presupuesto__acciones {
     width: 100%;
   }
 
+  .estado-presupuesto {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .acciones-presupuesto__edicion > *,
-  .acciones-presupuesto__salida > * {
+  .acciones-presupuesto__salida > *,
+  .estado-presupuesto__acciones > * {
     flex: 1 1 auto;
   }
 
@@ -1801,6 +1881,7 @@ input[type='number']::-webkit-outer-spin-button {
   .fila-presupuesto,
   .ticket-presupuesto__encabezado,
   .resumen-presupuesto,
+  .estado-presupuesto,
   .acciones-presupuesto {
     padding: var(--espaciado-mediano);
   }

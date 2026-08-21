@@ -1,9 +1,11 @@
 import { computed, ref } from 'vue';
 import {
   actualizarPresupuesto,
+  actualizarEstadoPresupuesto,
   crearPresupuesto,
   normalizarDatosPresupuesto,
   type DatosPresupuesto,
+  type EstadoPresupuesto,
   type Presupuesto,
 } from '@/dominio/presupuestos';
 import { crearRepositorioPresupuestos } from '@/repositorios/presupuestos/crearRepositorioPresupuestos';
@@ -113,6 +115,41 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     }
   }
 
+  async function cambiarEstadoPresupuesto(
+    idPresupuesto: string,
+    estado: EstadoPresupuesto,
+  ): Promise<Presupuesto> {
+    const presupuestoActual = obtenerPresupuestoPorId(idPresupuesto);
+
+    if (presupuestoActual === undefined) {
+      throw new Error('El presupuesto cuyo estado intentás cambiar ya no existe.');
+    }
+
+    if (presupuestoActual.estado === estado) {
+      return presupuestoActual;
+    }
+
+    guardando.value = true;
+    error.value = null;
+
+    try {
+      const presupuestoActualizado = actualizarEstadoPresupuesto(presupuestoActual, estado);
+      await repositorioPresupuestos.guardar(presupuestoActualizado);
+      presupuestos.value = presupuestos.value.map((presupuesto) =>
+        presupuesto.id === idPresupuesto ? presupuestoActualizado : presupuesto,
+      );
+      return presupuestoActualizado;
+    } catch (errorCapturado) {
+      error.value =
+        errorCapturado instanceof Error
+          ? errorCapturado.message
+          : 'No se pudo cambiar el estado del presupuesto.';
+      throw new Error(error.value, { cause: errorCapturado });
+    } finally {
+      guardando.value = false;
+    }
+  }
+
   function obtenerPresupuestoPorId(idPresupuesto: string): Presupuesto | undefined {
     return presupuestos.value.find((presupuesto) => presupuesto.id === idPresupuesto);
   }
@@ -194,6 +231,7 @@ export const usePresupuestosStore = defineStore('presupuestos', () => {
     cargarPresupuestos,
     agregarPresupuesto,
     editarPresupuesto,
+    cambiarEstadoPresupuesto,
     obtenerPresupuestoPorId,
     buscarPresupuestos,
     establecerBorradorVistaPrevia,

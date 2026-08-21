@@ -17,10 +17,12 @@ import type {
 export const TIPOS_DESTINATARIO = ['potencial', 'guardado'] as const;
 export const TIPOS_CONCEPTO_PRESUPUESTO = ['material', 'manoObra', 'traslado'] as const;
 export const ORIGENES_LINEA_PRESUPUESTO = ['predefinido', 'catalogo', 'manual'] as const;
+export const ESTADOS_PRESUPUESTO = ['pendiente', 'aceptado', 'rechazado'] as const;
 
 export type TipoDestinatario = (typeof TIPOS_DESTINATARIO)[number];
 export type TipoConceptoPresupuesto = (typeof TIPOS_CONCEPTO_PRESUPUESTO)[number];
 export type OrigenLineaPresupuesto = (typeof ORIGENES_LINEA_PRESUPUESTO)[number];
+export type EstadoPresupuesto = (typeof ESTADOS_PRESUPUESTO)[number];
 
 export interface OpcionUnidadPresupuesto {
   unidad: string;
@@ -76,6 +78,8 @@ export interface DatosPresupuesto {
 
 export interface Presupuesto extends DatosPresupuesto {
   id: string;
+  estado: EstadoPresupuesto;
+  fechaCambioEstado: string | null;
   fechaCreacion: string;
   fechaActualizacion: string;
 }
@@ -108,6 +112,8 @@ export function crearPresupuesto(datos: DatosPresupuesto): Presupuesto {
   return {
     id: crearIdentificadorMaterial(),
     ...normalizarDatosPresupuesto(datos),
+    estado: 'pendiente',
+    fechaCambioEstado: null,
     fechaCreacion: ahora,
     fechaActualizacion: ahora,
   };
@@ -121,6 +127,24 @@ export function actualizarPresupuesto(
     ...presupuesto,
     ...normalizarDatosPresupuesto(datos),
     fechaActualizacion: new Date().toISOString(),
+  };
+}
+
+export function actualizarEstadoPresupuesto(
+  presupuesto: Presupuesto,
+  estado: EstadoPresupuesto,
+): Presupuesto {
+  if (presupuesto.estado === estado) {
+    return presupuesto;
+  }
+
+  const ahora = new Date().toISOString();
+
+  return {
+    ...presupuesto,
+    estado,
+    fechaCambioEstado: estado === 'pendiente' ? null : ahora,
+    fechaActualizacion: ahora,
   };
 }
 
@@ -178,6 +202,7 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
   }
 
   const ahora = new Date().toISOString();
+  const estado = esEstadoPresupuesto(valor.estado) ? valor.estado : 'pendiente';
 
   return {
     id: valor.id,
@@ -186,6 +211,8 @@ export function recuperarPresupuestoGuardado(valor: unknown): Presupuesto | null
     moneda: valor.moneda === 'USD' ? 'USD' : 'UYU',
     lineas,
     configuracionDocumento: recuperarConfiguracionDocumento(valor.configuracionDocumento),
+    estado,
+    fechaCambioEstado: recuperarFechaCambioEstado(valor.fechaCambioEstado, estado),
     fechaCreacion: obtenerTexto(valor.fechaCreacion) || ahora,
     fechaActualizacion: obtenerTexto(valor.fechaActualizacion) || ahora,
   };
@@ -206,6 +233,8 @@ export function esPresupuestoGuardado(valor: unknown): valor is Presupuesto {
     (valor.configuracionDocumento === null ||
       valor.configuracionDocumento === undefined ||
       recuperarConfiguracionDocumento(valor.configuracionDocumento) !== null) &&
+    esEstadoPresupuesto(valor.estado) &&
+    (valor.fechaCambioEstado === null || typeof valor.fechaCambioEstado === 'string') &&
     typeof valor.fechaCreacion === 'string' &&
     typeof valor.fechaActualizacion === 'string'
   );
@@ -609,6 +638,18 @@ function esTipoConceptoPresupuesto(valor: unknown): valor is TipoConceptoPresupu
 
 function esOrigenLineaPresupuesto(valor: unknown): valor is OrigenLineaPresupuesto {
   return ORIGENES_LINEA_PRESUPUESTO.some((origen) => origen === valor);
+}
+
+function esEstadoPresupuesto(valor: unknown): valor is EstadoPresupuesto {
+  return ESTADOS_PRESUPUESTO.some((estado) => estado === valor);
+}
+
+function recuperarFechaCambioEstado(valor: unknown, estado: EstadoPresupuesto): string | null {
+  if (estado === 'pendiente' || typeof valor !== 'string') {
+    return null;
+  }
+
+  return Number.isNaN(Date.parse(valor)) ? null : valor;
 }
 
 function esLineaRecuperada(linea: LineaPresupuesto | null): linea is LineaPresupuesto {

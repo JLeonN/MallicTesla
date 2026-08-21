@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import BuscadorListado from '@/components/BuscadorListado.vue';
+import InsigniaEstadoPresupuesto from '@/components/presupuestos/InsigniaEstadoPresupuesto.vue';
 import { calcularTotalPresupuesto } from '@/dominio/presupuestos';
 import { formatearImporte } from '@/dominio/materiales';
 import { usePresupuestosStore } from '@/stores/presupuestos';
@@ -70,6 +71,7 @@ function formatearFecha(fecha: string): string {
             <span role="columnheader">Cliente</span>
             <span role="columnheader">Fecha</span>
             <span role="columnheader">Total</span>
+            <span role="columnheader">Estado</span>
             <span aria-label="Acciones" role="columnheader" />
           </div>
           <div
@@ -88,6 +90,9 @@ function formatearFecha(fecha: string): string {
                 )
               }}
             </strong>
+            <span role="cell">
+              <InsigniaEstadoPresupuesto :estado="presupuesto.estado" />
+            </span>
             <q-btn
               class="boton-secundario"
               flat
@@ -119,6 +124,7 @@ function formatearFecha(fecha: string): string {
                 )
               }}
             </strong>
+            <InsigniaEstadoPresupuesto :estado="presupuesto.estado" />
             <q-btn
               class="boton-secundario"
               flat

@@ -22,6 +22,9 @@
   --color-exito: #42d392;
   --color-advertencia: #f6c85f;
   --color-error: #ff6b6b;
+  --color-estado-pendiente-fondo: color-mix(in srgb, var(--color-advertencia) 14%, transparent);
+  --color-estado-aceptado-fondo: color-mix(in srgb, var(--color-exito) 14%, transparent);
+  --color-estado-rechazado-fondo: color-mix(in srgb, var(--color-error) 14%, transparent);
   --color-documento-fondo: #ffffff;
   --color-documento-texto: #17202a;
   --color-documento-texto-secundario: #5f6b76;
@@ -80,7 +83,8 @@
   --ancho-fecha-ticket: 10rem;
   --columnas-tabla-materiales: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.2fr)
     var(--ancho-columna-accion-material);
-  --columnas-tabla-presupuestos: minmax(0, 1.4fr) minmax(0, 0.7fr) minmax(0, 0.8fr) minmax(0, 0.9fr);
+  --columnas-tabla-presupuestos: minmax(0, 1.3fr) minmax(0, 0.65fr) minmax(0, 0.75fr)
+    minmax(0, 0.7fr) minmax(0, 0.9fr);
   --columnas-linea-presupuesto: minmax(11rem, 1.7fr) minmax(5.5rem, 0.55fr) minmax(5.5rem, 0.55fr)
     minmax(8rem, 0.75fr) minmax(8rem, 0.8fr) auto;
   --altura-control: 3rem;

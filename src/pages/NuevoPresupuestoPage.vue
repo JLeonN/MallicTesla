@@ -4,6 +4,7 @@ import { mdiWhatsapp } from '@quasar/extras/mdi-v7';
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import AgregadorMaterialPresupuesto from '@/components/presupuestos/AgregadorMaterialPresupuesto.vue';
+import ControlEstadoPresupuesto from '@/components/presupuestos/ControlEstadoPresupuesto.vue';
 import DocumentoPresupuesto from '@/components/presupuestos/DocumentoPresupuesto.vue';
 import FilaPresupuesto from '@/components/presupuestos/FilaPresupuesto.vue';
 import ResumenPresupuesto from '@/components/presupuestos/ResumenPresupuesto.vue';
@@ -18,6 +19,7 @@ import {
   crearLineasInicialesPresupuesto,
   type DatosPresupuesto,
   type ConfiguracionDocumentoPresupuesto,
+  type EstadoPresupuesto,
   type LineaPresupuesto,
   type Presupuesto,
   type TipoDestinatario,
@@ -60,6 +62,7 @@ const errorAccion = ref<string | null>(null);
 const configuracionDocumento = ref<ConfiguracionDocumentoPresupuesto | null>(null);
 const documentoPresupuesto = ref<DocumentoPresupuestoExpuesto | null>(null);
 const accionDocumento = ref<AccionDocumentoPresupuesto | null>(null);
+const estadoEnProceso = ref<EstadoPresupuesto | null>(null);
 
 const esNuevo = computed(() => ruta.name === 'nuevo-presupuesto');
 const esEdicion = computed(() => ruta.name === 'editar-presupuesto');
@@ -101,6 +104,7 @@ async function inicializarPantalla(): Promise<void> {
   presupuestoNoEncontrado.value = false;
   mostrarConfirmacionCancelar.value = false;
   errorAccion.value = null;
+  estadoEnProceso.value = null;
 
   try {
     await Promise.all([
@@ -300,6 +304,32 @@ async function guardarCambios(): Promise<void> {
     await router.replace(`/presupuestos/${presupuestoActualizado.id}`);
   } catch (errorCapturado) {
     errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
+  }
+}
+
+async function cambiarEstado(estado: EstadoPresupuesto): Promise<void> {
+  if (!presupuesto.value || estadoEnProceso.value !== null) {
+    return;
+  }
+
+  estadoEnProceso.value = estado;
+  errorAccion.value = null;
+
+  try {
+    presupuesto.value = await presupuestosStore.cambiarEstadoPresupuesto(
+      presupuesto.value.id,
+      estado,
+    );
+
+    $q.notify({
+      message: `Presupuesto marcado como ${estado}.`,
+      position: 'top',
+      classes: 'notificacion-exito',
+    });
+  } catch (errorCapturado) {
+    errorAccion.value = obtenerMensajeErrorGuardado(errorCapturado);
+  } finally {
+    estadoEnProceso.value = null;
   }
 }
 
@@ -528,6 +558,14 @@ function restablecerFechaPresupuesto(): void {
           />
         </section>
 
+        <ControlEstadoPresupuesto
+          v-if="soloLectura && presupuesto"
+          :estado="presupuesto.estado"
+          :fecha-cambio-estado="presupuesto.fechaCambioEstado"
+          :estado-en-proceso="estadoEnProceso"
+          @cambiar="cambiarEstado"
+        />
+
         <section class="acciones-presupuesto" aria-label="Acciones del presupuesto">
           <div class="acciones-presupuesto__edicion">
             <q-btn
@@ -537,7 +575,7 @@ function restablecerFechaPresupuesto(): void {
               no-caps
               icon="edit"
               label="Editar"
-              :disable="accionDocumento !== null"
+              :disable="presupuestosStore.guardando || accionDocumento !== null"
               :to="`/presupuestos/${presupuesto.id}/editar`"
             />
             <template v-else>
@@ -599,7 +637,7 @@ function restablecerFechaPresupuesto(): void {
               flat
               icon="visibility"
               label="Vista previa"
-              :disable="accionDocumento !== null"
+              :disable="presupuestosStore.guardando || accionDocumento !== null"
               @click="abrirVistaPrevia"
             />
             <q-btn

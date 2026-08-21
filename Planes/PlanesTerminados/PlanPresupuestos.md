@@ -12,6 +12,8 @@ Ampliación acordada con Leo el 20 de agosto de 2026: generar el PDF desde la vi
 
 Ampliación acordada con Leo el 20 de agosto de 2026: permitir agregar varias líneas de mano de obra en un mismo ticket, eligiendo una tarifa guardada o escribiendo un concepto manual para cada línea.
 
+Ampliación acordada con Leo el 21 de agosto de 2026: registrar internamente si cada presupuesto está pendiente, aceptado o rechazado, junto con la fecha de la decisión.
+
 ## Objetivo principal
 
 - Crear presupuestos en una única pantalla clara y cómoda para móvil
@@ -32,7 +34,7 @@ Ampliación acordada con Leo el 20 de agosto de 2026: permitir agregar varias l�
 - No guardar materiales escritos manualmente en el catálogo de materiales
 - No modificar un cliente, material ni precio del catálogo al editar datos dentro del presupuesto
 - No implementar todavía persistencia histórica ni copias históricas de clientes y materiales
-- No implementar PDF, WhatsApp, estados, aceptación, adicionales ni estadísticas
+- No implementar todavía adicionales, aceptación de costos adicionales ni estadísticas
 - No implementar el futuro apartado de configuración de mano de obra y nafta
 
 ## FASE 1: Modelar el presupuesto y sus cálculos
@@ -184,6 +186,9 @@ Conectar los valores habituales de Pablo sin vincular retroactivamente los presu
 - [x] Crear una vista previa profesional en una página independiente y preparada para impresión A4
 - [x] Conservar en cada presupuesto una copia del nombre comercial, contacto, logo, métodos de pago, redes y mensaje final
 - [x] Permitir volver al formulario sin perder cambios y abrir WhatsApp cuando el destinatario tenga teléfono
+- [x] Registrar estados pendiente, aceptado y rechazado sin modificar el documento enviado al cliente
+- [x] Mostrar el estado y la fecha de decisión en el Ticket guardado
+- [x] Identificar el estado de cada presupuesto en el listado responsive
 - [ ] Validar visualmente el flujo completo en navegador y Android
 
 ## FASE 8: Descargar y compartir el PDF
